@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "manual-cra-reynaldo",
+  "compatibility_date": "2026-07-19",
+  "compatibility_flags": ["nodejs_compat"],
+  "pages_build_output_dir": "./dist",
+  "d1_databases": [
+    {
+      "binding": "CONTENIDO_DB",
+      "database_name": "manual-cra-contenido",
+      "database_id": "17f6fd72-f222-42a9-b736-a8f6d7de92c6",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

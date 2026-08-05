@@ -1,0 +1,26 @@
+.avisos-globales { position: sticky; z-index: 100; top: 112px; color: var(--ink); background: #f8fbfd; border-bottom: 1px solid var(--border); box-shadow: 0 5px 16px rgba(23,50,77,.1); }
+.avisos-resumen { display: flex; width: 100%; min-height: 49px; padding: 7px max(14px, calc((100vw - 1180px) / 2)); align-items: center; gap: 10px; color: inherit; font: inherit; text-align: left; cursor: pointer; background: transparent; border: 0; }
+.avisos-icono { display: grid; width: 32px; height: 32px; flex: 0 0 auto; place-items: center; color: #6c5200; background: #ffe36a; border-radius: 9px; }
+.avisos-resumen > span:nth-child(2) { display: flex; min-width: 195px; flex-direction: column; }
+.avisos-resumen small { color: var(--muted); font-size: .6rem; font-weight: 850; letter-spacing: .06em; text-transform: uppercase; }
+.avisos-resumen strong { margin-top: 1px; font-size: .8rem; }
+.avisos-niveles { display: flex; flex: 1; gap: 5px; }
+.avisos-niveles b { padding: 3px 7px; color: white; font-size: .62rem; border-radius: 999px; text-transform: capitalize; }
+.avisos-niveles .nivel-rojo { background: #c62f35; }.avisos-niveles .nivel-naranja { background: #df731c; }.avisos-niveles .nivel-amarillo { color: #614b00; background: #ffd53d; }
+.avisos-niveles .nivel-viento { color: white; background: #176a9b; }
+.avisos-desplegar { flex: 0 0 auto; color: var(--movistar-blue-dark); font-size: .68rem; font-weight: 850; }
+.avisos-globales.nivel-rojo { border-bottom: 3px solid #c62f35; }.avisos-globales.nivel-naranja { border-bottom: 3px solid #df731c; }.avisos-globales.nivel-amarillo { border-bottom: 3px solid #e7b900; }
+.avisos-panel { position: absolute; top: 100%; left: 50%; width: min(100% - 24px, 1060px); max-height: min(70vh, 650px); overflow: hidden; background: white; border: 1px solid var(--border); border-radius: 0 0 18px 18px; box-shadow: 0 24px 60px rgba(9,38,61,.28); transform: translateX(-50%); }
+.avisos-panel > header { display: flex; padding: 16px 18px; align-items: center; justify-content: space-between; gap: 15px; color: white; background: var(--ink); border-bottom: 4px solid var(--prosegur-yellow); }
+.avisos-panel > header span { color: var(--prosegur-yellow); font-size: .62rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }.avisos-panel h2 { margin-top: 3px; font-size: 1.15rem; }
+.avisos-panel > header button { padding: 7px 10px; color: white; font-weight: 750; cursor: pointer; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.35); border-radius: 8px; }
+.avisos-listado { display: grid; max-height: calc(min(70vh, 650px) - 135px); padding: 12px; overflow: auto; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+.aviso-tarjeta { display: grid; grid-template-columns: auto minmax(0,1fr) auto; padding: 11px; align-items: start; gap: 10px; background: #f8fafc; border-left: 5px solid #8395a1; border-radius: 9px; }
+.aviso-tarjeta.nivel-rojo { border-left-color: #c62f35; }.aviso-tarjeta.nivel-naranja { border-left-color: #df731c; }.aviso-tarjeta.nivel-amarillo { border-left-color: #e7b900; }
+.aviso-tarjeta.aviso-viento { background: linear-gradient(115deg, #eef8fd, #f8fafc); outline: 2px solid rgba(23,106,155,.16); border-left-color: #176a9b; }
+.aviso-tarjeta > span { padding: 3px 6px; color: white; font-size: .58rem; font-weight: 900; background: #8395a1; border-radius: 5px; text-transform: uppercase; }.aviso-tarjeta.nivel-rojo > span { background: #c62f35; }.aviso-tarjeta.nivel-naranja > span { background: #df731c; }.aviso-tarjeta.nivel-amarillo > span { color: #604a00; background: #ffd53d; }
+.aviso-tarjeta strong { color: var(--muted); font-size: .66rem; }.aviso-tarjeta h3 { margin: 2px 0 4px; font-size: .86rem; }.aviso-tarjeta p { color: var(--muted); font-size: .68rem; line-height: 1.35; text-align: left; }.aviso-tarjeta a { color: var(--movistar-blue-dark); font-size: .65rem; font-weight: 850; white-space: nowrap; }
+.aviso-impacto-viento { grid-column: 2 / -1; display: flex; padding: 7px 9px; align-items: center; justify-content: space-between; gap: 10px; color: #0f5278; background: #dceff9; border-radius: 7px; }.aviso-impacto-viento b { font-size: .72rem; }.aviso-impacto-viento small { color: #315f78; font-size: .62rem; }
+.avisos-estado { padding: 30px; color: #8b3434; text-align: center; }.avisos-estado.correcto { color: #28603a; }
+.avisos-panel > footer { display: flex; min-height: 39px; padding: 9px 16px; align-items: center; justify-content: space-between; gap: 10px; color: var(--muted); font-size: .62rem; background: #f3f7f9; border-top: 1px solid var(--border); }
+@media (max-width: 700px) { .avisos-globales { top: 112px; }.avisos-niveles { display: none; }.avisos-resumen { padding-inline: 9px; }.avisos-resumen > span:nth-child(2) { min-width: 0; flex: 1; }.avisos-desplegar { font-size: 0; }.avisos-desplegar::after { content: "↓"; font-size: 1rem; }.avisos-globales.abierto .avisos-desplegar::after { content: "↑"; }.avisos-panel { width: calc(100% - 12px); max-height: 72vh; }.avisos-listado { max-height: calc(72vh - 140px); grid-template-columns: 1fr; }.avisos-panel > footer { align-items: flex-start; flex-direction: column; } }

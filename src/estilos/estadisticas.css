@@ -1,0 +1,23 @@
+.estadisticas-uso { width:min(100%,1040px); margin:30px auto 0; padding:22px; color:var(--ink); background:linear-gradient(145deg,#fff,#f2f9fd); border:1px solid var(--border); border-radius:22px; box-shadow:0 16px 42px rgba(23,50,77,.1); }
+.estadisticas-uso>header { display:grid; grid-template-columns:1fr auto auto; align-items:center; gap:20px; }
+.estadisticas-uso>header span { color:var(--movistar-blue-dark); font-size:.66rem; font-weight:900; letter-spacing:.1em; text-transform:uppercase; }
+.estadisticas-uso h2 { margin:3px 0 4px; font-size:1.35rem; }
+.estadisticas-uso header p { color:var(--muted); font-size:.78rem; }
+.estadisticas-resumen { text-align:right; }
+.estadisticas-resumen strong { display:block; color:var(--movistar-blue-dark); font-size:1.8rem; line-height:1; }
+.estadisticas-resumen small { color:var(--muted); font-size:.65rem; }
+.estadisticas-uso>header>button { padding:9px 12px; color:#fff; font-weight:800; cursor:pointer; background:var(--movistar-blue-dark); border:0; border-bottom:3px solid var(--prosegur-yellow); border-radius:9px; }
+.estadisticas-uso>header>button:disabled { cursor:wait; opacity:.65; }
+.estadisticas-cuadricula { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:20px; }
+.estadisticas-cuadricula article { display:grid; grid-template-columns:auto 1fr; padding:15px; align-items:center; gap:11px; background:#fff; border:1px solid #d7e6ee; border-radius:14px; }
+.estadisticas-cuadricula article>span { display:grid; width:40px; height:40px; place-items:center; color:#fff; font-size:1.25rem; background:linear-gradient(145deg,var(--movistar-blue),var(--movistar-blue-dark)); border-radius:12px; }
+.estadisticas-cuadricula h3 { color:var(--muted); font-size:.72rem; font-weight:750; }
+.estadisticas-cuadricula div>strong { color:var(--ink); font-size:1.55rem; line-height:1.1; }
+.estadisticas-cuadricula dl { display:grid; grid-column:1/-1; grid-template-columns:1fr 1fr; margin:2px 0 0; border-top:1px solid #e4edf2; }
+.estadisticas-cuadricula dl div { display:flex; padding-top:8px; justify-content:space-between; color:var(--muted); font-size:.68rem; }
+.estadisticas-cuadricula dl div+div { padding-left:12px; border-left:1px solid #e4edf2; }
+.estadisticas-cuadricula dd { margin:0; color:var(--movistar-blue-dark); font-weight:900; }
+.estadisticas-actualizacion { display:block; margin-top:12px; color:var(--muted); font-size:.63rem; text-align:right; }
+.estadisticas-error { margin-top:18px; padding:12px; color:#8f2424; background:#fff0f0; border-radius:9px; }
+@media(max-width:760px){.estadisticas-uso>header{grid-template-columns:1fr auto}.estadisticas-uso>header>button{grid-column:1/-1}.estadisticas-cuadricula{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:470px){.estadisticas-uso{padding:16px 12px;border-radius:16px}.estadisticas-cuadricula{grid-template-columns:1fr}}

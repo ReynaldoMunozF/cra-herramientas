@@ -1,0 +1,1569 @@
+.boton-herramientas-rapidas { display: inline-flex; min-height: 33px; padding: 4px 9px 4px 5px; align-items: center; gap: 7px; color: white; font: inherit; font-size: .72rem; font-weight: 800; cursor: pointer; background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.38); border-bottom: 2px solid var(--prosegur-yellow); border-radius: 9px; }
+.boton-herramientas-rapidas svg { width: 23px; height: 23px; padding: 4px; fill: none; stroke: var(--ink); stroke-width: 1.7; background: var(--prosegur-yellow); border-radius: 6px; }
+.boton-herramientas-rapidas small { color: rgba(255,255,255,.65); font-size: .65rem; }.boton-herramientas-rapidas:hover { background: rgba(255,255,255,.17); }
+.ventana-herramientas { position: relative; min-height: 100vh; padding-bottom: 24px; color: var(--ink); background: linear-gradient(160deg, #eef7fb, #f8fafc 45%, #e8f1f6); }
+.ventana-herramientas > header { display: flex; padding: 18px 20px; align-items: center; justify-content: space-between; gap: 12px; color: white; background: linear-gradient(120deg, #10283e, #176a9b); border-bottom: 4px solid var(--prosegur-yellow); }
+.ventana-herramientas > header span { color: var(--prosegur-yellow); font-size: .62rem; font-weight: 900; letter-spacing: .09em; text-transform: uppercase; }.ventana-herramientas > header h1 { margin-top: 3px; font-size: 1.35rem; }
+.ventana-herramientas > header button { display: grid; width: 34px; height: 34px; place-items: center; color: white; font-size: 1.4rem; cursor: pointer; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.35); border-radius: 9px; }
+.herramientas-popup-presentacion { padding: 18px 20px 10px; }.herramientas-popup-presentacion p { margin-top: 4px; color: var(--muted); font-size: .76rem; line-height: 1.4; text-align: left; }
+.herramientas-popup-accesos { display: grid; padding: 10px 20px 18px; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; }
+.ventana-herramientas.herramienta-desplegada .herramientas-popup-presentacion, .ventana-herramientas.herramienta-desplegada .herramientas-popup-aviso { display: none; }
+.ventana-herramientas.herramienta-desplegada > header { padding: 9px 14px; }
+.ventana-herramientas.herramienta-desplegada > header h1 { font-size: 1.05rem; }
+.ventana-herramientas.herramienta-desplegada .herramientas-popup-accesos { padding: 10px 14px 12px; }
+.ventana-herramientas.herramienta-desplegada .fse-activador, .ventana-herramientas.herramienta-desplegada .clima-rapido-activador, .ventana-herramientas.herramienta-desplegada .cuadrante-rapido-activador { min-height: 58px; }
+.ventana-herramientas .fse-rapido, .ventana-herramientas .clima-rapido { position: static; display: block; }
+.ventana-herramientas .fse-activador, .ventana-herramientas .clima-rapido-activador { width: 100%; min-height: 72px; box-shadow: 0 8px 20px rgba(9,38,61,.16); }
+.ventana-herramientas .fse-activador-texto strong, .ventana-herramientas .clima-activador-texto strong { white-space: normal; text-align: left; }
+.ventana-herramientas .fse-rapido-panel, .ventana-herramientas .clima-rapido-panel { position: absolute; z-index: 10; top: 165px; left: 12px; width: calc(100% - 24px); max-height: calc(100vh - 181px); overflow: auto; }
+.cuadrante-rapido { position: static; }.cuadrante-rapido-activador { display: flex; width: 100%; min-height: 72px; padding: 7px; align-items: center; gap: 7px; color: white; font: inherit; cursor: pointer; background: #176a9b; border: 1px solid rgba(255,255,255,.5); border-bottom: 4px solid var(--prosegur-yellow); border-radius: 16px; box-shadow: 0 8px 20px rgba(9,38,61,.16); }
+.cuadrante-rapido-activador > span { display: grid; width: 38px; height: 38px; flex: 0 0 auto; place-items: center; color: #17324d; background: var(--prosegur-yellow); border-radius: 10px; }.cuadrante-rapido-activador svg { width: 23px; height: 23px; fill: none; stroke: currentColor; stroke-width: 1.8; }.cuadrante-rapido-activador div { min-width: 0; text-align: left; }.cuadrante-rapido-activador small, .cuadrante-rapido-activador strong { display: block; }.cuadrante-rapido-activador small { color: rgba(255,255,255,.72); font-size: .56rem; }.cuadrante-rapido-activador strong { margin-top: 3px; font-size: .76rem; }
+.cuadrante-rapido-panel { position: absolute; z-index: 11; top: 165px; left: 12px; width: calc(100% - 24px); max-height: calc(100vh - 181px); overflow: visible; background: white; border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 22px 60px rgba(9,38,61,.3); }
+.cuadrante-rapido-panel > header { display: flex; padding: 15px 17px; align-items: center; justify-content: space-between; color: white; background: linear-gradient(120deg,#17324d,#176a9b); border-bottom: 4px solid var(--prosegur-yellow); }.cuadrante-rapido-panel > header span { color: var(--prosegur-yellow); font-size: .62rem; font-weight: 900; text-transform: uppercase; }.cuadrante-rapido-panel > header h2 { margin-top: 2px; font-size: 1.05rem; }.cuadrante-rapido-panel > header button { width: 31px; height: 31px; color: white; font-size: 1.3rem; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.35); border-radius: 8px; }
+.cuadrante-rapido-actualizacion { display:flex; margin:0; padding:6px 16px; align-items:center; gap:5px; color:#17324d; font-size:.62rem; font-weight:850; background:#fff6bf; border-bottom:1px solid #ead36a; }
+.cuadrante-rapido-actualizacion > span { display:grid; width:15px; height:15px; place-items:center; color:white; font-size:.55rem; background:#087db8; border-radius:50%; }
+.cuadrante-rapido-filtros { position: relative; display: grid; padding: 14px 16px; grid-template-columns: 1fr 1fr; gap: 9px; }.cuadrante-rapido-filtros label { color: var(--ink); font-size: .68rem; font-weight: 850; }.cuadrante-rapido-filtros input, .cuadrante-rapido-filtros select { display: block; width: 100%; min-height: 39px; margin-top: 5px; padding: 7px 9px; font: inherit; background: white; border: 1px solid #9eb5c5; border-radius: 8px; }.cuadrante-rapido-resultados { position: absolute; z-index: 20; top: 72px; right: 16px; width: calc(50% - 21px); max-height: min(260px, calc(100vh - 285px)); overflow-x: hidden; overflow-y: auto; background: white; border: 1px solid var(--border); border-radius: 9px; box-shadow: 0 10px 24px rgba(9,38,61,.2); }.cuadrante-rapido-resultados button { display: flex; width: 100%; padding: 8px 10px; align-items: center; justify-content: space-between; gap: 8px; color: var(--ink); cursor: pointer; background: white; border: 0; border-bottom: 1px solid var(--border); }.cuadrante-rapido-resultados span { overflow: hidden; color: var(--muted); font-size: .62rem; text-overflow: ellipsis; white-space: nowrap; }
+.cuadrante-rapido-calendario { padding: 0 10px 9px; }.cuadrante-rapido-calendario > div:first-child { display: flex; padding: 0 6px 6px; align-items: center; justify-content: space-between; gap: 8px; }.cuadrante-rapido-calendario > div:first-child span { color: var(--muted); font-size: .65rem; }.cuadrante-rapido-calendario .calendar { gap: 2px; }.cuadrante-rapido-calendario .calendar-weekday { padding: 2px 1px; font-size: .52rem; }.cuadrante-rapido-calendario .calendar-day, .cuadrante-rapido-calendario .calendar-blank { min-height: 36px; padding: 9px 2px 1px; border-radius: 6px; }.cuadrante-rapido-calendario .calendar-date { top: 2px; left: 3px; font-size: .48rem; }.cuadrante-rapido-calendario .calendar-day strong { font-size: .58rem; }.cuadrante-rapido-calendario .calendar-day small { display: none; }.cuadrante-rapido-calendario .calendar-day.today-highlight::after { top: 2px; right: 2px; padding: 1px 2px; font-size: .38rem; }
+.herramientas-popup-aviso { margin: 0 20px; padding: 13px 15px; color: #614d00; background: #fff8d6; border: 1px solid #ead47a; border-radius: 11px; }.herramientas-popup-aviso p { margin-top: 4px; font-size: .72rem; line-height: 1.45; text-align: left; }
+@media (max-width: 340px) { .herramientas-popup-accesos { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* -------------------------------------------------------------------------
+   Tema moderno exclusivo de la ventana de herramientas rápidas.
+   Se inspira en un panel de control nocturno sin modificar el resto de la app.
+   ------------------------------------------------------------------------- */
+.ventana-herramientas {
+  --toolbar-fondo: #062b45;
+  --toolbar-panel: #0b456b;
+  --toolbar-panel-claro: #087eb4;
+  --toolbar-cian: #27c9f3;
+  --toolbar-amarillo: #ffd100;
+  --toolbar-texto: #f7fbfe;
+  min-height: 100vh;
+  color: var(--toolbar-texto);
+  background:
+    radial-gradient(circle at 85% 12%, rgba(39, 201, 243, .2), transparent 25%),
+    radial-gradient(circle at 12% 88%, rgba(255, 209, 0, .12), transparent 28%),
+    linear-gradient(145deg, #041b2c 0%, var(--toolbar-fondo) 48%, #075c86 100%);
+}
+/* Comentarios frecuentes: cuarta herramienta de la barra auxiliar. */
+.ventana-herramientas .herramientas-popup-accesos { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.comentarios-rapidos { position: static; }
+.comentarios-rapidos-activador {
+  align-items: center; background: linear-gradient(135deg,#155c86,#0789ba); border: 1px solid rgba(255,255,255,.28);
+  border-bottom: 4px solid var(--prosegur-yellow); border-radius: 14px; color: #fff; cursor: pointer; display: flex;
+  gap: 7px; min-height: 72px; padding: 7px; text-align: left; transition: transform .18s ease, filter .18s ease; width: 100%;
+}
+.comentarios-rapidos-activador:hover { filter: brightness(1.12); transform: translateY(-2px); }
+.comentarios-rapidos.esta-abierto .comentarios-rapidos-activador { background: linear-gradient(135deg,#f6b900,#ffdd3f); color: #073553; }
+.comentarios-rapidos-activador > span {
+  align-items: center; background: var(--prosegur-yellow); border-radius: 50%; color: #073553; display: flex;
+  flex: 0 0 30px; height: 30px; justify-content: center; width: 30px;
+}
+.comentarios-rapidos-activador svg { fill: none; height: 18px; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; width: 18px; }
+.comentarios-rapidos-activador strong { font-size: .68rem; line-height: 1.1; min-width: 0; overflow-wrap: anywhere; }
+.comentarios-rapidos-panel {
+  background: linear-gradient(160deg,#0b3e5e,#05293f); border: 1px solid rgba(39,190,239,.45); border-radius: 14px;
+  box-shadow: 0 18px 45px rgba(0,18,32,.45); color: #fff; left: 12px; max-height: calc(100vh - 125px);
+  overflow: hidden; position: absolute; right: 12px; top: 114px; z-index: 20;
+}
+.comentarios-rapidos-panel > header {
+  align-items: center; background: linear-gradient(100deg,#164e74,#087fab); border-bottom: 3px solid var(--prosegur-yellow);
+  display: flex; justify-content: space-between; padding: 9px 12px;
+}
+.comentarios-rapidos-panel header small { color: var(--prosegur-yellow); font-size: .55rem; font-weight: 900; text-transform: uppercase; }
+.comentarios-rapidos-panel header h2 { font-size: .9rem; margin: 1px 0 0; }
+.comentarios-rapidos-panel header > button { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.35); border-radius: 8px; color: #fff; cursor: pointer; height: 28px; width: 28px; }
+.comentarios-rapidos-pestanas { display: grid; gap: 4px; grid-template-columns: 1fr 1fr; padding: 7px 8px 3px; }
+.comentarios-rapidos-pestanas button {
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.17); border-radius: 8px; color: #d8eaf3;
+  cursor: pointer; font-size: .68rem; font-weight: 800; padding: 6px;
+}
+.comentarios-rapidos-pestanas button.esta-activa { background: var(--prosegur-yellow); border-color: var(--prosegur-yellow); color: #073553; }
+.comentarios-rapidos-contenido { max-height: calc(100vh - 218px); overflow-y: auto; padding: 5px 8px 9px; scrollbar-width: thin; }
+.comentarios-rapidos-selector { display: grid; font-size: .65rem; font-weight: 800; gap: 3px; margin-bottom: 7px; }
+.comentarios-rapidos-selector select, .comentario-personal-formulario textarea {
+  background: #fff; border: 2px solid transparent; border-radius: 8px; color: #12364f; font: inherit; padding: 7px; width: 100%;
+}
+.comentarios-rapidos-lista { display: grid; gap: 6px; }
+.comentario-rapido {
+  align-items: center; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16); border-radius: 9px;
+  color: #fff; cursor: pointer; display: flex; gap: 7px; justify-content: space-between; padding: 7px; text-align: left; width: 100%;
+}
+.comentario-rapido:hover { background: rgba(39,190,239,.17); border-color: #27beef; }
+.comentario-rapido span, .comentario-personal p { font-size: .67rem; line-height: 1.35; }
+.comentario-rapido strong { color: var(--prosegur-yellow); flex: 0 0 auto; font-size: .58rem; text-transform: uppercase; }
+.comentario-personal-formulario, .comentario-personal {
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 9px; padding: 8px;
+}
+.comentario-personal-formulario { display: grid; gap: 6px; margin-bottom: 7px; }
+.comentario-personal-formulario label { color: var(--prosegur-yellow); font-size: .67rem; font-weight: 800; }
+.comentario-personal-formulario textarea { min-height: 58px; resize: vertical; }
+.comentario-personal-formulario button, .comentario-personal div button {
+  background: var(--prosegur-yellow); border: 0; border-radius: 7px; color: #073553; cursor: pointer; font-size: .62rem; font-weight: 900; padding: 6px 8px;
+}
+.comentario-personal-formulario button:disabled { cursor: not-allowed; opacity: .45; }
+.comentario-personal p { margin: 0 0 6px; overflow-wrap: anywhere; }
+.comentario-personal div { display: flex; align-items: center; gap: 5px; }
+.comentario-personal .comentario-orden-controles { display: inline-flex; margin-left: auto; gap: 4px; }
+.comentario-personal .comentario-orden-controles button { display: grid; width: 25px; min-width: 25px; height: 25px; padding: 0; place-items: center; color: white; font-size: .72rem; line-height: 1; background: #087ead; border: 1px solid rgba(255,255,255,.25); border-radius: 50%; }
+.comentario-personal .comentario-orden-controles button:disabled { cursor: not-allowed; opacity: .3; }
+.comentario-personal div .comentario-personal-eliminar { background: transparent; border: 1px solid rgba(255,255,255,.35); color: #fff; }
+.comentarios-rapidos-vacio { color: #bad3df; font-size: .68rem; text-align: center; }
+.comentarios-rapidos-mensaje {
+  background: rgba(39,190,239,.14); border: 1px solid rgba(39,190,239,.35); border-radius: 7px;
+  color: #e5f7ff; font-size: .65rem; margin: 0 0 7px; padding: 6px 7px;
+}
+.comentarios-operador-selector {
+  color: #dceaf2; display: grid; font-size: .64rem; font-weight: 850; gap: 3px; margin-bottom: 7px;
+}
+.comentarios-operador-selector select {
+  background: #fff; border: 2px solid transparent; border-radius: 8px; color: #12364f;
+  font: inherit; min-height: 32px; padding: 6px 7px; width: 100%;
+}
+.comentarios-operador-selector select:focus { border-color: #27beef; outline: none; }
+@media (max-width: 340px) {
+  .ventana-herramientas .herramientas-popup-accesos { gap: 3px; grid-template-columns: repeat(4,minmax(0,1fr)); }
+  .ventana-herramientas .comentarios-rapidos-activador { border-radius: 8px; gap: 2px; justify-content: center; min-height: 38px; padding: 3px 2px; }
+  .ventana-herramientas .comentarios-rapidos-activador > span { flex-basis: 25px; height: 25px; width: 25px; }
+  .ventana-herramientas .comentarios-rapidos-activador svg { height: 15px; width: 15px; }
+  .ventana-herramientas .comentarios-rapidos-activador strong { font-size: 0; }
+  .ventana-herramientas .comentarios-rapidos-activador strong::after { content: "Textos"; font-size: .52rem; }
+  .ventana-herramientas .comentarios-rapidos-panel { border-radius: 9px; left: 4px; max-height: calc(100vh - 83px); right: 4px; top: 79px; }
+  .ventana-herramientas .comentarios-rapidos-panel > header { padding: 5px 7px; }
+  .ventana-herramientas .comentarios-rapidos-panel header small { display: none; }
+  .ventana-herramientas .comentarios-rapidos-panel header h2 { font-size: .72rem; }
+  .ventana-herramientas .comentarios-rapidos-contenido { max-height: calc(100vh - 164px); }
+}
+/* Panel inicial a tamaño completo: ocho herramientas repartidas como un menú real. */
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos {
+  height: calc(100vh - 35px);
+  min-height: 360px;
+  padding: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(92px, 1fr));
+  align-content: stretch;
+  gap: 12px;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos > * {
+  height: 100%;
+  min-height: 0;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .fse-activador,
+.ventana-herramientas:not(.herramienta-desplegada) .clima-rapido-activador,
+.ventana-herramientas:not(.herramienta-desplegada) .cuadrante-rapido-activador,
+.ventana-herramientas:not(.herramienta-desplegada) .comentarios-rapidos-activador,
+.ventana-herramientas:not(.herramienta-desplegada) .ubicacion-rapida-activador,
+.ventana-herramientas:not(.herramienta-desplegada) .alfabeto-rapido-activador,
+.ventana-herramientas:not(.herramienta-desplegada) .productividad-rapida-activador,
+.ventana-herramientas:not(.herramienta-desplegada) .codigos-rapidos-activador {
+  width: 100%;
+  height: 100%;
+  min-height: 92px;
+  padding: 10px 7px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  border-radius: 16px;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .fse-activador-icono,
+.ventana-herramientas:not(.herramienta-desplegada) .clima-activador-icono,
+.ventana-herramientas:not(.herramienta-desplegada) .cuadrante-rapido-activador > span,
+.ventana-herramientas:not(.herramienta-desplegada) .comentarios-rapidos-activador > span,
+.ventana-herramientas:not(.herramienta-desplegada) .ubicacion-rapida-activador > span,
+.ventana-herramientas:not(.herramienta-desplegada) .productividad-rapida-activador > span,
+.ventana-herramientas:not(.herramienta-desplegada) .codigos-rapidos-activador > span {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.45), 0 6px 14px rgba(0,15,27,.25);
+}
+.ventana-herramientas:not(.herramienta-desplegada) .alfabeto-rapido-activador svg {
+  width: 42px;
+  height: 42px;
+  padding: 9px;
+  color: #063553;
+  background: #ffd400;
+  border-radius: 14px;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .fse-activador svg,
+.ventana-herramientas:not(.herramienta-desplegada) .clima-rapido-activador svg,
+.ventana-herramientas:not(.herramienta-desplegada) .cuadrante-rapido-activador svg,
+.ventana-herramientas:not(.herramienta-desplegada) .comentarios-rapidos-activador svg,
+.ventana-herramientas:not(.herramienta-desplegada) .ubicacion-rapida-activador svg,
+.ventana-herramientas:not(.herramienta-desplegada) .productividad-rapida-activador svg {
+  width: 25px;
+  height: 25px;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .fse-activador-texto,
+.ventana-herramientas:not(.herramienta-desplegada) .clima-activador-texto,
+.ventana-herramientas:not(.herramienta-desplegada) .cuadrante-rapido-activador div {
+  text-align: center;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .fse-activador-texto small,
+.ventana-herramientas:not(.herramienta-desplegada) .clima-activador-texto small,
+.ventana-herramientas:not(.herramienta-desplegada) .cuadrante-rapido-activador small {
+  display: none;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos strong,
+.ventana-herramientas:not(.herramienta-desplegada) .comentarios-rapidos-activador strong,
+.ventana-herramientas:not(.herramienta-desplegada) .codigos-rapidos-activador strong {
+  display: block;
+  max-width: 100%;
+  margin: 0;
+  color: white;
+  font-size: clamp(.7rem, 2.8vw, .84rem);
+  font-weight: 900;
+  line-height: 1.18;
+  text-align: center;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos > :nth-child(3n + 1) button { background: linear-gradient(145deg,#075a82,#092f4a); }
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos > :nth-child(3n + 2) button { background: linear-gradient(145deg,#0a8fbe,#075071); }
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos > :nth-child(3n) button { background: linear-gradient(145deg,#176f9a,#083a59); }
+@media (max-width: 340px) {
+  .ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos {
+    height: calc(100vh - 32px);
+    padding: 8px;
+    gap: 7px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(4, minmax(74px, 1fr));
+  }
+  .ventana-herramientas:not(.herramienta-desplegada) .fse-activador,
+  .ventana-herramientas:not(.herramienta-desplegada) .clima-rapido-activador,
+  .ventana-herramientas:not(.herramienta-desplegada) .cuadrante-rapido-activador,
+  .ventana-herramientas:not(.herramienta-desplegada) .comentarios-rapidos-activador,
+  .ventana-herramientas:not(.herramienta-desplegada) .ubicacion-rapida-activador,
+  .ventana-herramientas:not(.herramienta-desplegada) .alfabeto-rapido-activador,
+  .ventana-herramientas:not(.herramienta-desplegada) .productividad-rapida-activador,
+  .ventana-herramientas:not(.herramienta-desplegada) .codigos-rapidos-activador { min-height: 74px; }
+  .ventana-herramientas:not(.herramienta-desplegada) .comentarios-rapidos-activador strong { font-size: .7rem; }
+  .ventana-herramientas:not(.herramienta-desplegada) .comentarios-rapidos-activador strong::after { content: none; }
+}
+/* -------------------------------------------------------------------------
+   Lanzador legible: aprovecha el ancho fijo de la ventana en tres columnas.
+   Cada acceso conserva icono y nombre sin quedar comprimido entre vecinos.
+   ------------------------------------------------------------------------- */
+.ventana-herramientas .herramientas-popup-accesos,
+.ventana-herramientas.herramienta-desplegada .herramientas-popup-accesos {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 12px;
+}
+.ventana-herramientas .herramientas-popup-accesos > * { min-width: 0; }
+.ventana-herramientas .fse-activador,
+.ventana-herramientas .clima-rapido-activador,
+.ventana-herramientas .cuadrante-rapido-activador,
+.ventana-herramientas .comentarios-rapidos-activador,
+.ventana-herramientas .ubicacion-rapida-activador,
+.ventana-herramientas .alfabeto-rapido-activador,
+.ventana-herramientas .productividad-rapida-activador,
+.ventana-herramientas .codigos-rapidos-activador {
+  min-height: 76px;
+  border-radius: 13px;
+}
+/* Herramienta administrativa de resoluciones y mensajes. */
+.codigos-rapidos { position: static; }
+.codigos-rapidos-activador {
+  display: flex;
+  width: 100%;
+  padding: 8px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: white;
+  font: inherit;
+  cursor: pointer;
+  background: linear-gradient(145deg,#0788bd,#064a70);
+  border: 1px solid rgba(124,207,255,.32);
+  border-bottom: 4px solid var(--prosegur-yellow);
+  box-shadow: 0 8px 20px rgba(0,14,24,.28);
+  transition: transform .18s ease, filter .18s ease;
+}
+.codigos-rapidos-activador:hover { filter: brightness(1.12); transform: translateY(-2px); }
+.codigos-rapidos-activador > span {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #062b45;
+  font-size: .72rem;
+  font-weight: 1000;
+  background: var(--prosegur-yellow);
+  border-radius: 50%;
+}
+.codigos-rapidos-activador > span svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.codigos-rapidos-activador strong { font-size: .76rem; line-height: 1.15; }
+.codigos-rapidos.abierto .codigos-rapidos-activador { color: #062b45; background: var(--prosegur-yellow); }
+.codigos-rapidos-panel {
+  position: absolute;
+  z-index: 80;
+  inset: 8px 10px auto;
+  min-height: calc(100vh - 55px);
+  max-height: calc(100vh - 55px);
+  overflow: auto;
+  color: white;
+  background: linear-gradient(155deg,#063957,#041e31 72%);
+  border: 1px solid rgba(91,198,247,.4);
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgba(0,13,24,.65);
+}
+.codigos-rapidos-panel > header {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  display: flex;
+  padding: 11px 13px;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(120deg,#123b5a,#078bbf);
+  border-bottom: 3px solid var(--prosegur-yellow);
+}
+.codigos-rapidos-panel header small { color: #ffe043; font-size: .55rem; font-weight: 900; text-transform: uppercase; }
+.codigos-rapidos-panel header h2 { margin-top: 2px; font-size: 1rem; }
+.codigos-rapidos-panel > header > button {
+  width: 30px; height: 30px; color: white; font-size: 1.25rem; cursor: pointer;
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.4); border-radius: 8px;
+}
+.codigos-rapidos-categorias { display: grid; padding: 16px; gap: 12px; }
+.codigos-rapidos-categorias > button {
+  display: grid; padding: 13px; grid-template-columns: 46px 1fr 22px; align-items: center; gap: 11px;
+  color: white; text-align: left; cursor: pointer; background: rgba(9,89,130,.62);
+  border: 1px solid rgba(105,207,252,.38); border-radius: 13px;
+}
+.codigos-rapidos-categorias i { display:grid; width:44px; height:44px; place-items:center; color:#052c46; font-size:.72rem; font-style:normal; font-weight:1000; background:#ffd400; border-radius:11px; }
+.codigos-rapidos-categorias small,.codigos-rapidos-categorias strong { display:block; }
+.codigos-rapidos-categorias small { color:#b9d9e9; font-size:.61rem; }
+.codigos-rapidos-categorias strong { margin-top:3px; font-size:.91rem; }
+.codigos-rapidos-categorias b { color:#ffd400; font-size:1.2rem; }
+.codigos-rapidos-contenido { padding: 12px; }
+.codigos-rapidos-subcabecera { display:flex; margin-bottom:9px; align-items:center; justify-content:space-between; gap:8px; }
+.codigos-rapidos-subcabecera button { padding:6px 8px; color:#062b45; font-size:.65rem; font-weight:900; cursor:pointer; background:#ffd400; border:0; border-radius:7px; }
+.codigos-rapidos-subcabecera strong { font-size:.84rem; }
+.codigos-rapidos-busqueda { display:grid; grid-template-columns:24px 1fr 28px; align-items:center; color:#0a5b82; background:white; border:2px solid #ffd400; border-radius:10px; }
+.codigos-rapidos-busqueda > span { text-align:center; font-size:1.1rem; }
+.codigos-rapidos-busqueda input { min-width:0; padding:10px 3px; font:inherit; border:0; outline:0; }
+.codigos-rapidos-busqueda button { color:#17415b; font-size:1.15rem; cursor:pointer; background:none; border:0; }
+.codigos-rapidos-ayuda,.codigos-rapidos-contador { margin:10px 2px; color:#bfd9e6; font-size:.7rem; }
+.codigos-rapidos-resultados { display:grid; padding-bottom:8px; gap:7px; }
+.codigos-rapidos-resultados article { display:grid; padding:9px 10px; grid-template-columns:70px minmax(0,1fr) auto; align-items:center; gap:10px; background:rgba(255,255,255,.08); border:1px solid rgba(132,208,242,.23); border-radius:9px; }
+.codigos-rapidos-resultados article strong { color:#ffd400; font-size:1rem; letter-spacing:.04em; }
+.codigos-rapidos-resultados article span { color:#eef8fc; font-size:.7rem; line-height:1.3; }
+.codigos-rapidos-resultados article button { min-width:62px; min-height:32px; padding:5px 8px; color:#062f4b; font:inherit; font-size:.66rem; font-weight:900; cursor:pointer; background:#ffd400; border:1px solid #ffe978; border-radius:8px; transition:transform 140ms ease,background 140ms ease; }
+.codigos-rapidos-resultados article button:hover { background:#ffe15a; transform:translateY(-1px); }
+.codigos-rapidos-resultados article button.copiado { color:#fff; background:#15966b; border-color:#56d9ae; }
+.codigos-rapidos-resultados article button.error { color:#fff; background:#b6293d; border-color:#ef8291; }
+@media (max-width:380px) {
+  .codigos-rapidos-resultados article { grid-template-columns:58px minmax(0,1fr); gap:7px; }
+  .codigos-rapidos-resultados article button { grid-column:1 / -1; width:100%; }
+}
+@media (max-width: 340px) {
+  .ventana-herramientas .herramientas-popup-accesos,
+  .ventana-herramientas.herramienta-desplegada .herramientas-popup-accesos {
+    grid-template-columns: repeat(3,minmax(0,1fr));
+    gap: 6px;
+  }
+  .ventana-herramientas .codigos-rapidos-activador { min-height: 56px; padding: 5px; }
+  .codigos-rapidos-activador > span { width: 30px; height: 30px; font-size: .58rem; }
+}
+/* Ajuste visual final: iconos grandes, homogéneos y nombres sin comprimir. */
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(4, minmax(78px, 1fr));
+  gap: 10px;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .fse-activador,
+.ventana-herramientas:not(.herramienta-desplegada) .clima-rapido-activador,
+.ventana-herramientas:not(.herramienta-desplegada) .cuadrante-rapido-activador,
+.ventana-herramientas:not(.herramienta-desplegada) .comentarios-rapidos-activador,
+.ventana-herramientas:not(.herramienta-desplegada) .ubicacion-rapida-activador,
+.ventana-herramientas:not(.herramienta-desplegada) .alfabeto-rapido-activador,
+.ventana-herramientas:not(.herramienta-desplegada) .productividad-rapida-activador,
+.ventana-herramientas:not(.herramienta-desplegada) .codigos-rapidos-activador {
+  min-height: 78px;
+  padding: 7px 8px;
+  gap: 5px;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .fse-activador-icono,
+.ventana-herramientas:not(.herramienta-desplegada) .clima-activador-icono,
+.ventana-herramientas:not(.herramienta-desplegada) .cuadrante-rapido-activador > span,
+.ventana-herramientas:not(.herramienta-desplegada) .comentarios-rapidos-activador > span,
+.ventana-herramientas:not(.herramienta-desplegada) .ubicacion-rapida-activador > span,
+.ventana-herramientas:not(.herramienta-desplegada) .productividad-rapida-activador > span,
+.ventana-herramientas:not(.herramienta-desplegada) .codigos-rapidos-activador > span,
+.ventana-herramientas:not(.herramienta-desplegada) .alfabeto-rapido-icono {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  place-items: center;
+  color: #062f4b;
+  background: linear-gradient(145deg,#ffe15b,#ffd000);
+  border: 2px solid rgba(255,255,255,.7);
+  border-radius: 16px;
+  box-shadow: 0 7px 16px rgba(0,12,23,.32);
+}
+.ventana-herramientas:not(.herramienta-desplegada) .alfabeto-rapido-icono {
+  font-size: .74rem;
+  font-weight: 1000;
+  letter-spacing: -.04em;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .fse-activador svg,
+.ventana-herramientas:not(.herramienta-desplegada) .clima-rapido-activador svg,
+.ventana-herramientas:not(.herramienta-desplegada) .cuadrante-rapido-activador svg,
+.ventana-herramientas:not(.herramienta-desplegada) .comentarios-rapidos-activador svg,
+.ventana-herramientas:not(.herramienta-desplegada) .ubicacion-rapida-activador svg,
+.ventana-herramientas:not(.herramienta-desplegada) .productividad-rapida-activador svg,
+.ventana-herramientas:not(.herramienta-desplegada) .codigos-rapidos-activador svg {
+  width: 29px;
+  height: 29px;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos strong,
+.ventana-herramientas:not(.herramienta-desplegada) .comentarios-rapidos-activador strong,
+.ventana-herramientas:not(.herramienta-desplegada) .codigos-rapidos-activador strong {
+  font-size: clamp(.76rem, 3vw, .9rem);
+  line-height: 1.15;
+}
+.ventana-herramientas::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  opacity: .18;
+  background-image: linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: linear-gradient(to bottom, black, transparent 70%);
+}
+.ventana-herramientas > header {
+  position: relative;
+  z-index: 2;
+  padding: 17px 20px;
+  background: linear-gradient(100deg, rgba(5,45,70,.98), rgba(5,117,165,.94));
+  border-bottom: 1px solid rgba(103, 224, 255, .45);
+  box-shadow: 0 12px 35px rgba(3, 0, 24, .4);
+}
+.ventana-herramientas > header span { color: var(--toolbar-amarillo); }
+.ventana-herramientas > header h1 { color: white; letter-spacing: -.025em; }
+.ventana-herramientas > header button {
+  color: white;
+  background: rgba(255,255,255,.08);
+  border-color: rgba(117,225,255,.45);
+  border-radius: 50%;
+  box-shadow: inset 0 0 18px rgba(37,217,255,.08);
+  transition: transform 160ms ease, background 160ms ease;
+}
+.ventana-herramientas > header button:hover { color: #082b43; background: var(--toolbar-amarillo); transform: rotate(8deg) scale(1.05); }
+.acciones-ventana-herramientas { display: flex; align-items: center; gap: 8px; }
+.ventana-herramientas > header .boton-fijar-herramientas {
+  display: inline-flex;
+  width: auto;
+  min-width: 76px;
+  padding: 0 11px;
+  align-items: center;
+  gap: 6px;
+  color: white;
+  font: inherit;
+  font-size: .7rem;
+  font-weight: 850;
+  border-radius: 999px;
+}
+.ventana-herramientas > header .boton-fijar-herramientas:hover { transform: translateY(-1px); }
+.ventana-herramientas > header .boton-fijar-herramientas svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ventana-herramientas > header .boton-fijar-herramientas span { color: inherit; font-size: inherit; letter-spacing: 0; text-transform: none; }
+.herramientas-popup-presentacion { position: relative; z-index: 1; padding-top: 22px; }
+.herramientas-popup-presentacion strong { font-size: 1.02rem; letter-spacing: -.01em; }
+.herramientas-popup-presentacion p { color: #b8d3e2; }
+.herramientas-popup-accesos { position: relative; z-index: 3; gap: 12px; }
+.ventana-herramientas .fse-activador,
+.ventana-herramientas .clima-rapido-activador,
+.ventana-herramientas .cuadrante-rapido-activador {
+  position: relative;
+  overflow: hidden;
+  color: white;
+  background: linear-gradient(145deg, rgba(8,126,180,.97), rgba(5,47,75,.99));
+  border: 1px solid rgba(124, 207, 255, .25);
+  border-bottom: 0;
+  border-radius: 15px;
+  box-shadow: 0 13px 28px rgba(2,0,22,.4), inset 0 1px rgba(255,255,255,.08);
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+.ventana-herramientas .fse-activador::after,
+.ventana-herramientas .clima-rapido-activador::after,
+.ventana-herramientas .cuadrante-rapido-activador::after {
+  position: absolute;
+  right: -25px;
+  bottom: -42px;
+  width: 90px;
+  height: 90px;
+  content: "";
+  background: radial-gradient(circle, rgba(39,201,243,.26), transparent 68%);
+}
+.ventana-herramientas .fse-activador:hover,
+.ventana-herramientas .clima-rapido-activador:hover,
+.ventana-herramientas .cuadrante-rapido-activador:hover {
+  background: linear-gradient(145deg, #0a94cc, #063f62);
+  border-color: rgba(37,217,255,.65);
+  box-shadow: 0 16px 34px rgba(2,0,22,.5), 0 0 20px rgba(37,217,255,.1);
+  transform: translateY(-3px);
+}
+.ventana-herramientas .fse-activador-icono,
+.ventana-herramientas .clima-activador-icono,
+.ventana-herramientas .cuadrante-rapido-activador > span {
+  color: white;
+  background: linear-gradient(145deg, #ffe45e, var(--toolbar-amarillo));
+  border: 1px solid rgba(255,255,255,.32);
+  border-radius: 50%;
+  box-shadow: 0 0 18px rgba(255,209,0,.25);
+}
+.ventana-herramientas .fse-activador-icono { color: #082b43; }
+.ventana-herramientas .clima-activador-icono { background: linear-gradient(145deg, #27dfff, #087dcf); box-shadow: 0 0 18px rgba(37,217,255,.3); }
+.ventana-herramientas .cuadrante-rapido-activador > span { color: #082b43; background: linear-gradient(145deg, #fff068, #ffae2b); box-shadow: 0 0 18px rgba(255,216,45,.28); }
+.ventana-herramientas .fse-activador-texto small,
+.ventana-herramientas .clima-activador-texto small,
+.ventana-herramientas .cuadrante-rapido-activador small { color: #b8d3e2; }
+.ventana-herramientas .fse-rapido-panel,
+.ventana-herramientas .clima-rapido-panel,
+.ventana-herramientas .cuadrante-rapido-panel {
+  color: var(--toolbar-texto);
+  background: linear-gradient(155deg, rgba(7,79,116,.99), rgba(4,34,55,.995));
+  border: 1px solid rgba(104,215,255,.3);
+  border-radius: 17px;
+  box-shadow: 0 24px 70px rgba(2,19,31,.62), 0 0 28px rgba(39,201,243,.12);
+  animation: panelModernoEntra 220ms ease-out both;
+}
+.ventana-herramientas .fse-rapido-panel > header,
+.ventana-herramientas .clima-rapido-panel > header,
+.ventana-herramientas .cuadrante-rapido-panel > header {
+  color: white;
+  background: linear-gradient(100deg, #07527c, #0796cc);
+  border-bottom: 3px solid var(--toolbar-amarillo);
+}
+.ventana-herramientas .fse-rapido-panel header span,
+.ventana-herramientas .clima-rapido-panel header span,
+.ventana-herramientas .cuadrante-rapido-panel header span { color: #ffe55c; }
+.ventana-herramientas .fse-rapido-panel label,
+.ventana-herramientas .clima-rapido-panel label,
+.ventana-herramientas .cuadrante-rapido-filtros label { color: #e5f3fa; }
+.ventana-herramientas .fse-validacion > strong {
+  color: #ffffff;
+  background: rgba(22, 128, 176, .42);
+  border: 1px solid rgba(120, 211, 255, .3);
+}
+.ventana-herramientas .fse-rapido-panel input,
+.ventana-herramientas .clima-rapido-panel input,
+.ventana-herramientas .cuadrante-rapido-filtros input,
+.ventana-herramientas .cuadrante-rapido-filtros select {
+  color: white;
+  background: rgba(2,28,45,.7);
+  border: 1px solid rgba(120,211,255,.42);
+}
+.ventana-herramientas .fse-rapido-panel input:focus,
+.ventana-herramientas .clima-rapido-panel input:focus,
+.ventana-herramientas .cuadrante-rapido-filtros input:focus,
+.ventana-herramientas .cuadrante-rapido-filtros select:focus {
+  outline: 3px solid rgba(37,217,255,.14);
+  border-color: var(--toolbar-cian);
+  box-shadow: 0 0 16px rgba(37,217,255,.12);
+}
+.ventana-herramientas .cuadrante-rapido-filtros select option { color: #082b43; background: white; }
+.ventana-herramientas .cuadrante-rapido-resultados { background: #073b5c; border-color: rgba(39,201,243,.5); box-shadow: 0 18px 38px rgba(0,18,31,.55); }
+.ventana-herramientas .cuadrante-rapido-resultados button { color: white; background: #073b5c; border-color: rgba(255,255,255,.08); }
+.ventana-herramientas .cuadrante-rapido-resultados button:hover { color: #082b43; background: var(--toolbar-amarillo); }
+.ventana-herramientas .cuadrante-rapido-resultados span,
+.ventana-herramientas .cuadrante-rapido-calendario > div:first-child span { color: #b5cfdd; }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-weekday { color: #7de7ff; }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-blank { background: rgba(255,255,255,.035); border-color: rgba(255,255,255,.04); }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day { box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+.ventana-herramientas .fse-advertencia,
+.ventana-herramientas .herramientas-popup-aviso {
+  color: #edf8fd;
+  background: rgba(255,255,255,.075);
+  border: 1px solid rgba(255,229,92,.25);
+}
+.ventana-herramientas .herramientas-popup-aviso p { color: #b5cfdd; }
+.ventana-herramientas .fse-resultado,
+.ventana-herramientas .clima-rapido-resultado { border-color: rgba(255,255,255,.1); }
+.ventana-herramientas .fse-resultado > small,
+.ventana-herramientas .fse-resultado > p,
+.ventana-herramientas .clima-rapido-resumen small,
+.ventana-herramientas .clima-rapido-resultado dt { color: #b5cfdd; }
+.ventana-herramientas .fse-resultado h3,
+.ventana-herramientas .clima-rapido-resumen strong,
+.ventana-herramientas .clima-rapido-resultado dd { color: white; }
+.ventana-herramientas .fse-resultado > div {
+  color: #edf8fd;
+  background: rgba(255,255,255,.075);
+  border: 1px solid rgba(39,201,243,.16);
+}
+.ventana-herramientas .fse-resultado .fse-exclusion { color: #ffe55c; }
+.ventana-herramientas .clima-rapido-resumen { background: rgba(255,255,255,.065); }
+.ventana-herramientas .clima-rapido-resumen > span { background: rgba(255,255,255,.1); }
+.ventana-herramientas .clima-rapido-resumen b { color: var(--toolbar-amarillo); }
+.ventana-herramientas .clima-rapido-resultado dl > div { border-color: rgba(255,255,255,.1); }
+@keyframes panelModernoEntra {
+  from { opacity: 0; transform: translateY(12px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+/* Calendario circular: el color identifica el tipo de turno de un vistazo. */
+.ventana-herramientas .cuadrante-rapido-calendario { padding: 2px 16px 12px; animation: calendarioFluido 360ms cubic-bezier(.2,.75,.25,1) both; }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar {
+  padding: 4px 8px;
+  align-items: center;
+  justify-items: center;
+  gap: 7px 10px;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-weekday {
+  width: 100%;
+  padding: 4px 0 6px;
+  color: #65e6ff;
+  font-size: .58rem;
+  letter-spacing: .08em;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-blank {
+  width: min(58px, 100%);
+  min-height: 58px;
+  aspect-ratio: 1;
+  visibility: hidden;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day {
+  width: min(58px, 100%);
+  min-height: 0;
+  aspect-ratio: 1;
+  padding: 13px 4px 4px;
+  overflow: visible;
+  color: white;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 50%;
+  box-shadow: inset 0 1px rgba(255,255,255,.2), 0 7px 16px rgba(2,0,22,.28);
+  animation: diaCircularEntra 320ms cubic-bezier(.2,.8,.25,1) both;
+  transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day:hover {
+  z-index: 3;
+  filter: brightness(1.12) saturate(1.08);
+  transform: translateY(-4px) scale(1.07);
+  box-shadow: inset 0 1px rgba(255,255,255,.28), 0 12px 22px rgba(2,0,22,.4);
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-date {
+  top: 6px;
+  left: 50%;
+  color: rgba(255,255,255,.72);
+  font-size: .46rem;
+  transform: translateX(-50%);
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day strong {
+  font-size: .64rem;
+  letter-spacing: .02em;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.morning {
+  color: #241600;
+  background: linear-gradient(145deg, #fff37b, #ffab24);
+  border-color: #ffe768;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.morning .calendar-date { color: rgba(36,22,0,.62); }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.afternoon {
+  background: linear-gradient(145deg, #ffb347, #e96522);
+  border-color: #ffd08a;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.night {
+  background: linear-gradient(145deg, #3bdcff, #147fca 62%, #064b91);
+  border-color: #76eaff;
+  box-shadow: inset 0 1px rgba(255,255,255,.28), 0 0 15px rgba(46,177,255,.22);
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.vacation {
+  color: #06261d;
+  background: linear-gradient(145deg, #65f0bd, #25ae80);
+  border-color: #8effd6;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.vacation .calendar-date { color: rgba(6,38,29,.62); }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.leave {
+  background: linear-gradient(145deg, #ff8178, #d43958);
+  border-color: #ffa39d;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.other {
+  background: linear-gradient(145deg, #39cae8, #087ca8);
+  border-color: #73e7fa;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.off {
+  color: #9bb5c4;
+  background: rgba(255,255,255,.035);
+  border: 1px dashed rgba(181,211,226,.3);
+  box-shadow: none;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.off .calendar-date { color: #7e9aaa; }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.today-highlight {
+  color: white;
+  border: 3px solid #fff36b;
+  box-shadow: 0 0 0 4px rgba(255,243,107,.16), 0 0 22px rgba(37,217,255,.45);
+  animation: diaCircularEntra 320ms ease both, pulsoCircularActual 2.2s ease-in-out 400ms infinite;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.today-highlight::after {
+  top: -6px;
+  right: -10px;
+  padding: 2px 5px;
+  color: #082b43;
+  font-size: .38rem;
+  background: #fff36b;
+  box-shadow: 0 3px 8px rgba(0,0,0,.25);
+}
+.ventana-herramientas .cuadrante-rapido-resultados {
+  transform-origin: top;
+  animation: desplegableFluido 190ms cubic-bezier(.2,.8,.25,1) both;
+}
+@keyframes calendarioFluido {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes diaCircularEntra {
+  from { opacity: 0; transform: scale(.7) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes desplegableFluido {
+  from { opacity: 0; transform: translateY(-5px) scaleY(.92); }
+  to { opacity: 1; transform: translateY(0) scaleY(1); }
+}
+@keyframes pulsoCircularActual {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(255,243,107,.12), 0 0 15px rgba(37,217,255,.35); }
+  50% { box-shadow: 0 0 0 7px rgba(255,243,107,.04), 0 0 26px rgba(37,217,255,.55); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ventana-herramientas .cuadrante-rapido-calendario,
+  .ventana-herramientas .cuadrante-rapido-calendario .calendar-day,
+  .ventana-herramientas .cuadrante-rapido-resultados { animation: none; }
+}
+/* Modo auxiliar compacto: prioriza la consulta y evita ocupar la pantalla. */
+.ventana-herramientas { padding-bottom: 10px; }
+.ventana-herramientas > header,
+.ventana-herramientas.herramienta-desplegada > header { padding: 8px 11px; }
+.ventana-herramientas > header h1,
+.ventana-herramientas.herramienta-desplegada > header h1 { margin-top: 1px; font-size: .95rem; }
+.ventana-herramientas > header > div:first-child > span { font-size: .5rem; }
+.ventana-herramientas > header button { width: 29px; height: 29px; font-size: 1.1rem; }
+.ventana-herramientas > header .boton-fijar-herramientas { min-width: 62px; height: 29px; padding: 0 8px; font-size: .62rem; }
+.ventana-herramientas .herramientas-popup-presentacion,
+.ventana-herramientas .herramientas-popup-aviso { display: none; }
+.ventana-herramientas .herramientas-popup-accesos,
+.ventana-herramientas.herramienta-desplegada .herramientas-popup-accesos { padding: 8px 10px 10px; gap: 7px; }
+.ventana-herramientas .fse-activador,
+.ventana-herramientas .clima-rapido-activador,
+.ventana-herramientas .cuadrante-rapido-activador,
+.ventana-herramientas.herramienta-desplegada .fse-activador,
+.ventana-herramientas.herramienta-desplegada .clima-rapido-activador,
+.ventana-herramientas.herramienta-desplegada .cuadrante-rapido-activador {
+  min-height: 46px;
+  padding: 5px 7px;
+  gap: 6px;
+  border-radius: 11px;
+}
+.ventana-herramientas .fse-activador-icono,
+.ventana-herramientas .clima-activador-icono,
+.ventana-herramientas .cuadrante-rapido-activador > span { width: 32px; height: 32px; }
+.ventana-herramientas .fse-activador-icono svg,
+.ventana-herramientas .clima-activador-icono svg,
+.ventana-herramientas .cuadrante-rapido-activador svg { width: 19px; height: 19px; }
+.ventana-herramientas .fse-activador-texto small,
+.ventana-herramientas .clima-activador-texto small,
+.ventana-herramientas .cuadrante-rapido-activador small { display: none; }
+.ventana-herramientas .fse-activador-texto strong,
+.ventana-herramientas .clima-activador-texto strong,
+.ventana-herramientas .cuadrante-rapido-activador strong { margin: 0; font-size: .68rem; line-height: 1.1; }
+.ventana-herramientas .fse-rapido-panel,
+.ventana-herramientas .clima-rapido-panel,
+.ventana-herramientas .cuadrante-rapido-panel {
+  top: 114px;
+  left: 8px;
+  width: calc(100% - 16px);
+  max-height: calc(100vh - 122px);
+  border-radius: 13px;
+}
+.ventana-herramientas .fse-rapido-panel > header,
+.ventana-herramientas .clima-rapido-panel > header,
+.ventana-herramientas .cuadrante-rapido-panel > header { padding: 8px 11px; }
+.ventana-herramientas .fse-rapido-panel header > div > span,
+.ventana-herramientas .clima-rapido-panel header > div > span,
+.ventana-herramientas .cuadrante-rapido-panel header > div > span { display: none; }
+.ventana-herramientas .fse-rapido-panel header h2,
+.ventana-herramientas .clima-rapido-panel header h2,
+.ventana-herramientas .cuadrante-rapido-panel header h2 { margin: 0; font-size: .88rem; }
+.ventana-herramientas .fse-rapido-panel header button,
+.ventana-herramientas .clima-rapido-panel header button,
+.ventana-herramientas .cuadrante-rapido-panel header button { width: 27px; height: 27px; font-size: 1rem; }
+.ventana-herramientas .fse-advertencia { padding: 7px 11px; font-size: .62rem; }
+.ventana-herramientas .fse-rapido-panel form,
+.ventana-herramientas .clima-rapido-panel form { padding: 10px 12px; }
+.ventana-herramientas .fse-rapido-panel input,
+.ventana-herramientas .clima-rapido-panel input { padding: 8px 9px; }
+.ventana-herramientas .fse-rapido-panel form button,
+.ventana-herramientas .clima-rapido-panel form button { padding: 7px 10px; }
+.ventana-herramientas .cuadrante-rapido-filtros { padding: 8px 11px; gap: 7px; }
+.ventana-herramientas .cuadrante-rapido-filtros input,
+.ventana-herramientas .cuadrante-rapido-filtros select { min-height: 32px; margin-top: 3px; padding: 5px 7px; font-size: .72rem; }
+.ventana-herramientas .cuadrante-rapido-resultados { top: 56px; right: 11px; width: calc(50% - 15px); }
+.ventana-herramientas .cuadrante-rapido-calendario { padding: 0 10px 7px; }
+.ventana-herramientas .cuadrante-rapido-calendario > div:first-child { padding-bottom: 3px; font-size: .75rem; }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar { gap: 4px 7px; }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-blank,
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day { width: min(44px, 100%); min-height: 0; }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day { padding-top: 11px; }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-weekday { padding: 2px 0 3px; font-size: .48rem; }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day strong { font-size: .54rem; }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-date { top: 4px; font-size: .39rem; }
+/* Cuadrante ultracompacto para utilizarlo como referencia lateral. */
+.ventana-herramientas .cuadrante-rapido-panel { top: 108px; max-height: calc(100vh - 114px); }
+.ventana-herramientas .cuadrante-rapido-panel > header { padding: 6px 9px; }
+.ventana-herramientas .cuadrante-rapido-filtros { padding: 6px 9px; }
+.ventana-herramientas .cuadrante-rapido-filtros label { font-size: .58rem; }
+.ventana-herramientas .cuadrante-rapido-filtros input,
+.ventana-herramientas .cuadrante-rapido-filtros select { min-height: 28px; padding: 3px 6px; font-size: .65rem; }
+.ventana-herramientas .cuadrante-rapido-resultados { top: 47px; right: 9px; width: calc(50% - 12px); }
+.ventana-herramientas .cuadrante-rapido-resultados button { padding: 6px 8px; font-size: .68rem; }
+.ventana-herramientas .cuadrante-rapido-calendario { padding: 0 7px 5px; }
+.ventana-herramientas .cuadrante-rapido-calendario > div:first-child { padding: 0 3px 2px; font-size: .68rem; }
+.ventana-herramientas .cuadrante-rapido-calendario > div:first-child span { display: none; }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar { padding: 2px 5px; gap: 2px 4px; }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-weekday { padding: 1px 0 2px; font-size: .42rem; }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-blank,
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day { width: min(34px, 100%); }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day { padding: 9px 2px 2px; }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day strong { font-size: .48rem; }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-date { top: 3px; font-size: .34rem; }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.today-highlight::after { top: -5px; right: -8px; padding: 1px 3px; font-size: .3rem; }
+/* Anula la conversión móvil a lista dentro de la toolbar flotante. */
+.ventana-herramientas .cuadrante-rapido-calendario .calendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-weekday,
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-blank { display: block; }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day {
+  display: flex;
+  grid-template-columns: none;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  overflow: visible;
+  text-align: center;
+  border-radius: 50%;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-date-block,
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-shift {
+  display: contents;
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-mobile-weekday,
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day small { display: none; }
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-date {
+  position: absolute;
+  line-height: normal;
+  opacity: .72;
+}
+/* Adaptación extrema para la ventana fijada de 300 × 380. */
+html:has(.ventana-herramientas),
+body:has(.ventana-herramientas) {
+  min-width: 0;
+  overflow-x: hidden;
+}
+@media (max-width: 340px) {
+  .ventana-herramientas > header,
+  .ventana-herramientas.herramienta-desplegada > header { padding: 5px 7px; }
+  .ventana-herramientas > header h1,
+  .ventana-herramientas.herramienta-desplegada > header h1 { font-size: .76rem; }
+  .ventana-herramientas > header > div:first-child > span { display: none; }
+  .acciones-ventana-herramientas { gap: 4px; }
+  .ventana-herramientas > header button { width: 24px; height: 24px; }
+  .ventana-herramientas > header .boton-fijar-herramientas { min-width: 48px; height: 24px; padding: 0 5px; font-size: .52rem; }
+  .ventana-herramientas > header .boton-fijar-herramientas svg { width: 12px; height: 12px; }
+  .ventana-herramientas .herramientas-popup-accesos,
+  .ventana-herramientas.herramienta-desplegada .herramientas-popup-accesos { padding: 5px 6px 6px; gap: 4px; }
+  .ventana-herramientas .fse-activador,
+  .ventana-herramientas .clima-rapido-activador,
+  .ventana-herramientas .cuadrante-rapido-activador,
+  .ventana-herramientas.herramienta-desplegada .fse-activador,
+  .ventana-herramientas.herramienta-desplegada .clima-rapido-activador,
+  .ventana-herramientas.herramienta-desplegada .cuadrante-rapido-activador {
+    min-height: 38px;
+    padding: 3px 4px;
+    gap: 3px;
+    border-radius: 8px;
+  }
+  .ventana-herramientas .fse-activador-icono,
+  .ventana-herramientas .clima-activador-icono,
+  .ventana-herramientas .cuadrante-rapido-activador > span { width: 25px; height: 25px; }
+  .ventana-herramientas .fse-activador-icono svg,
+  .ventana-herramientas .clima-activador-icono svg,
+  .ventana-herramientas .cuadrante-rapido-activador svg { width: 15px; height: 15px; }
+  .ventana-herramientas .fse-activador-texto strong,
+  .ventana-herramientas .clima-activador-texto strong,
+  .ventana-herramientas .cuadrante-rapido-activador strong { font-size: 0; }
+  .ventana-herramientas .fse-activador-texto strong::after { content: "FSE"; font-size: .54rem; }
+  .ventana-herramientas .clima-activador-texto strong::after { content: "Clima"; font-size: .54rem; }
+  .ventana-herramientas .cuadrante-rapido-activador strong::after { content: "Turnos"; font-size: .54rem; }
+  .ventana-herramientas .fse-rapido-panel,
+  .ventana-herramientas .clima-rapido-panel,
+  .ventana-herramientas .cuadrante-rapido-panel {
+    top: 79px;
+    left: 4px;
+    width: calc(100% - 8px);
+    max-height: calc(100vh - 83px);
+    border-radius: 9px;
+  }
+  .ventana-herramientas .fse-rapido-panel > header,
+  .ventana-herramientas .clima-rapido-panel > header,
+  .ventana-herramientas .cuadrante-rapido-panel > header { padding: 4px 6px; }
+  .ventana-herramientas .fse-rapido-panel header h2,
+  .ventana-herramientas .clima-rapido-panel header h2,
+  .ventana-herramientas .cuadrante-rapido-panel header h2 { font-size: .68rem; }
+  .ventana-herramientas .fse-rapido-panel form,
+  .ventana-herramientas .clima-rapido-panel form { padding: 6px; }
+  .ventana-herramientas .fse-advertencia { padding: 5px 6px; font-size: .52rem; }
+  .ventana-herramientas .cuadrante-rapido-filtros { padding: 4px 6px; gap: 4px; }
+  .ventana-herramientas .cuadrante-rapido-filtros label { font-size: .48rem; }
+  .ventana-herramientas .cuadrante-rapido-filtros input,
+  .ventana-herramientas .cuadrante-rapido-filtros select { min-height: 23px; padding: 2px 4px; font-size: .55rem; }
+  .ventana-herramientas .cuadrante-rapido-resultados { top: 38px; right: 6px; width: calc(50% - 8px); }
+  .ventana-herramientas .cuadrante-rapido-resultados button { padding: 4px 5px; font-size: .55rem; }
+  .ventana-herramientas .cuadrante-rapido-calendario { padding: 0 3px 3px; }
+  .ventana-herramientas .cuadrante-rapido-calendario > div:first-child { font-size: .56rem; }
+  .ventana-herramientas .cuadrante-rapido-calendario .calendar { padding: 1px 2px; gap: 1px 2px; }
+  .ventana-herramientas .cuadrante-rapido-calendario .calendar-weekday { font-size: .34rem; }
+  .ventana-herramientas .cuadrante-rapido-calendario .calendar-blank,
+  .ventana-herramientas .cuadrante-rapido-calendario .calendar-day { width: min(22px, 100%); }
+  .ventana-herramientas .cuadrante-rapido-calendario .calendar-day { padding: 6px 1px 1px; }
+  .ventana-herramientas .cuadrante-rapido-calendario .calendar-day strong { font-size: .35rem; }
+  .ventana-herramientas .cuadrante-rapido-calendario .calendar-date { top: 2px; font-size: .27rem; }
+  .ventana-herramientas .cuadrante-rapido-calendario .calendar-day.today-highlight::after { display: none; }
+}
+/* Estos ajustes finales prevalecen sobre las reglas históricas de tres botones. */
+.ventana-herramientas .herramientas-popup-accesos {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.ventana-herramientas.herramienta-desplegada .comentarios-rapidos-activador {
+  min-height: 58px;
+}
+@media (max-width: 340px) {
+  .ventana-herramientas .herramientas-popup-accesos,
+  .ventana-herramientas.herramienta-desplegada .herramientas-popup-accesos {
+    gap: 3px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .ventana-herramientas .comentarios-rapidos-panel {
+    left: 4px;
+    max-height: calc(100vh - 83px);
+    right: 4px;
+    top: 79px;
+  }
+}
+/* Calendario de la toolbar: la fecha domina y el turno queda como distintivo. */
+.ventana-herramientas .cuadrante-rapido-calendario .calendar {
+  padding: 2px 4px 5px;
+  row-gap: 3px;
+  column-gap: 2px;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-blank {
+  width: min(28px, 100%);
+  min-height: 0;
+  aspect-ratio: 1;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day {
+  position: relative;
+  width: min(28px, 100%);
+  padding: 0;
+  overflow: visible;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-date-block {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-date {
+  position: static;
+  color: #ffffff;
+  font-size: .61rem;
+  font-weight: 950;
+  line-height: 1;
+  opacity: 1;
+  text-shadow: 0 1px 3px rgba(0,0,0,.5);
+  transform: none;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-shift {
+  position: absolute;
+  z-index: 2;
+  bottom: -2px;
+  left: 50%;
+  display: block;
+  min-width: 21px;
+  padding: 1.5px 3px;
+  color: white;
+  line-height: 1;
+  text-align: center;
+  background: #092e49;
+  border: 1px solid rgba(255,255,255,.65);
+  border-radius: 999px;
+  box-shadow: 0 2px 5px rgba(0,0,0,.3);
+  transform: translateX(-50%);
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-shift strong {
+  display: block;
+  font-size: .35rem;
+  letter-spacing: 0;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.off .calendar-shift strong {
+  font-size: 0;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.off .calendar-shift strong::after {
+  content: "L";
+  font-size: .35rem;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.morning .calendar-date,
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.vacation .calendar-date {
+  color: #1c270d;
+  text-shadow: 0 1px 1px rgba(255,255,255,.45);
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.off .calendar-date {
+  color: #d8e8f0;
+  text-shadow: none;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.today-highlight {
+  border-width: 2px;
+  box-shadow: 0 0 0 2px rgba(255,243,107,.2), 0 0 12px rgba(37,217,255,.5);
+}
+/* Versión rectangular: lectura rápida del día y del turno en poco espacio. */
+.ventana-herramientas .cuadrante-rapido-calendario .calendar {
+  padding: 2px 3px 5px;
+  align-items: stretch;
+  gap: 1px;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-weekday {
+  padding: 1px 0 2px;
+  font-size: .4rem;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-blank {
+  width: 100%;
+  min-height: 23px;
+  aspect-ratio: auto;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day {
+  display: flex;
+  width: 100%;
+  min-height: 23px;
+  aspect-ratio: auto;
+  padding: 2px 3px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px;
+  border-radius: 4px;
+  box-shadow: inset 0 1px rgba(255,255,255,.22);
+  transform: none;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day:hover {
+  z-index: 1;
+  filter: brightness(1.12);
+  transform: none;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.5);
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-date-block {
+  display: flex;
+  width: auto;
+  height: auto;
+  flex: 0 0 auto;
+  align-items: center;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-date {
+  font-size: .59rem;
+  line-height: 1;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-shift {
+  position: static;
+  display: block;
+  min-width: 19px;
+  padding: 2px 3px;
+  flex: 0 1 auto;
+  background: rgba(3,31,49,.78);
+  border-color: rgba(255,255,255,.42);
+  box-shadow: none;
+  transform: none;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-shift strong,
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.off .calendar-shift strong::after {
+  font-size: .34rem;
+}
+.ventana-herramientas .cuadrante-rapido-calendario .calendar-day.today-highlight {
+  border-color: #fff06a;
+  box-shadow: inset 0 0 0 1px #fff06a, 0 0 7px rgba(255,225,42,.55);
+}
+/* Sin cabecera duplicada: la barra nativa de la ventana ya incluye el cierre. */
+.ventana-herramientas {
+  padding-bottom: 34px;
+}
+.ventana-herramientas .fse-rapido-panel,
+.ventana-herramientas .clima-rapido-panel,
+.ventana-herramientas .cuadrante-rapido-panel,
+.ventana-herramientas .comentarios-rapidos-panel,
+.ventana-herramientas .ubicacion-rapida-panel {
+  top: 79px;
+  max-height: calc(100vh - 116px);
+}
+.ventana-herramientas .cuadrante-rapido-panel {
+  overflow: visible;
+}
+.ventana-herramientas .cuadrante-rapido-resultados {
+  z-index: 50;
+  max-height: min(190px, calc(100vh - 175px));
+  overflow-y: auto;
+  box-shadow: 0 14px 30px rgba(0,18,31,.75);
+}
+/* Tras consultar el CP se prioriza el resultado y se recupera espacio vertical. */
+.ventana-herramientas .fse-rapido-panel.con-resultado {
+  display: flex;
+  flex-direction: column;
+}
+.ventana-herramientas .fse-rapido-panel.con-resultado > header,
+.ventana-herramientas .fse-rapido-panel.con-resultado > .fse-advertencia {
+  display: none;
+}
+.ventana-herramientas .fse-rapido-panel.con-resultado > form {
+  order: 1;
+  padding-block: 6px;
+}
+.ventana-herramientas .fse-rapido-panel.con-resultado > .fse-resultado {
+  order: 2;
+}
+.ventana-herramientas .fse-rapido-panel.con-resultado > .fse-validacion {
+  order: 3;
+}
+/* Regla final intencionada: prevalece sobre los estilos históricos de 4 columnas. */
+.ventana-herramientas .herramientas-popup-accesos,
+.ventana-herramientas.herramienta-desplegada .herramientas-popup-accesos {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 12px;
+}
+@media (max-width: 340px) {
+  .ventana-herramientas .herramientas-popup-accesos,
+  .ventana-herramientas.herramienta-desplegada .herramientas-popup-accesos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+}
+/* Sistema visual definitivo del menú de herramientas. */
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(4, minmax(82px, 1fr));
+  gap: 10px;
+  padding: 12px;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos > aside {
+  min-width: 0;
+  height: 100%;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos > aside > button {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 82px;
+  padding: 8px 6px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  border: 1px solid rgba(99,205,250,.32);
+  border-bottom: 4px solid #ffd400;
+  border-radius: 16px;
+  background: linear-gradient(145deg,#0a82af 0%,#075175 55%,#062f4b 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 8px 20px rgba(0,14,26,.3);
+}
+.ventana-herramientas:not(.herramienta-desplegada) .herramienta-menu-icono {
+  display: grid;
+  width: 54px !important;
+  height: 54px !important;
+  min-width: 54px;
+  flex: 0 0 54px !important;
+  padding: 0 !important;
+  place-items: center;
+  color: #052f4b !important;
+  background: linear-gradient(145deg,#fff078,#ffd000) !important;
+  border: 2px solid rgba(255,255,255,.78) !important;
+  border-radius: 17px !important;
+  box-shadow: 0 6px 14px rgba(0,13,24,.32) !important;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .herramienta-menu-icono svg {
+  display: block;
+  width: 31px !important;
+  height: 31px !important;
+  padding: 0 !important;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.85;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .alfabeto-rapido-icono {
+  font-size: .82rem;
+  font-weight: 1000;
+  letter-spacing: -.04em;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .fse-activador-texto,
+.ventana-herramientas:not(.herramienta-desplegada) .clima-activador-texto,
+.ventana-herramientas:not(.herramienta-desplegada) .cuadrante-rapido-activador > div {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .fse-activador-texto small,
+.ventana-herramientas:not(.herramienta-desplegada) .clima-activador-texto small,
+.ventana-herramientas:not(.herramienta-desplegada) .cuadrante-rapido-activador small {
+  display: none;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos > aside > button strong {
+  display: block !important;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  color: #fff !important;
+  font-size: .82rem !important;
+  font-weight: 900;
+  line-height: 1.12;
+  text-align: center;
+  overflow: visible;
+  overflow-wrap: normal;
+  word-break: normal;
+  white-space: normal;
+}
+@media (max-width: 340px) {
+  .ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    grid-template-rows: repeat(4,minmax(76px,1fr));
+    gap: 7px;
+    padding: 8px;
+  }
+  .ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos > aside > button { min-height: 76px; }
+  .ventana-herramientas:not(.herramienta-desplegada) .herramienta-menu-icono {
+    width: 46px !important;
+    height: 46px !important;
+    min-width: 46px;
+    flex-basis: 46px !important;
+  }
+  .ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos > aside > button strong { font-size: .72rem !important; }
+}
+/* Escritorio de aplicaciones: cada utilidad tiene identidad y nombre propio. */
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(105px, 1fr));
+  gap: 10px 6px;
+  padding: 14px 10px 40px;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos > aside > button[data-nombre] {
+  position: relative;
+  display: flex;
+  min-height: 105px;
+  padding: 8px 3px 26px;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  transform: none;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos > aside > button[data-nombre]:hover {
+  filter: brightness(1.08);
+  transform: translateY(-3px);
+}
+.ventana-herramientas:not(.herramienta-desplegada) button[data-nombre] .fse-activador-texto,
+.ventana-herramientas:not(.herramienta-desplegada) button[data-nombre] .clima-activador-texto,
+.ventana-herramientas:not(.herramienta-desplegada) button[data-nombre] > div,
+.ventana-herramientas:not(.herramienta-desplegada) button[data-nombre] > strong {
+  display: none !important;
+}
+.ventana-herramientas:not(.herramienta-desplegada) button[data-nombre]::after {
+  content: attr(data-nombre);
+  position: absolute;
+  right: 1px;
+  bottom: 3px;
+  left: 1px;
+  display: block;
+  color: #f7fcff;
+  font-size: .68rem;
+  font-weight: 850;
+  line-height: 1.12;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0,15,28,.9);
+  white-space: normal;
+}
+.ventana-herramientas:not(.herramienta-desplegada) button[data-nombre] .herramienta-menu-icono {
+  position: relative;
+  width: 68px !important;
+  height: 68px !important;
+  min-width: 68px;
+  flex: 0 0 68px !important;
+  color: white !important;
+  border: 1px solid rgba(255,255,255,.5) !important;
+  border-radius: 19px !important;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.42), 0 9px 20px rgba(0,13,24,.42) !important;
+}
+.ventana-herramientas:not(.herramienta-desplegada) button[data-nombre] .herramienta-menu-icono::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  pointer-events: none;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 14px;
+}
+.ventana-herramientas:not(.herramienta-desplegada) button[data-nombre] .herramienta-menu-icono svg {
+  position: relative;
+  z-index: 1;
+  width: 37px !important;
+  height: 37px !important;
+  color: white;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,.25));
+}
+.ventana-herramientas:not(.herramienta-desplegada) .fse-activador .herramienta-menu-icono {
+  background: linear-gradient(145deg,#ff5f6d,#d7193f 58%,#940b28) !important;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .clima-rapido-activador .herramienta-menu-icono {
+  background: linear-gradient(145deg,#53d7ff,#078ed1 58%,#0865a5) !important;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .cuadrante-rapido-activador .herramienta-menu-icono {
+  background: linear-gradient(145deg,#ffe767,#ffb800 58%,#ed8100) !important;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .comentarios-rapidos-activador .herramienta-menu-icono {
+  background: linear-gradient(145deg,#ca77ff,#8d42dc 58%,#5d22a5) !important;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .ubicacion-rapida-activador .herramienta-menu-icono {
+  background: linear-gradient(145deg,#65e3aa,#12a975 58%,#087651) !important;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .alfabeto-rapido-activador .herramienta-menu-icono {
+  background: linear-gradient(145deg,#7b92ff,#465bd9 58%,#2638a1) !important;
+  font-size: 1.05rem;
+  letter-spacing: -.05em;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .productividad-rapida-activador .herramienta-menu-icono {
+  background: linear-gradient(145deg,#ff9d63,#f05252 58%,#bd263f) !important;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .codigos-rapidos-activador .herramienta-menu-icono {
+  background: linear-gradient(145deg,#42d7dc,#087f9e 58%,#07516d) !important;
+}
+@media (max-width: 340px) {
+  .ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos {
+    grid-template-columns: repeat(3,minmax(0,1fr));
+    grid-template-rows: repeat(3,minmax(92px,1fr));
+    gap: 7px 3px;
+    padding: 8px 5px 36px;
+  }
+  .ventana-herramientas:not(.herramienta-desplegada) button[data-nombre] .herramienta-menu-icono {
+    width: 58px !important;
+    height: 58px !important;
+    min-width: 58px;
+    flex-basis: 58px !important;
+    border-radius: 17px !important;
+  }
+  .ventana-herramientas:not(.herramienta-desplegada) button[data-nombre]::after { font-size: .59rem; }
+}
+/* Corrección de la cuadrícula: cada aplicación ocupa solo su propia celda. */
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos > aside {
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  align-self: stretch;
+  grid-row: auto !important;
+  grid-column: auto !important;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos > aside > button[data-nombre] {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 !important;
+}
+.ventana-herramientas:not(.herramienta-desplegada) button[data-nombre] > :not(.herramienta-menu-icono) {
+  display: none !important;
+}
+/* Iconos oficiales del menú: el SVG aporta el fondo y el símbolo completos. */
+.ventana-herramientas button[data-nombre] .herramienta-menu-icono {
+  padding: 0 !important;
+  overflow: visible;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.ventana-herramientas button[data-nombre] .herramienta-menu-icono::after {
+  content: none !important;
+}
+.ventana-herramientas button[data-nombre] .herramienta-menu-icono img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+/* Todos los componentes del menú, incluido Comentarios (que usa un div),
+   comparten exactamente la misma celda, alineación y etiqueta inferior. */
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos > * {
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  align-self: stretch;
+  grid-row: auto !important;
+  grid-column: auto !important;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos > * > button[data-nombre] {
+  position: relative !important;
+  display: flex !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 8px 3px 26px !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos > * > button[data-nombre]::after {
+  content: attr(data-nombre) !important;
+  position: absolute !important;
+  right: 1px !important;
+  bottom: 3px !important;
+  left: 1px !important;
+  display: block !important;
+  color: #f7fcff !important;
+  font-size: .68rem !important;
+  font-weight: 850 !important;
+  line-height: 1.12 !important;
+  text-align: center !important;
+  text-shadow: 0 2px 4px rgba(0,15,28,.9) !important;
+  white-space: normal !important;
+}
+
+/* Distribución vertical: dos accesos por fila y nombres alineados. */
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  grid-template-rows: repeat(4, 124px) !important;
+  gap: 10px 8px !important;
+  padding: 12px 10px 18px !important;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos > * > button[data-nombre] {
+  padding: 5px 2px 31px !important;
+  justify-content: flex-start !important;
+}
+.ventana-herramientas:not(.herramienta-desplegada) button[data-nombre] .herramienta-menu-icono {
+  width: 84px !important;
+  height: 84px !important;
+  min-width: 84px !important;
+  flex: 0 0 84px !important;
+}
+.ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos > * > button[data-nombre]::after {
+  top: 93px !important;
+  bottom: auto !important;
+  width: 100% !important;
+  min-height: 27px;
+  padding: 0 4px;
+  align-content: start;
+  font-size: .69rem !important;
+  line-height: 1.08 !important;
+  box-sizing: border-box;
+  text-align: center !important;
+}
+@media (max-width: 380px) {
+  .ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos {
+    grid-template-rows: repeat(4, 112px) !important;
+    gap: 8px 6px !important;
+    padding-inline: 5px !important;
+  }
+  .ventana-herramientas:not(.herramienta-desplegada) button[data-nombre] .herramienta-menu-icono {
+    width: 74px !important;
+    height: 74px !important;
+    min-width: 74px !important;
+    flex-basis: 74px !important;
+  }
+  .ventana-herramientas:not(.herramienta-desplegada) .herramientas-popup-accesos > * > button[data-nombre]::after {
+    top: 83px !important;
+    font-size: .61rem !important;
+  }
+}
+
+/* Al abrir una herramienta, el menú se convierte en una única barra compacta. */
+.ventana-herramientas.herramienta-desplegada .herramientas-popup-accesos {
+  display: grid !important;
+  grid-template-columns: none !important;
+  grid-template-rows: 46px !important;
+  grid-auto-flow: column !important;
+  grid-auto-columns: minmax(0, 1fr) !important;
+  gap: 3px !important;
+  width: 100%;
+  height: 56px;
+  padding: 5px 6px !important;
+  align-items: center;
+  overflow: visible;
+  box-sizing: border-box;
+}
+.ventana-herramientas.herramienta-desplegada .herramientas-popup-accesos > * {
+  position: static !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: 46px !important;
+  grid-row: 1 !important;
+}
+.ventana-herramientas.herramienta-desplegada .herramientas-popup-accesos > * > button[data-nombre] {
+  display: grid !important;
+  width: 100% !important;
+  height: 46px !important;
+  min-width: 0 !important;
+  min-height: 46px !important;
+  max-height: 46px !important;
+  margin: 0 !important;
+  padding: 3px !important;
+  place-items: center !important;
+  overflow: visible !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.ventana-herramientas.herramienta-desplegada button[data-nombre] > :not(.herramienta-menu-icono),
+.ventana-herramientas.herramienta-desplegada button[data-nombre]::after {
+  display: none !important;
+  content: none !important;
+}
+.ventana-herramientas.herramienta-desplegada button[data-nombre] .herramienta-menu-icono {
+  display: block !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  max-width: 40px !important;
+  flex: 0 0 40px !important;
+  margin: 0 auto !important;
+}
+.ventana-herramientas.herramienta-desplegada button[data-nombre][aria-expanded="true"] .herramienta-menu-icono {
+  outline: 2px solid #ffd400;
+  outline-offset: 1px;
+  border-radius: 12px;
+}
+.ventana-herramientas.herramienta-desplegada .fse-rapido-panel,
+.ventana-herramientas.herramienta-desplegada .clima-rapido-panel,
+.ventana-herramientas.herramienta-desplegada .cuadrante-rapido-panel,
+.ventana-herramientas.herramienta-desplegada .comentarios-rapidos-panel,
+.ventana-herramientas.herramienta-desplegada .ubicacion-rapida-panel,
+.ventana-herramientas.herramienta-desplegada .alfabeto-rapido-panel,
+.ventana-herramientas.herramienta-desplegada .productividad-rapida-panel,
+.ventana-herramientas.herramienta-desplegada .codigos-rapidos-panel {
+  top: 58px !important;
+  max-height: calc(100vh - 64px) !important;
+}

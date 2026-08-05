@@ -1,0 +1,173 @@
+/* Comentarios rápidos para MasterMind */
+.comments-widget {
+  position: fixed;
+  z-index: 20;
+  right: 22px;
+  bottom: 22px;
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.comments-trigger {
+  display: flex;
+  min-height: 50px;
+  padding: 12px 18px;
+  align-items: center;
+  gap: 9px;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+  background: var(--ink);
+  border: 0;
+  border-bottom: 4px solid var(--prosegur-yellow);
+  border-radius: 999px;
+  box-shadow: 0 12px 30px rgba(23, 50, 77, 0.28);
+  transition: transform 150ms ease, background 150ms ease;
+}
+
+.comments-trigger > span {
+  display: grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  color: var(--ink);
+  background: var(--prosegur-yellow);
+  border-radius: 50%;
+}
+
+.comments-trigger:hover {
+  background: var(--movistar-blue-dark);
+  transform: translateY(-2px);
+}
+
+.comments-trigger:active {
+  transform: translateY(1px) scale(0.97);
+}
+
+.comments-panel {
+  width: min(430px, calc(100vw - 32px));
+  max-height: min(620px, calc(100vh - 110px));
+  overflow: hidden;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 22px 58px rgba(23, 50, 77, 0.24);
+  animation: commentsReveal 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.comments-panel-header {
+  display: flex;
+  padding: 18px 20px;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+  background: linear-gradient(120deg, var(--movistar-blue-dark), var(--movistar-blue));
+  border-bottom: 4px solid var(--prosegur-yellow);
+}
+
+.comments-panel-header span {
+  display: block;
+  margin-bottom: 3px;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.comments-panel-header h2 {
+  font-size: 1.15rem;
+}
+
+.comments-panel-header button {
+  width: 34px;
+  height: 34px;
+  color: white;
+  font-size: 1.45rem;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+}
+
+.comments-help {
+  padding: 13px 18px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  background: var(--background);
+  border-bottom: 1px solid var(--border);
+}
+
+.comments-list {
+  display: grid;
+  max-height: min(480px, calc(100vh - 245px));
+  padding: 10px;
+  overflow-y: auto;
+  gap: 7px;
+}
+
+.comments-list button {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  width: 100%;
+  padding: 12px 13px;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.comments-list button:hover {
+  background: var(--movistar-blue-soft);
+  border-color: var(--movistar-blue);
+  transform: translateX(-3px);
+}
+
+.comments-list button:active {
+  transform: scale(0.985);
+}
+
+.comments-list button > span {
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.comments-list button > strong {
+  color: var(--movistar-blue-dark);
+  font-size: 0.73rem;
+}
+
+.comments-list button.copied {
+  color: #245d2d;
+  background: #ebf8ed;
+  border-color: #62a76b;
+}
+
+.comments-list button.copied > strong {
+  color: #245d2d;
+}
+
+@keyframes commentsReveal {
+  from { opacity: 0; transform: translateY(14px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 560px) {
+  .comments-widget {
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .comments-trigger {
+    min-height: 46px;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+  }
+}

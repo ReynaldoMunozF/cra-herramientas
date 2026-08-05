@@ -1,0 +1,214 @@
+.ventana-herramientas .herramientas-popup-accesos {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.alfabeto-rapido {
+  position: static;
+}
+
+.alfabeto-rapido-activador {
+  display: flex;
+  width: 100%;
+  min-height: 46px;
+  padding: 5px;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  background: linear-gradient(145deg, #0788bd, #075077);
+  border: 1px solid rgba(255,255,255,.25);
+  border-bottom: 3px solid var(--prosegur-yellow);
+  border-radius: 11px;
+}
+
+.alfabeto-rapido-activador svg {
+  width: 30px;
+  height: 30px;
+  padding: 6px;
+  fill: none;
+  stroke: #073553;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  background: var(--prosegur-yellow);
+  border-radius: 50%;
+}
+
+.alfabeto-rapido-activador strong {
+  display: none;
+}
+
+.alfabeto-rapido.abierto .alfabeto-rapido-activador {
+  background: linear-gradient(145deg, #0ba3dc, #0876a6);
+  box-shadow: inset 0 -3px var(--prosegur-yellow);
+}
+
+.alfabeto-rapido-panel {
+  position: fixed;
+  z-index: 40;
+  top: 79px;
+  right: 4px;
+  left: 4px;
+  max-height: calc(100vh - 116px);
+  overflow-y: auto;
+  color: white;
+  background: linear-gradient(160deg, #0b456b, #04263c);
+  border: 1px solid rgba(39,201,243,.45);
+  border-radius: 10px;
+  box-shadow: 0 18px 45px rgba(0,18,32,.55);
+}
+
+.alfabeto-rapido-panel > header {
+  display: flex;
+  padding: 7px 9px;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(100deg, #07527c, #0796cc);
+  border-bottom: 3px solid var(--prosegur-yellow);
+}
+
+.alfabeto-rapido-panel header small {
+  color: #ffe55c;
+  font-size: .48rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.alfabeto-rapido-panel header h2 {
+  margin-top: 1px;
+  font-size: .82rem;
+}
+
+.alfabeto-rapido-panel header button {
+  width: 27px;
+  height: 27px;
+  color: white;
+  cursor: pointer;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.4);
+  border-radius: 7px;
+}
+
+.alfabeto-deletreador {
+  padding: 8px;
+}
+
+.alfabeto-deletreador label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: .62rem;
+  font-weight: 850;
+}
+
+.alfabeto-deletreador input {
+  width: 100%;
+  padding: 7px 8px;
+  color: #12364f;
+  font: inherit;
+  font-size: .72rem;
+  border: 2px solid transparent;
+  border-radius: 7px;
+}
+
+.alfabeto-deletreador input:focus {
+  outline: 0;
+  border-color: var(--prosegur-yellow);
+}
+
+.alfabeto-resultado {
+  margin-top: 6px;
+  padding: 7px;
+  background: rgba(255,255,255,.08);
+  border-left: 3px solid var(--prosegur-yellow);
+  border-radius: 7px;
+}
+
+.alfabeto-resultado > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.alfabeto-resultado span {
+  padding: 2px 5px;
+  color: #062f49;
+  font-size: .58rem;
+  font-weight: 850;
+  background: #eaf8ff;
+  border-radius: 999px;
+}
+
+.alfabeto-resultado button {
+  width: 100%;
+  margin-top: 6px;
+  padding: 5px;
+  color: #073553;
+  font-size: .6rem;
+  font-weight: 900;
+  cursor: pointer;
+  background: var(--prosegur-yellow);
+  border: 0;
+  border-radius: 6px;
+}
+
+.alfabeto-listado {
+  display: grid;
+  padding: 0 8px 9px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3px;
+}
+
+.alfabeto-listado > div {
+  display: flex;
+  min-width: 0;
+  min-height: 30px;
+  padding: 5px;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 5px;
+}
+
+.alfabeto-listado strong {
+  display: grid;
+  width: 21px;
+  height: 21px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #073553;
+  font-size: .68rem;
+  font-weight: 950;
+  background: var(--prosegur-yellow);
+  border-radius: 4px;
+}
+
+.alfabeto-listado span {
+  min-width: 0;
+  flex: 1;
+  font-size: .68rem;
+  font-weight: 850;
+  line-height: 1.1;
+  text-align: center;
+  white-space: normal;
+}
+
+@media (max-width: 340px) {
+  .ventana-herramientas .herramientas-popup-accesos,
+  .ventana-herramientas.herramienta-desplegada .herramientas-popup-accesos {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 3px;
+  }
+
+  .alfabeto-rapido-activador {
+    min-height: 38px;
+    padding: 3px;
+    border-radius: 8px;
+  }
+
+  .alfabeto-rapido-activador svg {
+    width: 26px;
+    height: 26px;
+    padding: 5px;
+  }
+}

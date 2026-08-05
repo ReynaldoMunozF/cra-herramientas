@@ -1,0 +1,62 @@
+.admin-manual { min-height: 100vh; padding: 34px 20px 60px; color: var(--ink); background: var(--background); }
+.admin-cabecera { display: flex; width: min(100%, 1180px); margin: 0 auto 20px; padding: 30px; align-items: flex-end; justify-content: space-between; gap: 24px; color: white; background: linear-gradient(120deg, var(--movistar-blue-dark), var(--movistar-blue)); border-bottom: 5px solid var(--prosegur-yellow); border-radius: 20px; }
+.admin-cabecera > div:first-child > span, .admin-titulo-seccion span, .admin-publicacion > div > span { color: var(--prosegur-yellow); font-size: .68rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.admin-cabecera h1 { margin: 5px 0 8px; font-size: clamp(1.8rem, 4vw, 2.7rem); }
+.admin-cabecera p { max-width: 720px; color: rgba(255,255,255,.86); text-align: left; }
+.admin-cabecera-enlaces { display: flex; flex: 0 0 auto; gap: 8px; }
+.admin-cabecera-enlaces a { padding: 9px 12px; color: white; border: 1px solid rgba(255,255,255,.45); border-radius: 9px; }
+.admin-selector-proceso { display: grid; grid-template-columns: minmax(210px, 360px) 1fr; width: min(100%, 1180px); margin: 0 auto 16px; padding: 16px 18px; align-items: center; gap: 6px 18px; background: white; border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 8px 26px rgba(23,50,77,.06); }
+.admin-selector-proceso label { color: var(--ink); font-size: .8rem; font-weight: 900; }
+.admin-selector-proceso select { grid-row: 2; min-height: 44px; padding: 9px 12px; color: var(--ink); font: inherit; font-weight: 800; background: #f7fafc; border: 1px solid var(--border); border-radius: 9px; }
+.admin-selector-proceso p { grid-column: 2; grid-row: 1 / span 2; color: var(--muted); text-align: left; }
+.admin-seguridad, .admin-mensaje, .admin-error { width: min(100%, 1180px); margin: 0 auto 16px; padding: 12px 16px; border-radius: 10px; }
+.admin-seguridad { display: flex; gap: 10px; color: #5d4b00; background: #fff8d5; border: 1px solid #ead47a; }
+.admin-mensaje { color: #245d36; background: #e7f7ec; border: 1px solid #9bd3aa; }
+.admin-error { color: #8b2f2b; background: #fff0ef; border: 1px solid #e5b4b0; }
+.admin-distribucion { display: grid; grid-template-columns: 300px minmax(0, 1fr); width: min(100%, 1180px); margin: 0 auto; align-items: start; gap: 18px; }
+.admin-pasos, .admin-editor, .admin-comentarios, .admin-publicacion, .admin-versiones { background: white; border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 8px 26px rgba(23,50,77,.08); }
+.admin-pasos { position: sticky; top: 84px; max-height: calc(100vh - 105px); padding: 16px; overflow: auto; }
+.admin-titulo-seccion { display: flex; margin-bottom: 15px; align-items: center; justify-content: space-between; gap: 12px; }
+.admin-titulo-seccion h2, .admin-titulo-seccion h3 { margin-top: 3px; font-size: 1.05rem; }
+.admin-titulo-seccion button, .admin-publicacion button { padding: 9px 12px; color: white; font-weight: 800; cursor: pointer; background: var(--movistar-blue-dark); border: 0; border-radius: 8px; }
+.admin-pasos nav { display: grid; gap: 7px; }
+.admin-pasos nav button { display: grid; grid-template-columns: 28px 1fr; padding: 9px; align-items: center; gap: 8px; color: var(--ink); text-align: left; cursor: pointer; background: #f7fafc; border: 1px solid var(--border); border-radius: 9px; }
+.admin-pasos nav button > span { display: grid; width: 26px; height: 26px; place-items: center; color: var(--movistar-blue-dark); font-size: .7rem; background: var(--movistar-blue-soft); border-radius: 7px; }
+.admin-pasos nav button strong { overflow: hidden; font-size: .76rem; line-height: 1.3; text-overflow: ellipsis; }
+.admin-pasos nav button.activo { color: white; background: var(--movistar-blue-dark); border-color: var(--movistar-blue-dark); }
+.admin-editor { padding: 22px; }
+.admin-eliminar { color: #a03935 !important; background: #fff0ef !important; border: 1px solid #e3aaa7 !important; }
+.admin-campos { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.admin-campos label, .admin-opcion label { color: var(--muted); font-size: .73rem; font-weight: 800; }
+.admin-campos input, .admin-campos textarea, .admin-opcion input, .admin-opcion select, .admin-comentarios textarea { width: 100%; margin-top: 6px; padding: 10px 11px; color: var(--ink); font: inherit; background: white; border: 1px solid #b7cbd7; border-radius: 8px; }
+.admin-campos .ancho-completo { grid-column: 1 / -1; }
+.admin-comprobacion { display: flex; grid-column: 1 / -1; align-items: center; gap: 8px; color: var(--ink) !important; }
+.admin-comprobacion input { width: auto; margin: 0; }
+.admin-opciones { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
+.admin-opcion { display: grid; grid-template-columns: 1.2fr 1fr .8fr auto; margin-bottom: 9px; padding: 11px; align-items: end; gap: 9px; background: #f7fafc; border-radius: 10px; }
+.admin-opcion > button { width: 34px; height: 38px; color: #9b3430; font-size: 1.2rem; cursor: pointer; background: #fff0ef; border: 1px solid #e4b0ad; border-radius: 8px; }
+.admin-vacio { padding: 13px; color: var(--muted); background: #f7fafc; border-radius: 9px; }
+.admin-vista-previa { margin-top: 22px; padding: 22px; background: #f8fcfe; border: 1px solid var(--border); border-left: 5px solid var(--movistar-blue); border-radius: 12px; }
+.admin-vista-previa > span { color: var(--movistar-blue-dark); font-size: .68rem; font-weight: 850; text-transform: uppercase; }
+.admin-vista-previa h2 { margin: 6px 0 8px; }
+.admin-vista-previa p { color: var(--muted); text-align: left; }
+.admin-vista-previa > div { display: flex; margin-top: 15px; flex-wrap: wrap; gap: 8px; }
+.admin-vista-previa button { padding: 9px 12px; color: white; background: var(--movistar-blue-dark); border: 0; border-bottom: 3px solid var(--prosegur-yellow); border-radius: 8px; }
+.admin-comentarios, .admin-publicacion, .admin-versiones { width: min(100%, 1180px); margin: 18px auto 0; padding: 22px; }
+.admin-comentarios > div:last-child { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.admin-comentarios label { position: relative; padding: 11px; background: #f7fafc; border-radius: 10px; }
+.admin-comentarios label > span { color: var(--muted); font-size: .7rem; font-weight: 800; }
+.admin-comentarios label > button { color: #a03935; cursor: pointer; background: transparent; border: 0; }
+.admin-publicacion { display: flex; align-items: center; justify-content: space-between; gap: 20px; color: white; background: #17324d; }
+.admin-publicacion p { margin-top: 5px; color: rgba(255,255,255,.72); text-align: left; }
+.admin-publicacion > div:last-child { display: flex; flex: 0 0 auto; gap: 9px; }
+.admin-publicacion button { background: white; color: var(--ink); }
+.admin-publicacion button.publicar { background: var(--prosegur-yellow); }
+.admin-publicacion button:disabled { cursor: wait; opacity: .5; }
+.admin-versiones ol { display: grid; margin-top: 13px; gap: 7px; list-style: none; }
+.admin-versiones li { display: grid; grid-template-columns: 60px 100px 1fr; padding: 9px 11px; align-items: center; background: #f7fafc; border-radius: 8px; }
+.admin-versiones li span { width: fit-content; padding: 3px 7px; font-size: .65rem; border-radius: 99px; }
+.estado-publicada { color: #25613a; background: #daf3e3; }.estado-borrador { color: #6b5100; background: #fff1ad; }.estado-archivada { color: var(--muted); background: #e6edf1; }
+.admin-versiones time { color: var(--muted); font-size: .75rem; text-align: right; }
+@media (max-width: 850px) { .admin-cabecera { align-items: flex-start; flex-direction: column; }.admin-distribucion { grid-template-columns: 1fr; }.admin-pasos { position: static; max-height: none; }.admin-pasos nav { grid-template-columns: repeat(2, 1fr); }.admin-opcion { grid-template-columns: 1fr 1fr; }.admin-opcion > button { justify-self: end; }.admin-comentarios > div:last-child { grid-template-columns: 1fr; }.admin-publicacion { align-items: stretch; flex-direction: column; } }
+@media (max-width: 560px) { .admin-manual { padding-inline: 10px; }.admin-cabecera { padding: 22px 17px; }.admin-cabecera-enlaces, .admin-publicacion > div:last-child { width: 100%; flex-direction: column; }.admin-selector-proceso { grid-template-columns: 1fr; }.admin-selector-proceso select, .admin-selector-proceso p { grid-column: 1; grid-row: auto; }.admin-campos, .admin-opcion, .admin-pasos nav { grid-template-columns: 1fr; }.admin-campos .ancho-completo { grid-column: auto; }.admin-publicacion button { width: 100%; } }

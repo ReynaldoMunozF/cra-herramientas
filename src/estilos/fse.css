@@ -1,0 +1,44 @@
+.fse-rapido { position: fixed; z-index: 89; bottom: 18px; left: 168px; display: flex; align-items: flex-start; flex-direction: column; gap: 10px; }
+.fse-rapido-panel { width: min(410px, calc(100vw - 24px)); overflow: hidden; background: white; border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 22px 60px rgba(9,38,61,.3); animation: fseAparece 180ms ease-out both; }
+.fse-rapido-panel > header { display: flex; padding: 17px 18px; align-items: center; justify-content: space-between; gap: 12px; color: white; background: linear-gradient(120deg, #17324d, #285e82); border-bottom: 4px solid var(--prosegur-yellow); }
+.fse-rapido-panel header span { color: var(--prosegur-yellow); font-size: .65rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.fse-rapido-panel header h2 { margin-top: 2px; font-size: 1.1rem; }
+.fse-rapido-panel header button { width: 32px; height: 32px; flex: 0 0 auto; color: white; font-size: 1.35rem; cursor: pointer; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.35); border-radius: 9px; }
+.fse-advertencia { padding: 11px 18px; color: #654f00; font-size: .72rem; line-height: 1.4; background: #fff8d6; border-bottom: 1px solid #ead47a; }
+.fse-rapido-panel form { padding: 16px 18px; }
+.fse-rapido-panel label { display: block; margin-bottom: 6px; color: var(--ink); font-size: .78rem; font-weight: 800; }
+.fse-rapido-panel form > div { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.fse-rapido-panel input { min-width: 0; padding: 11px 12px; color: var(--ink); font: inherit; border: 1px solid #9eb5c5; border-radius: 9px; }
+.fse-rapido-panel input:focus { outline: 3px solid rgba(1,157,244,.18); border-color: var(--movistar-blue); }
+.fse-rapido-panel form button { padding: 10px 13px; color: white; font-weight: 800; cursor: pointer; background: #17324d; border: 0; border-bottom: 3px solid var(--prosegur-yellow); border-radius: 9px; }
+.fse-error { margin-top: 8px; color: #a83232; font-size: .76rem; text-align: left; }
+.fse-resultado { position: relative; padding: 17px 18px; border-top: 1px solid var(--border); }
+.fse-resultado > small { display: block; padding-right: 95px; color: var(--muted); }
+.fse-resultado h3 { margin: 5px 0 7px; color: #17324d; font-size: 1.45rem; }
+.fse-resultado > p { color: var(--muted); font-size: .78rem; line-height: 1.45; text-align: left; }
+.fse-resultado > div { margin-top: 12px; padding: 10px; color: var(--ink); font-size: .74rem; line-height: 1.4; background: #edf5fa; border-radius: 8px; }
+.fse-resultado .fse-exclusion { margin-top: 10px; color: #7c3434; font-weight: 750; }
+.fse-validacion { display: grid; padding: 0 18px 12px; align-items: center; grid-template-columns: auto 1fr; gap: 7px 10px; border-bottom: 1px solid var(--border); }
+.fse-validacion > strong { padding: 5px 8px; color: #17324d; font-size: .72rem; line-height: 1.2; background: #edf5fa; border-radius: 7px; white-space: nowrap; }
+.fse-validacion-botones { display: flex; gap: 6px; }
+.fse-validacion button { min-height: 29px; padding: 5px 10px; color: white; font: inherit; font-size: .66rem; font-weight: 850; cursor: pointer; background: #25734b; border: 0; border-radius: 7px; }
+.fse-validacion button.incorrecto { background: #9b3838; }
+.fse-validacion button:disabled { cursor: wait; opacity: .6; }
+.fse-correccion { display: grid; grid-column: 1 / -1; grid-template-columns: auto 1fr auto; align-items: center; gap: 6px; }
+.fse-correccion label { margin: 0; font-size: .65rem; }
+.fse-correccion select { min-width: 0; padding: 6px 8px; color: var(--ink); font: inherit; font-size: .67rem; background: white; border: 1px solid #9eb5c5; border-radius: 7px; }
+.fse-correccion button { background: #17324d; }
+.fse-validacion .fse-validacion-exito { grid-column: 1 / -1; margin: 0; padding: 7px 9px; color: #155a38; font-size: .68rem; font-weight: 800; background: #e7f6ee; border-radius: 7px; }
+.fse-validacion .fse-validacion-error { grid-column: 1 / -1; margin: 0; color: #a83232; font-size: .66rem; }
+.fse-confianza { position: absolute; top: 16px; right: 18px; padding: 4px 7px; color: #6b5100; font-size: .62rem; font-weight: 850; background: #fff1ad; border-radius: 999px; text-transform: uppercase; }
+.fse-confianza.alta { color: #135b38; background: #dff5e9; }
+.fse-confianza.baja { color: #833636; background: #ffe2e2; }
+.fse-activador { display: inline-flex; min-height: 58px; padding: 7px 15px 7px 8px; align-items: center; gap: 10px; color: white; font-weight: 800; cursor: pointer; background: #17324d; border: 1px solid rgba(255,255,255,.5); border-bottom: 4px solid var(--prosegur-yellow); border-radius: 16px; box-shadow: 0 8px 24px rgba(9,38,61,.25); }
+.fse-activador-icono { display: grid; width: 42px; height: 42px; flex: 0 0 auto; place-items: center; color: #17324d; background: var(--prosegur-yellow); border-radius: 12px; }
+.fse-activador-icono svg { width: 25px; height: 25px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.fse-activador-texto { display: flex; align-items: flex-start; flex-direction: column; line-height: 1.12; }
+.fse-activador-texto small { color: rgba(255,255,255,.7); font-size: .62rem; font-weight: 700; }
+.fse-activador-texto strong { margin-top: 3px; font-size: .86rem; white-space: nowrap; }
+.fse-activador:hover { background: #285e82; transform: translateY(-2px); }
+@keyframes fseAparece { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+@media (max-width: 600px) { .fse-rapido { right: 12px; bottom: 68px; left: 12px; } .fse-rapido-panel { width: 100%; } .fse-validacion { grid-template-columns: 1fr; } .fse-correccion { grid-column: auto; grid-template-columns: 1fr auto; } .fse-correccion label { grid-column: 1 / -1; } }

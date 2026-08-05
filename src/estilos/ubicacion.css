@@ -1,0 +1,228 @@
+.ubicacion-rapida { position: relative; }
+.ubicacion-rapida-activador {
+  align-items: center; background: linear-gradient(135deg,#075e88,#019cd9); border: 1px solid rgba(255,255,255,.35);
+  border-bottom: 4px solid var(--prosegur-yellow); border-radius: 14px; color: #fff; cursor: pointer; display: flex;
+  gap: 7px; justify-content: center; min-height: 58px; padding: 7px 10px; transition: filter .18s ease, transform .18s ease; width: 100%;
+}
+.ubicacion-rapida-activador:hover { filter: brightness(1.12); transform: translateY(-2px); }
+.ubicacion-rapida-activador svg { fill: none; height: 26px; stroke: currentColor; stroke-width: 1.8; width: 26px; }
+.ubicacion-rapida-activador strong { font-size: .72rem; }
+.ubicacion-rapida-panel {
+  background: linear-gradient(160deg,#0b3e5e,#05293f); border: 1px solid rgba(39,190,239,.5); border-radius: 14px;
+  box-shadow: 0 18px 45px rgba(0,18,32,.45); color: #fff; overflow: hidden; position: absolute; z-index: 30;
+}
+.ubicacion-toolbar .ubicacion-rapida-panel {
+  left: 9px;
+  max-height: calc(100vh - 116px);
+  overflow-y: auto;
+  position: fixed;
+  right: 9px;
+  top: 79px;
+}
+.ubicacion-global .ubicacion-rapida-panel { right: 0; top: calc(100% + 8px); width: min(420px, calc(100vw - 20px)); }
+.ubicacion-rapida-panel > header {
+  align-items: center; background: linear-gradient(100deg,#164e74,#087fab); border-bottom: 3px solid var(--prosegur-yellow);
+  display: flex; justify-content: space-between; padding: 9px 12px;
+}
+.ubicacion-rapida-panel header small { color: var(--prosegur-yellow); font-size: .55rem; font-weight: 900; text-transform: uppercase; }
+.ubicacion-rapida-panel h2 { font-size: .9rem; margin: 1px 0 0; }
+.ubicacion-en-desarrollo {
+  background: var(--prosegur-yellow); border-radius: 999px; color: #073553; display: inline-block;
+  font-size: .48rem; font-weight: 900; margin-left: 4px; padding: 2px 5px; text-transform: uppercase; vertical-align: middle;
+}
+.ubicacion-aviso-desarrollo {
+  background: rgba(255,207,0,.11); border-bottom: 1px solid rgba(255,207,0,.28); color: #ffe98a;
+  font-size: .58rem; line-height: 1.35; margin: 0; padding: 6px 10px;
+}
+.ubicacion-rapida-panel header button { background: transparent; border: 1px solid rgba(255,255,255,.4); border-radius: 8px; color: #fff; cursor: pointer; height: 28px; width: 28px; }
+.ubicacion-rapida-panel form { display: grid; gap: 5px; padding: 10px; }
+.ubicacion-rapida-panel form label { font-size: .67rem; font-weight: 850; }
+.ubicacion-rapida-panel form textarea {
+  border: 2px solid transparent; border-radius: 8px; color: #12364f; display: block; font: inherit;
+  line-height: 1.35; margin-top: 4px; min-height: 76px; padding: 8px; resize: vertical; width: 100%;
+}
+.ubicacion-modos { display: grid; gap: 4px; grid-template-columns: 1fr 1fr; padding: 8px 10px 0; }
+.ubicacion-modos button {
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.2); border-radius: 8px;
+  color: #d8e8f0; cursor: pointer; font-size: .65rem; font-weight: 850; padding: 6px;
+}
+.ubicacion-modos button.activo { background: var(--prosegur-yellow); border-color: var(--prosegur-yellow); color: #073553; }
+.ubicacion-campos-coordenadas { display: grid; gap: 6px; grid-template-columns: 1fr 1fr; }
+.ubicacion-campos-coordenadas label { display: grid; gap: 3px; min-width: 0; }
+.ubicacion-rapida-panel input { border: 2px solid transparent; border-radius: 8px; color: #12364f; min-width: 0; padding: 8px; }
+.ubicacion-rapida-panel form button, .ubicacion-rapida-resultado button { background: var(--prosegur-yellow); border: 0; border-radius: 8px; color: #073553; cursor: pointer; font-size: .67rem; font-weight: 900; padding: 7px 10px; }
+.ubicacion-rapida-panel form > small { color: #bcd5e1; font-size: .58rem; }
+.ubicacion-rapida-error { background: rgba(215,45,45,.2); border-radius: 6px; color: #ffdada; font-size: .65rem; margin: 2px 0 0; padding: 6px; }
+.ubicacion-rapida-resultado { border-top: 1px solid rgba(255,255,255,.15); padding: 10px; }
+.ubicacion-rapida-resultado > span { color: var(--prosegur-yellow); font-size: .58rem; font-weight: 900; }
+.ubicacion-rapida-resultado h3 { font-size: .9rem; margin: 2px 0 4px; }
+.ubicacion-rapida-resultado p { color: #d8e8f0; font-size: .66rem; line-height: 1.4; margin: 0 0 7px; }
+.ubicacion-rapida-resultado .ubicacion-coincidencia {
+  background: rgba(255,207,0,.13); border-left: 3px solid var(--prosegur-yellow); color: #ffe889; padding: 6px;
+}
+.ubicacion-rapida-resultado code { background: rgba(255,255,255,.1); border-radius: 6px; display: block; font-size: .68rem; padding: 6px; }
+.ubicacion-rapida-resultado > div { display: flex; gap: 5px; margin: 7px 0; }
+.ubicacion-rapida-resultado .ubicacion-coordenadas-separadas { display: grid; grid-template-columns: 1fr 1fr; }
+.ubicacion-coordenadas-separadas > div { background: rgba(255,255,255,.06); border-radius: 8px; min-width: 0; padding: 6px; }
+.ubicacion-coordenadas-separadas small { color: #bcd5e1; display: block; font-size: .55rem; margin-bottom: 3px; }
+.ubicacion-coordenadas-separadas button { margin-top: 5px; padding: 5px 6px; width: 100%; }
+.ubicacion-rapida-resultado > small { color: #ffd65a; display: block; font-size: .58rem; line-height: 1.35; }
+.ubicacion-global .ubicacion-rapida-activador { border-bottom-width: 3px; min-height: 40px; padding: 5px 9px; }
+.ubicacion-global .ubicacion-rapida-activador svg { height: 21px; width: 21px; }
+
+/* En la toolbar se muestran únicamente iconos, con el nombre accesible y tooltip. */
+.ventana-herramientas .herramientas-popup-accesos { grid-template-columns: repeat(5,minmax(0,1fr)); }
+.ventana-herramientas.ventana-fijada .herramientas-popup-presentacion,
+.ventana-herramientas.ventana-fijada .herramientas-popup-aviso { display: none; }
+.ventana-herramientas.ventana-fijada:not(.herramienta-desplegada) > header { padding-bottom: 7px; padding-top: 7px; }
+.ventana-herramientas.ventana-fijada:not(.herramienta-desplegada) .herramientas-popup-accesos { padding-bottom: 8px; padding-top: 7px; }
+.ventana-herramientas > header { flex-wrap: nowrap; }
+.ventana-herramientas > header > div:first-child { flex: 0 0 auto; order: 1; }
+.ventana-herramientas > header > .consejo-operador {
+  background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.14); flex: 1 1 220px;
+  margin: 0; max-width: 250px; min-height: 32px; min-width: 0; order: 2; padding: 4px 7px;
+}
+.ventana-herramientas > header > .consejo-operador p {
+  display: -webkit-box; font-size: .56rem; line-height: 1.25; overflow: hidden; text-align: left;
+  -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+}
+.ventana-herramientas > header > .acciones-ventana-herramientas { flex: 0 0 auto; order: 3; }
+.ventana-herramientas.herramienta-desplegada > header > .consejo-operador { display: none; }
+
+@media (max-width: 340px) {
+  .ventana-herramientas > header { gap: 5px; }
+  .ventana-herramientas > header > .consejo-operador { flex-basis: 110px; min-height: 27px; padding: 3px 5px; }
+  .ventana-herramientas > header > .consejo-operador p { font-size: .49rem; }
+  .ventana-herramientas > header > .consejo-operador > span { display: none; }
+}
+.pie-herramientas-rapidas {
+  align-items: center; background: rgba(2,23,38,.8); border-top: 1px solid rgba(255,255,255,.1);
+  bottom: 0; color: #9eb9c9; display: flex; font-size: .52rem; gap: 7px; justify-content: center;
+  left: 0; padding: 5px 8px; position: fixed; right: 0; z-index: 25;
+}
+.pie-herramientas-rapidas a { color: #7edcff; text-decoration: none; }
+.ventana-herramientas .herramientas-popup-accesos button[class$="activador"] strong,
+.ventana-herramientas .herramientas-popup-accesos .fse-activador-texto,
+.ventana-herramientas .herramientas-popup-accesos .clima-activador-texto { display: none; }
+.ventana-herramientas .herramientas-popup-accesos button[class$="activador"] { justify-content: center; padding-left: 4px; padding-right: 4px; }
+
+@media (max-width: 600px) {
+  .ubicacion-global .ubicacion-rapida-activador strong { display: none; }
+  .ubicacion-global .ubicacion-rapida-panel { position: fixed; right: 10px; top: 76px; }
+}
+
+@media (max-width: 340px) {
+  .ventana-herramientas .herramientas-popup-accesos,
+  .ventana-herramientas.herramienta-desplegada .herramientas-popup-accesos { grid-template-columns: repeat(5,minmax(0,1fr)); }
+  .ventana-herramientas .ubicacion-rapida-activador { border-radius: 8px; min-height: 38px; padding: 3px; }
+  .ventana-herramientas .ubicacion-rapida-activador svg { height: 18px; width: 18px; }
+  .ubicacion-toolbar .ubicacion-rapida-panel { left: 4px; max-height: calc(100vh - 116px); right: 4px; top: 79px; }
+}
+
+/* -------------------------------------------------------------------------
+   ICONOS HOMOGÉNEOS DE LA TOOLBAR
+   Todos comparten tamaño, forma, centrado y grosor visual. El color permite
+   reconocer la función rápidamente sin necesidad de mostrar texto.
+   ------------------------------------------------------------------------- */
+.ventana-herramientas .herramientas-popup-accesos > * > button,
+.ventana-herramientas.herramienta-desplegada .herramientas-popup-accesos > * > button {
+  align-items: center;
+  border-radius: 13px;
+  display: flex;
+  justify-content: center;
+  min-height: 62px;
+  padding: 7px;
+}
+
+.ventana-herramientas .fse-activador-icono,
+.ventana-herramientas .clima-activador-icono,
+.ventana-herramientas .cuadrante-rapido-activador > span,
+.ventana-herramientas .comentarios-rapidos-activador > span {
+  align-items: center;
+  border: 1px solid rgba(255,255,255,.55);
+  border-radius: 50%;
+  box-shadow: 0 5px 12px rgba(0,20,37,.25), inset 0 1px 0 rgba(255,255,255,.28);
+  display: flex;
+  flex: 0 0 40px;
+  height: 40px;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  width: 40px;
+}
+
+.ventana-herramientas .ubicacion-toolbar .ubicacion-rapida-activador > svg {
+  background: linear-gradient(145deg,#ffcf00,#f5a900);
+  border: 1px solid rgba(255,255,255,.55);
+  border-radius: 50%;
+  box-shadow: 0 5px 12px rgba(0,20,37,.25), inset 0 1px 0 rgba(255,255,255,.28);
+  box-sizing: border-box;
+  color: #073553;
+  flex: 0 0 40px;
+  height: 40px;
+  margin: 0;
+  padding: 9px;
+  width: 40px;
+}
+
+.ventana-herramientas .fse-activador-icono {
+  background: linear-gradient(145deg,#ffcf00,#f5a900);
+  color: #073553;
+}
+
+.ventana-herramientas .clima-activador-icono {
+  background: linear-gradient(145deg,#20c9f5,#018dca);
+  color: #fff;
+}
+
+.ventana-herramientas .cuadrante-rapido-activador > span {
+  background: linear-gradient(145deg,#ffdb3d,#ffb900);
+  color: #073553;
+}
+
+.ventana-herramientas .comentarios-rapidos-activador > span {
+  background: linear-gradient(145deg,#26bfe8,#047ead);
+  color: #fff;
+}
+
+.ventana-herramientas .fse-activador-icono svg,
+.ventana-herramientas .clima-activador-icono svg,
+.ventana-herramientas .cuadrante-rapido-activador > span svg,
+.ventana-herramientas .comentarios-rapidos-activador > span svg {
+  box-sizing: border-box;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  stroke-width: 1.8;
+  width: 22px;
+}
+
+@media (max-width: 340px) {
+  .ventana-herramientas .herramientas-popup-accesos > * > button,
+  .ventana-herramientas.herramienta-desplegada .herramientas-popup-accesos > * > button {
+    min-height: 48px;
+    padding: 4px 2px;
+  }
+
+  .ventana-herramientas .fse-activador-icono,
+  .ventana-herramientas .clima-activador-icono,
+  .ventana-herramientas .cuadrante-rapido-activador > span,
+  .ventana-herramientas .comentarios-rapidos-activador > span,
+  .ventana-herramientas .ubicacion-toolbar .ubicacion-rapida-activador > svg {
+    flex-basis: 32px;
+    height: 32px;
+    width: 32px;
+  }
+
+  .ventana-herramientas .ubicacion-toolbar .ubicacion-rapida-activador > svg {
+    padding: 7px;
+  }
+
+  .ventana-herramientas .fse-activador-icono svg,
+  .ventana-herramientas .clima-activador-icono svg,
+  .ventana-herramientas .cuadrante-rapido-activador > span svg,
+  .ventana-herramientas .comentarios-rapidos-activador > span svg {
+    height: 18px;
+    width: 18px;
+  }
+}

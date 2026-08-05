@@ -1,0 +1,150 @@
+/* ================================================================
+   VARIABLES GLOBALES
+   Centralizan colores, sombras y tipografía para mantener coherencia.
+   ================================================================ */
+:root {
+  --movistar-blue: #019df4;
+  --movistar-blue-dark: #0077b8;
+  --movistar-blue-soft: #e9f7fe;
+  --prosegur-yellow: #ffd100;
+  --ink: #17324d;
+  --muted: #60758a;
+  --surface: #ffffff;
+  --background: #f2f7fa;
+  --border: #d9e7ef;
+  --shadow: 0 14px 36px rgba(23, 50, 77, 0.12);
+}
+
+/* Normalización básica para que tamaños y márgenes sean previsibles. */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Fondo y tipografía general de todas las rutas de la aplicación. */
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  line-height: 1.5;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(1, 157, 244, 0.15), transparent 32rem),
+    var(--background);
+}
+
+/* Ritmo tipográfico compartido por todas las páginas. */
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.18;
+  text-wrap: balance;
+}
+
+p,
+li,
+small {
+  line-height: 1.5;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+button,
+a,
+input {
+  line-height: 1.3;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+a {
+  color: var(--movistar-blue-dark);
+  font-weight: 650;
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--movistar-blue);
+  text-decoration: underline;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--prosegur-yellow);
+  outline-offset: 3px;
+}
+
+/* Cierre de la sesión creada por el middleware privado de Cloudflare. */
+.barra-superior-global > .boton-cerrar-sesion {
+  display: inline-flex;
+  width: auto;
+  min-width: 0;
+  margin: 0;
+  padding: 5px 8px;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 800;
+  background: rgba(23, 50, 77, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 6px;
+  line-height: 1;
+  backdrop-filter: blur(8px);
+}
+
+/* Pie común con la autoría y un canal profesional de contacto. */
+.pie-desarrollador {
+  display: flex;
+  min-height: 66px;
+  padding: 16px 24px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.74rem;
+  text-align: center;
+  background: #10283e;
+  border-top: 4px solid var(--prosegur-yellow);
+}
+
+.pie-desarrollador a {
+  color: #72c9fa;
+  font-size: inherit;
+  font-weight: 750;
+}
+
+.pie-desarrollador a:hover {
+  color: white;
+}
+
+@media (max-width: 520px) {
+  .pie-desarrollador {
+    padding: 15px 18px;
+    flex-direction: column;
+  }
+}
+
+.barra-superior-global > .boton-cerrar-sesion:hover {
+  color: var(--ink);
+  text-decoration: none;
+  background: var(--prosegur-yellow);
+}
+
+/* Contenedor vertical que mantiene el pie al final de la pantalla. */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
