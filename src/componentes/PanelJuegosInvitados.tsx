@@ -6,6 +6,7 @@ const JUEGOS = [
   { id: "asesino", nombre: "Caso del asesino", icono: "⌕" },
   { id: "flota", nombre: "Hundir la flota", icono: "⚓" },
   { id: "panel", nombre: "Desactivar el panel", icono: "⚡" },
+  { id: "infiltrado", nombre: "El infiltrado", icono: "?" },
 ];
 
 /** Permite al administrador rotar los juegos visibles para invitados sin desplegar código. */

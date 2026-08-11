@@ -1,0 +1,1 @@
+ALTER TABLE salas_infiltrado ADD COLUMN ronda INTEGER NOT NULL DEFAULT 1;

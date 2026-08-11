@@ -8,19 +8,57 @@ interface PartidaPalabra {
 }
 
 const PALABRAS_POR_TEMATICA: Record<string, string[]> = {
-  cra: ["AVISO", "CABLE", "CLAVE", "FUEGO", "LLAVE", "PANEL", "RADIO", "TURNO"],
-  animales: ["PERRO", "TIGRE", "CEBRA", "KOALA", "PANDA", "MOSCA", "GALLO", "OVEJA"],
-  naturaleza: ["PLAYA", "MONTE", "NUBES", "SELVA", "FLORA", "CAMPO", "LAGOS", "RAYOS"],
-  alimentos: ["ARROZ", "PASTA", "QUESO", "FRUTA", "DULCE", "SALSA", "LIMON", "MELON"],
-  objetos: ["RELOJ", "TECLA", "VASOS", "LIBRO", "SILLA", "MESAS", "BOLSA", "CAJON"],
+  cra: [
+    "AVISO", "CABLE", "CLAVE", "FUEGO", "LLAVE", "PANEL", "RADIO", "TURNO", "VIDEO", "MOVIL",
+    "ZONAS", "SENAL", "ACUDA", "FALLO", "REDES", "PILAS", "CORTE", "LINEA", "TECLA", "BOTON",
+    "HURTO", "LOCAL", "CERCO", "VALLA", "COFRE", "CAJON", "RELOJ", "CASCO", "FOCOS", "LUCES",
+    "DATOS", "FIBRA", "TORRE", "POSTE", "CALLE", "MAPAS", "RUTAS", "PLANO", "HUMOS", "SUSTO",
+    "FALSA", "RUIDO", "GOLPE", "RONDA", "FUGAS", "MOTOR", "ROBAR", "SALTO", "CRUCE", "TEMOR",
+  ],
+  animales: [
+    "PERRO", "TIGRE", "CEBRA", "KOALA", "PANDA", "MOSCA", "GALLO", "OVEJA", "BURRO", "ZORRO",
+    "RATON", "LINCE", "CISNE", "GARZA", "MIRLO", "PULPO", "CARPA", "SAPOS", "RANAS", "COBRA",
+    "YEGUA", "POTRO", "CABRA", "CERDO", "BISON", "HIENA", "LLAMA", "TAPIR", "OKAPI", "LEMUR",
+    "ERIZO", "TEJON", "HURON", "VISON", "GANSO", "PATOS", "LOROS", "FOCAS", "BUHOS", "PECES",
+    "MONOS", "TOROS", "VACAS", "PUMAS", "LOBOS", "GATOS", "PAVOS", "MULAS", "ORCAS", "ANSAR",
+  ],
+  naturaleza: [
+    "PLAYA", "MONTE", "NUBES", "SELVA", "FLORA", "CAMPO", "LAGOS", "RAYOS", "VALLE", "CERRO",
+    "LLANO", "ROCAS", "ARENA", "NIEVE", "BRISA", "CLIMA", "HOJAS", "RAMAS", "PINOS", "ROBLE",
+    "HAYAS", "SETAS", "MUSGO", "JUNCO", "BREZO", "OLIVO", "FAUNA", "MARES", "ISLAS", "COSTA",
+    "DUNAS", "CUEVA", "POZOS", "BARRO", "ASTRO", "LUNAS", "NORTE", "SAUCE", "CEDRO", "PERAL",
+    "CORAL", "ALGAS", "LOMAS", "PRADO", "ROCIO", "HELAR", "SOLAR", "OASIS", "CIELO", "NADIR",
+  ],
+  alimentos: [
+    "ARROZ", "PASTA", "QUESO", "FRUTA", "DULCE", "SALSA", "LIMON", "MELON", "PANES", "LECHE",
+    "HUEVO", "JAMON", "POLLO", "CARNE", "SOPAS", "CALDO", "PURES", "PIZZA", "TARTA", "CACAO",
+    "PERAS", "MANGO", "KIWIS", "FRESA", "PASAS", "DATIL", "OLIVA", "TRIGO", "AVENA", "YOGUR",
+    "CREMA", "BOLLO", "BACON", "PESTO", "SUSHI", "RAMEN", "TACOS", "CURRY", "DONUT", "GOFRE",
+    "CHILE", "NABOS", "BERZA", "GRELO", "HIGOS", "BREVA", "COCOS", "PINON", "SEPIA", "AREPA",
+  ],
+  objetos: [
+    "RELOJ", "TECLA", "VASOS", "LIBRO", "SILLA", "MESAS", "BOLSA", "CAJON", "LAPIZ", "PAPEL",
+    "GOMAS", "REGLA", "PINZA", "PLATO", "TAZAS", "COPAS", "JARRA", "BOTES", "CAJAS", "LLAVE",
+    "MARCO", "FOTOS", "VELAS", "FOCOS", "CABLE", "RADIO", "MOVIL", "RATON", "BANCO", "SOFAS",
+    "CAMAS", "MANTA", "COJIN", "PEINE", "GORRA", "BOTAS", "CASCO", "RUEDA", "MOTOR", "CLAVO",
+    "CUBOS", "BROCA", "LIMAS", "NIVEL", "METRO", "CINTA", "TUBOS", "PERLA", "JOYAS", "DADOS",
+  ],
+  GOT: [
+    "FUEGO", "REINA", "TRONO", "REINO", "NEGRO", "VERDE", "LUCHA", "REYES", "CASAS", "ACERO",
+    "NIEVE", "NORTE", "LOBOS", "GRAJO", "HONOR", "PODER", "DUELO", "LANZA", "YELMO", "TORRE",
+    "MUROS", "REJAS", "SELLO", "CARTA", "MAPAS", "RUTAS", "BARCO", "MARES", "ISLAS", "COSTA",
+    "MAGIA", "BRUJA", "ENANO", "HADAS", "RIVAL", "HEROE", "VILLA", "NOBLE", "PLEBE", "CLERO",
+    "JOYAS", "PLATA", "COBRE", "CETRO", "BOTAS", "MANTO", "COPAS", "BODAS", "DAMAS", "PACTO",
+  ],
 };
 const TEMATICAS = Object.keys(PALABRAS_POR_TEMATICA);
 
 // Defensa adicional: el juego nunca utilizará una entrada que no tenga exactamente cinco letras.
 Object.keys(PALABRAS_POR_TEMATICA).forEach((tematica) => {
-  PALABRAS_POR_TEMATICA[tematica] = PALABRAS_POR_TEMATICA[tematica]
+  PALABRAS_POR_TEMATICA[tematica] = [...new Set(PALABRAS_POR_TEMATICA[tematica])]
     .filter((palabra) => /^[A-Z]{5}$/.test(palabra));
 });
+const PALABRAS_VALIDAS = new Set(Object.values(PALABRAS_POR_TEMATICA).flat());
 
 const normalizarMatricula = (valor: unknown) => {
   const matricula = typeof valor === "string" ? valor.trim().toUpperCase() : "";
@@ -147,6 +185,9 @@ export const onRequest = async (contexto: ContextoPagina) => {
   const propuesta = normalizarPalabra(datos.palabra);
   if (datos.accion !== "comprobar" || !matricula || !propuesta) {
     return responderJson({ error: "La partida, matrícula o palabra no son válidas." }, 400);
+  }
+  if (!PALABRAS_VALIDAS.has(propuesta)) {
+    return responderJson({ error: "Esa palabra no está admitida. Prueba con una palabra real de cinco letras." }, 400);
   }
 
   const partida = await baseDatos.prepare(

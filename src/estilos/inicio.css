@@ -590,3 +590,47 @@
     flex-direction: column;
   }
 }
+
+/* Mensaje editable y publicado por el administrador en ambas portadas. */
+.rincon-javi { display:grid; width:min(100%,1080px); margin:24px auto; padding:24px; grid-template-columns:112px minmax(0,1fr); align-items:center; gap:20px; color:#f4fbff; background:linear-gradient(135deg,#073553,#0b6683); border:1px solid rgba(83,214,156,.55); border-left:6px solid #ffd100; border-radius:18px; box-shadow:0 16px 34px rgba(2,45,68,.2); box-sizing:border-box; }
+.avatar-javi { position:relative; width:112px; height:112px; margin:0; padding:0; overflow:hidden; background:#062d50; border:3px solid #53d69c; border-radius:24px; box-shadow:0 8px 20px rgba(0,0,0,.28),0 0 0 5px rgba(255,209,0,.12); animation:avatar-javi-respirar 3s ease-in-out infinite; }
+.avatar-javi-imagen { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:opacity .08s; }
+.avatar-javi-reposo { opacity:1; z-index:1; }
+.avatar-javi-hablando { opacity:0; z-index:2; animation:avatar-javi-hablar 2.2s steps(1,end) infinite; }
+.avatar-javi-parpadeo { opacity:0; z-index:3; animation:avatar-javi-parpadear 4.2s infinite; }
+@keyframes avatar-javi-parpadear { 0%,44%,48%,100%{opacity:0} 45%,47%{opacity:1} }
+@keyframes avatar-javi-hablar { 0%,18%,42%,58%,82%,100%{opacity:0} 19%,41%,59%,81%{opacity:1} }
+@keyframes avatar-javi-respirar { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+.rincon-javi span { color:#53d69c; font-size:.7rem; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
+.rincon-javi h2 { margin:3px 0 7px; color:white; font-size:1.55rem; }
+.rincon-javi p { margin:0; color:#d9edf5; font-size:1rem; line-height:1.65; white-space:pre-wrap; overflow-wrap:anywhere; }
+.editor-rincon-javi { width:min(100%,1080px); margin:24px auto; padding:24px; color:#173e55; background:white; border:1px solid #c4dce7; border-radius:18px; box-shadow:0 13px 30px rgba(2,45,68,.1); box-sizing:border-box; }
+.editor-rincon-javi header > span { color:#087ead; font-size:.72rem; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
+.editor-rincon-javi h2 { margin:4px 0; font-size:1.25rem; }
+.editor-rincon-javi header p { margin:0 0 18px; color:#60778b; }
+.editor-rincon-javi-visible { display:flex; padding:13px 15px; align-items:center; gap:12px; cursor:pointer; background:#edf7fb; border:1px solid #c5e0eb; border-radius:12px; }
+.editor-rincon-javi-visible input { position:absolute; opacity:0; pointer-events:none; }
+.editor-rincon-javi-visible i { position:relative; width:46px; height:25px; flex:0 0 auto; background:#8ca6b4; border-radius:20px; transition:.2s; }
+.editor-rincon-javi-visible i::after { position:absolute; top:3px; left:3px; width:19px; height:19px; content:""; background:white; border-radius:50%; transition:.2s; }
+.editor-rincon-javi-visible input:checked + i { background:#18a773; }
+.editor-rincon-javi-visible input:checked + i::after { transform:translateX(21px); }
+.editor-rincon-javi-visible strong,.editor-rincon-javi-visible small { display:block; }
+.editor-rincon-javi-visible small { margin-top:2px; color:#60778b; }
+.editor-rincon-javi-contenido { display:block; margin-top:16px; font-weight:850; }
+.editor-rincon-javi-contenido textarea { display:block; width:100%; min-height:130px; margin-top:7px; padding:13px; color:#173e55; font:inherit; line-height:1.5; resize:vertical; background:#f7fbfd; border:1px solid #afccd9; border-radius:11px; box-sizing:border-box; }
+.editor-rincon-javi-contenido > small { display:block; margin-top:5px; color:#668091; font-weight:600; text-align:right; }
+.editor-rincon-javi footer { display:flex; margin-top:15px; align-items:center; justify-content:space-between; gap:12px; }
+.editor-rincon-javi footer p { margin:0; color:#486579; font-weight:700; }
+.editor-rincon-javi footer button { min-height:41px; padding:8px 16px; color:#073553; font:inherit; font-weight:900; cursor:pointer; background:#ffd100; border:0; border-radius:10px; }
+.editor-rincon-javi footer button:disabled { cursor:not-allowed; opacity:.5; }
+
+@media (max-width: 620px) {
+  .rincon-javi { grid-template-columns:72px minmax(0,1fr); padding:18px 15px; gap:13px; }
+  .avatar-javi { width:72px; height:72px; border-radius:17px; }
+  .rincon-javi h2 { font-size:1.25rem; }
+  .editor-rincon-javi footer { align-items:stretch; flex-direction:column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avatar-javi,.avatar-javi-parpadeo,.avatar-javi-hablando { animation:none; }
+}

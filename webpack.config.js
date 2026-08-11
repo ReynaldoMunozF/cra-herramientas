@@ -39,7 +39,7 @@ module.exports = {
         loader: "babel-loader",
       },
       {
-        test: /\.(png|jpg|svg)$/,
+        test: /\.(png|jpg|webp|svg)$/,
         // Copia imágenes importadas a la salida final y devuelve su URL.
         type: "asset/resource",
       },

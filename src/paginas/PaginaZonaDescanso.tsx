@@ -4,10 +4,13 @@ import { JuegoPalabraClave } from "../componentes/JuegoPalabraClave";
 import { JuegoCasoAsesino } from "../componentes/JuegoCasoAsesino";
 import { JuegoHundirFlota } from "../componentes/JuegoHundirFlota";
 import { JuegoDesactivarPanel } from "../componentes/JuegoDesactivarPanel";
+import { JuegoInfiltrado } from "../componentes/JuegoInfiltrado";
 
 interface Pistas {
   exactas: number;
   colores: number;
+  posiciones: boolean[];
+  desplazadas: boolean[];
 }
 
 interface Intento {
@@ -32,6 +35,8 @@ interface RespuestaComprobacion {
   error?: string;
 }
 
+type ModoCodigo = "basico" | "pro";
+
 const COLORES = [
   { nombre: "Azul", clase: "azul" },
   { nombre: "Amarillo", clase: "amarillo" },
@@ -39,7 +44,10 @@ const COLORES = [
   { nombre: "Rojo", clase: "rojo" },
   { nombre: "Morado", clase: "morado" },
   { nombre: "Turquesa", clase: "turquesa" },
+  { nombre: "Naranja", clase: "naranja" },
 ];
+
+const CANTIDAD_COLORES_CODIGO = 5;
 
 const operadores = Array.from(
   new Map(
@@ -63,15 +71,16 @@ const formatearTiempo = (segundos: number) => {
   return `${String(minutos).padStart(2, "0")}:${String(resto).padStart(2, "0")}`;
 };
 
-/** Primer juego de la zona de descanso: descubre cuatro colores en ocho intentos. */
+/** Primer juego de la zona de descanso: descubre cinco colores en ocho intentos. */
 export const PaginaZonaDescanso: React.FC = () => {
   const [esAdministrador, establecerEsAdministrador] = React.useState(false);
   const [juegosInvitados, establecerJuegosInvitados] = React.useState<string[]>(["codigo", "palabra", "asesino", "flota"]);
-  const [juegoActivo, establecerJuegoActivo] = React.useState<"codigo" | "palabra" | "asesino" | "flota" | "panel">("codigo");
+  const [juegoActivo, establecerJuegoActivo] = React.useState<"codigo" | "palabra" | "asesino" | "flota" | "panel" | "infiltrado">("codigo");
   const [matricula, establecerMatricula] = React.useState(
     () => localStorage.getItem(CLAVE_MATRICULA_JUEGO) ?? "RMI"
   );
   const [partidaId, establecerPartidaId] = React.useState("");
+  const [modoCodigo, establecerModoCodigo] = React.useState<ModoCodigo>("basico");
   const [jugada, establecerJugada] = React.useState<number[]>([]);
   const [intentos, establecerIntentos] = React.useState<Intento[]>([]);
   const [segundos, establecerSegundos] = React.useState(0);
@@ -118,7 +127,7 @@ export const PaginaZonaDescanso: React.FC = () => {
 
   React.useEffect(() => {
     if (esAdministrador || juegosInvitados.includes(juegoActivo)) return;
-    establecerJuegoActivo((juegosInvitados[0] ?? "codigo") as "codigo" | "palabra" | "asesino" | "flota" | "panel");
+    establecerJuegoActivo((juegosInvitados[0] ?? "codigo") as "codigo" | "palabra" | "asesino" | "flota" | "panel" | "infiltrado");
   }, [esAdministrador, juegoActivo, juegosInvitados]);
 
   React.useEffect(() => {
@@ -155,7 +164,7 @@ export const PaginaZonaDescanso: React.FC = () => {
         method: "POST",
         credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ accion: "iniciar" }),
+        body: JSON.stringify({ accion: "iniciar", modo: modoCodigo }),
       });
       const datos = await respuesta.json() as { partidaId?: string; error?: string };
       if (!respuesta.ok || !datos.partidaId) {
@@ -169,7 +178,11 @@ export const PaginaZonaDescanso: React.FC = () => {
       establecerPausado(false);
       establecerSecretoVisible(null);
       establecerJugando(true);
-      establecerMensaje("El cronómetro está en marcha. Elige cuatro colores.");
+      establecerMensaje(
+        modoCodigo === "pro"
+          ? "Modo Pro: elige cinco colores distintos entre siete opciones."
+          : "Modo Básico: usa los cinco colores una sola vez."
+      );
     } catch (error) {
       establecerJugando(false);
       establecerMensaje(error instanceof Error ? error.message : "No se pudo iniciar.");
@@ -179,19 +192,26 @@ export const PaginaZonaDescanso: React.FC = () => {
   };
 
   const agregarColor = (color: number) => {
-    if (!jugando || terminada || jugada.length >= 4) return;
+    if (
+      !jugando
+      || pausado
+      || terminada
+      || cargando
+      || jugada.length >= CANTIDAD_COLORES_CODIGO
+      || jugada.includes(color)
+    ) return;
     establecerJugada((actual) => [...actual, color]);
     establecerMensaje("");
   };
 
   const quitarUltimoColor = () => {
-    if (!jugando || terminada) return;
+    if (!jugando || pausado || terminada || cargando) return;
     establecerJugada((actual) => actual.slice(0, -1));
     establecerMensaje("");
   };
 
   const comprobar = async () => {
-    if (!partidaId || jugada.length !== 4 || terminada) return;
+    if (!partidaId || jugada.length !== CANTIDAD_COLORES_CODIGO || pausado || terminada || cargando) return;
     establecerCargando(true);
     establecerMensaje("Comprobando la combinación…");
     try {
@@ -229,7 +249,11 @@ export const PaginaZonaDescanso: React.FC = () => {
         establecerMensaje("Se agotaron los ocho intentos. Prueba con una nueva combinación.");
       } else {
         establecerMensaje(
-          `${datos.pistas.exactas} en posición correcta y ${datos.pistas.colores} de otro color.`
+          modoCodigo === "pro"
+            ? `${datos.pistas.exactas} ${datos.pistas.exactas === 1 ? "posición exacta" : "posiciones exactas"} y ${datos.pistas.colores} ${datos.pistas.colores === 1 ? "color desplazado" : "colores desplazados"}.`
+            : datos.pistas.exactas === 0
+              ? "Ningún color está en la posición correcta. Cambia completamente el orden."
+              : `${datos.pistas.exactas} de 5 ${datos.pistas.exactas === 1 ? "posición correcta" : "posiciones correctas"}. Reordena los demás colores.`
         );
       }
     } catch (error) {
@@ -295,10 +319,19 @@ export const PaginaZonaDescanso: React.FC = () => {
             <span aria-hidden="true">⚡</span>
             <div><strong>Desactivar el panel</strong><small>Nuevo · Solo administrador</small></div>
           </button>}
+          <button
+            type="button"
+            hidden={!esAdministrador && !juegosInvitados.includes("infiltrado")}
+            className={juegoActivo === "infiltrado" ? "activo" : ""}
+            onClick={() => establecerJuegoActivo("infiltrado")}
+          >
+            <span aria-hidden="true">?</span>
+            <div><strong>El infiltrado</strong><small>Nuevo · 3 a 10 jugadores</small></div>
+          </button>
       </nav>
 
-      <section className={`zona-descanso-contenido ${juegoActivo === "asesino" ? "modo-murdoku" : ""} ${juegoActivo === "flota" ? "modo-flota" : ""}`}>
-        {juegoActivo === "panel" ? <JuegoDesactivarPanel /> : juegoActivo === "palabra" ? <JuegoPalabraClave esAdministrador={esAdministrador} /> :
+      <section className={`zona-descanso-contenido ${juegoActivo === "asesino" ? "modo-murdoku" : ""} ${juegoActivo === "flota" ? "modo-flota" : ""} ${juegoActivo === "infiltrado" ? "modo-infiltrado" : ""}`}>
+        {juegoActivo === "infiltrado" ? <JuegoInfiltrado /> : juegoActivo === "panel" ? <JuegoDesactivarPanel /> : juegoActivo === "palabra" ? <JuegoPalabraClave esAdministrador={esAdministrador} /> :
           juegoActivo === "asesino" ? <JuegoCasoAsesino /> : (
           juegoActivo === "flota" ? <JuegoHundirFlota /> : (
           <>
@@ -329,6 +362,17 @@ export const PaginaZonaDescanso: React.FC = () => {
                 ))}
               </select>
             </label>
+            <label>
+              Modo
+              <select
+                value={modoCodigo}
+                disabled={jugando}
+                onChange={(evento) => establecerModoCodigo(evento.target.value as ModoCodigo)}
+              >
+                <option value="basico">Básico · 5 colores sin repetir</option>
+                <option value="pro">Pro · 5 distintos entre 7 colores</option>
+              </select>
+            </label>
             <button type="button" onClick={iniciarPartida} disabled={cargando}>
               {jugando ? "Reiniciar partida" : "Nueva partida"}
             </button>
@@ -337,7 +381,7 @@ export const PaginaZonaDescanso: React.FC = () => {
           {pausado && <section className="juego-pausado-capa"><span>Ⅱ</span><h3>Partida en pausa</h3><p>La combinación está oculta y el cronómetro detenido.</p><button type="button" onClick={cambiarPausa}>Reanudar</button></section>}
 
           <div className="codigo-secreto-oculto" aria-label="Código secreto">
-            {Array.from({ length: 4 }, (_, indice) => {
+            {Array.from({ length: CANTIDAD_COLORES_CODIGO }, (_, indice) => {
               const color = secretoVisible?.[indice];
               return (
                 <span
@@ -359,7 +403,7 @@ export const PaginaZonaDescanso: React.FC = () => {
                 <div className={`codigo-secreto-fila ${esActual ? "actual" : ""}`} key={indice}>
                   <span className="codigo-secreto-numero">{indice + 1}</span>
                   <div className="codigo-secreto-fichas">
-                    {Array.from({ length: 4 }, (_, posicion) => {
+                    {Array.from({ length: CANTIDAD_COLORES_CODIGO }, (_, posicion) => {
                       const color = coloresFila[posicion];
                       return (
                         <span
@@ -370,12 +414,12 @@ export const PaginaZonaDescanso: React.FC = () => {
                     })}
                   </div>
                   <div className="codigo-secreto-pistas" aria-label="Pistas">
-                    {Array.from({ length: 4 }, (_, posicion) => {
-                      const exactas = intento?.pistas.exactas ?? 0;
-                      const colores = intento?.pistas.colores ?? 0;
-                      const clase = posicion < exactas
-                        ? "exacta"
-                        : posicion < exactas + colores ? "otro-color" : "";
+                    {Array.from({ length: CANTIDAD_COLORES_CODIGO }, (_, posicion) => {
+                      const clase = modoCodigo === "basico"
+                        ? intento?.pistas.posiciones?.[posicion] ? "otro-color" : ""
+                        : intento?.pistas.posiciones?.[posicion]
+                          ? "otro-color"
+                          : intento?.pistas.desplazadas?.[posicion] ? "desplazada" : "";
                       return <span className={clase} key={posicion} />;
                     })}
                   </div>
@@ -385,10 +429,17 @@ export const PaginaZonaDescanso: React.FC = () => {
           </div>
 
           <div className="codigo-secreto-paleta">
-            {COLORES.map((color, indice) => (
+            {COLORES.slice(0, modoCodigo === "pro" ? 7 : 5).map((color, indice) => (
               <button
                 type="button"
-                disabled={!jugando || pausado || terminada || jugada.length >= 4}
+                disabled={
+                  !jugando
+                  || pausado
+                  || terminada
+                  || cargando
+                  || jugada.length >= CANTIDAD_COLORES_CODIGO
+                  || jugada.includes(indice)
+                }
                 onClick={() => agregarColor(indice)}
                 aria-label={`Añadir ${color.nombre}`}
                 key={color.nombre}
@@ -400,16 +451,18 @@ export const PaginaZonaDescanso: React.FC = () => {
           </div>
 
           <div className="codigo-secreto-acciones">
-            <button type="button" className="secundario" onClick={quitarUltimoColor} disabled={!jugada.length}>
+            <button type="button" className="secundario" onClick={quitarUltimoColor} disabled={!jugada.length || pausado || cargando}>
               Borrar último
             </button>
-            <button type="button" onClick={comprobar} disabled={jugada.length !== 4 || cargando}>
+            <button type="button" onClick={comprobar} disabled={jugada.length !== CANTIDAD_COLORES_CODIGO || pausado || cargando}>
               Comprobar combinación
             </button>
           </div>
           <p className="codigo-secreto-mensaje" aria-live="polite">{mensaje}</p>
           <p className="codigo-secreto-ayuda">
-            ● Negra: color y posición correctos · ○ Blanca: color correcto en otra posición
+            {modoCodigo === "pro"
+              ? "● Blanco lleno: color y posición correctos · ○ Blanco hueco: color correcto en otra posición"
+              : "○ Blanco: un color está en su posición correcta · Círculo vacío: posición incorrecta"}
           </p>
         </div>
 

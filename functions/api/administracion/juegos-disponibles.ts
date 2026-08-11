@@ -1,6 +1,6 @@
 import { ContextoPagina, responderJson } from "../_utilidades";
 
-const JUEGOS = ["codigo", "palabra", "asesino", "flota", "panel"];
+const JUEGOS = ["codigo", "palabra", "asesino", "flota", "panel", "infiltrado"];
 
 const consultar = async (contexto: ContextoPagina) => {
   const fila = await contexto.env.CONTENIDO_DB.prepare(

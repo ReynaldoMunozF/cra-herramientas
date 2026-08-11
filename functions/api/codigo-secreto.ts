@@ -7,33 +7,41 @@ interface PartidaD1 {
   estado: "activa" | "ganada" | "agotada";
   iniciada_en: number;
   pausa_iniciada_en: number | null;
+  modo: ModoCodigo;
 }
+
+type ModoCodigo = "basico" | "pro";
+const CANTIDAD_COLORES_CODIGO = 5;
+const COLORES_POR_MODO: Record<ModoCodigo, number> = { basico: 5, pro: 7 };
 
 const normalizarMatricula = (valor: unknown) => {
   const matricula = typeof valor === "string" ? valor.trim().toUpperCase() : "";
   return /^[A-Z0-9]{2,8}$/.test(matricula) ? matricula : null;
 };
 
-const combinacionValida = (valor: unknown): valor is number[] =>
-  Array.isArray(valor)
-  && valor.length === 4
-  && valor.every((color) => Number.isInteger(color) && color >= 0 && color <= 5);
+const combinacionValida = (valor: unknown, modo: ModoCodigo): valor is number[] => {
+  if (!Array.isArray(valor) || valor.length !== CANTIDAD_COLORES_CODIGO) return false;
+  const coloresValidos = valor.every(
+    (color) => Number.isInteger(color) && color >= 0 && color < COLORES_POR_MODO[modo]
+  );
+  return coloresValidos && new Set(valor).size === CANTIDAD_COLORES_CODIGO;
+};
 
 const calcularPistas = (secreto: number[], jugada: number[]) => {
-  let exactas = 0;
+  const posiciones = jugada.map((color, indice) => color === secreto[indice]);
+  const exactas = posiciones.filter(Boolean).length;
   const secretoPendiente: number[] = [];
   const jugadaPendiente: number[] = [];
 
   jugada.forEach((color, indice) => {
-    if (color === secreto[indice]) {
-      exactas += 1;
-    } else {
+    if (!posiciones[indice]) {
       secretoPendiente.push(secreto[indice]);
       jugadaPendiente.push(color);
     }
   });
 
   let colores = 0;
+  const desplazadas = Array.from({ length: jugada.length }, () => false);
   jugadaPendiente.forEach((color) => {
     const posicion = secretoPendiente.indexOf(color);
     if (posicion >= 0) {
@@ -41,13 +49,21 @@ const calcularPistas = (secreto: number[], jugada: number[]) => {
       secretoPendiente.splice(posicion, 1);
     }
   });
-  return { exactas, colores };
+  jugada.forEach((color, indice) => {
+    desplazadas[indice] = !posiciones[indice] && secreto.includes(color);
+  });
+  return { exactas, colores, posiciones, desplazadas };
 };
 
-const crearSecreto = () => {
-  const numeros = new Uint8Array(4);
-  crypto.getRandomValues(numeros);
-  return Array.from(numeros, (numero) => numero % 6);
+const crearSecreto = (modo: ModoCodigo) => {
+  const secreto = Array.from({ length: COLORES_POR_MODO[modo] }, (_, color) => color);
+  const aleatorios = new Uint32Array(secreto.length - 1);
+  crypto.getRandomValues(aleatorios);
+  for (let indice = secreto.length - 1; indice > 0; indice -= 1) {
+    const intercambio = aleatorios[indice - 1] % (indice + 1);
+    [secreto[indice], secreto[intercambio]] = [secreto[intercambio], secreto[indice]];
+  }
+  return secreto.slice(0, CANTIDAD_COLORES_CODIGO);
 };
 
 /** Mantiene el código y el cronómetro en el servidor y devuelve el ranking compartido. */
@@ -94,15 +110,16 @@ export const onRequest = async (contexto: ContextoPagina) => {
   }
 
   if (datos.accion === "iniciar") {
+    const modo: ModoCodigo = datos.modo === "pro" ? "pro" : "basico";
     const id = crypto.randomUUID();
-    const secreto = crearSecreto();
+    const secreto = crearSecreto(modo);
     await baseDatos
       .prepare(
         `INSERT INTO partidas_codigo_secreto
-           (id, secreto, intentos, estado, iniciada_en)
-         VALUES (?, ?, 0, 'activa', unixepoch())`
+           (id, secreto, modo, intentos, estado, iniciada_en)
+         VALUES (?, ?, ?, 0, 'activa', unixepoch())`
       )
-      .bind(id, JSON.stringify(secreto))
+      .bind(id, JSON.stringify(secreto), modo)
       .run();
     return responderJson({ partidaId: id });
   }
@@ -139,13 +156,13 @@ export const onRequest = async (contexto: ContextoPagina) => {
   }
 
   const matricula = normalizarMatricula(datos.matricula);
-  if (!matricula || !combinacionValida(datos.jugada)) {
+  if (!matricula) {
     return responderJson({ error: "La partida, la matrícula o la combinación no son válidas." }, 400);
   }
 
   const partida = await baseDatos
     .prepare(
-      `SELECT id, secreto, intentos, estado, iniciada_en, pausa_iniciada_en
+      `SELECT id, secreto, intentos, estado, iniciada_en, pausa_iniciada_en, modo
        FROM partidas_codigo_secreto WHERE id = ?`
     )
     .bind(partidaId)
@@ -154,6 +171,10 @@ export const onRequest = async (contexto: ContextoPagina) => {
   if (!partida || partida.estado !== "activa" || partida.intentos >= 8 || partida.pausa_iniciada_en !== null) {
     return responderJson({ error: "La partida ya no está disponible." }, 409);
   }
+  const modo: ModoCodigo = partida.modo === "pro" ? "pro" : "basico";
+  if (!combinacionValida(datos.jugada, modo)) {
+    return responderJson({ error: "La combinación no cumple las reglas del modo seleccionado." }, 400);
+  }
 
   let secreto: number[];
   try {
@@ -161,13 +182,13 @@ export const onRequest = async (contexto: ContextoPagina) => {
   } catch {
     return responderJson({ error: "No se pudo recuperar la partida." }, 500);
   }
-  if (!combinacionValida(secreto)) {
+  if (!combinacionValida(secreto, modo)) {
     return responderJson({ error: "La partida contiene datos no válidos." }, 500);
   }
 
   const pistas = calcularPistas(secreto, datos.jugada);
   const intentos = partida.intentos + 1;
-  const victoria = pistas.exactas === 4;
+  const victoria = pistas.exactas === CANTIDAD_COLORES_CODIGO;
   const agotada = !victoria && intentos >= 8;
 
   if (victoria) {

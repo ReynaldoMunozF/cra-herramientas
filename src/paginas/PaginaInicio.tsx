@@ -9,6 +9,7 @@ import { PanelEstadisticasUso } from "../componentes/PanelEstadisticasUso";
 import { EditorCuadranteAdmin } from "../componentes/EditorCuadranteAdmin";
 import { PanelReinicioMarcadores } from "../componentes/PanelReinicioMarcadores";
 import { PanelJuegosInvitados } from "../componentes/PanelJuegosInvitados";
+import { RinconJavi } from "../componentes/RinconJavi";
 
 interface HerramientaPortal {
   titulo: string;
@@ -154,6 +155,8 @@ export const PaginaInicio: React.FC = () => {
         <p>Selecciona una herramienta para comenzar. Este espacio crecerá con nuevas funcionalidades.</p>
       </header>
 
+      {sesionCargada && <RinconJavi esAdministrador={esAdministrador} />}
+
       <nav className="inicio-accesos-rapidos" aria-label="Accesos rápidos">
         {accesosRapidos.map((acceso) => <Link className={acceso.clase} to={acceso.ruta} target="_blank" rel="noopener" key={acceso.ruta}>
           <img src={acceso.imagen} alt="" aria-hidden="true" />
@@ -189,6 +192,7 @@ export const PaginaInicio: React.FC = () => {
       {esAdministrador && <EditorCuadranteAdmin />}
       {esAdministrador && <PanelJuegosInvitados />}
       {esAdministrador && <PanelReinicioMarcadores />}
+      {esAdministrador && <RinconJavi esAdministrador soloEditor />}
       <p className="inicio-proximamente">Nuevas herramientas se incorporarán próximamente.</p>
     </main>
   );

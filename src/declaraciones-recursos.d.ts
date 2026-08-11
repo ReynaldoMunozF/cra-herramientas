@@ -10,3 +10,8 @@ declare module "*.png" {
   const rutaRecurso: string;
   export default rutaRecurso;
 }
+
+declare module "*.webp" {
+  const rutaRecurso: string;
+  export default rutaRecurso;
+}

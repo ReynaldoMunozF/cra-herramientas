@@ -46,6 +46,7 @@ const normalizar = (texto = "") => texto.normalize("NFD").replace(/[\u0300-\u036
  */
 const demarcacionesVerificadas: Record<string, string> = {
   "pozuelo de alarcon|madrid": "Policía Nacional",
+  "parla|madrid": "Policía Nacional",
 };
 
 /**

@@ -11,6 +11,7 @@ const NOMBRES_TEMATICAS: Record<string, string> = {
   naturaleza: "Naturaleza",
   alimentos: "Alimentos",
   objetos: "Objetos cotidianos",
+  GOT: "Juego de Tronos",
 };
 
 const operadores = Array.from(new Map(
