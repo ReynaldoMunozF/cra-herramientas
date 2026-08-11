@@ -31,7 +31,17 @@ export const onRequestGet = async (contexto: ContextoPagina) => {
     .bind(codigoPostal)
     .first<{ resultadoMostrado: string; esCorrecto: number; resultadoCorregido: string | null }>();
 
+  // Una confirmación posterior debe conservar el cuerpo que se estaba mostrando.
+  // Antes solo se recuperaba resultado_corregido, por lo que confirmar una
+  // corrección creaba una fila nueva sin ese campo y reaparecía el cálculo base.
+  const resultadoAsignado = validacion?.esCorrecto === 1
+    ? validacion.resultadoMostrado
+    : validacion?.resultadoCorregido;
+
   return responderJson({
+    resultadoAsignado: resultadoAsignado && cuerposPermitidos.has(resultadoAsignado)
+      ? resultadoAsignado
+      : null,
     resultadoCorregido: validacion?.resultadoCorregido && cuerposPermitidos.has(validacion.resultadoCorregido)
       ? validacion.resultadoCorregido
       : null,

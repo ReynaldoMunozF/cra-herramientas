@@ -149,21 +149,23 @@ export const ConsultaFseRapida: React.FC = () => {
       const respuestaCorreccion = await fetch(`/api/validaciones-fse?codigoPostal=${encodeURIComponent(codigoPostal)}`);
       const correccionGuardada = respuestaCorreccion.ok
         ? await respuestaCorreccion.json() as {
+          resultadoAsignado?: string | null;
           resultadoCorregido?: string | null;
           resultadoConfirmado?: string | null;
         }
-        : { resultadoCorregido: null, resultadoConfirmado: null };
+        : { resultadoAsignado: null, resultadoCorregido: null, resultadoConfirmado: null };
 
       establecerUbicacion(ubicacionEncontrada);
-      const orientacionPersistida = correccionGuardada.resultadoCorregido ? {
+      const resultadoAsignado = correccionGuardada.resultadoAsignado ?? correccionGuardada.resultadoCorregido;
+      const orientacionPersistida = resultadoAsignado ? {
         ...orientacionCalculada,
-        principal: correccionGuardada.resultadoCorregido,
-        concurrentes: orientacionCalculada.principal === correccionGuardada.resultadoCorregido
+        principal: resultadoAsignado,
+        concurrentes: orientacionCalculada.principal === resultadoAsignado
           ? orientacionCalculada.concurrentes
           : [orientacionCalculada.principal, ...orientacionCalculada.concurrentes.filter(
-            (cuerpo) => cuerpo !== correccionGuardada.resultadoCorregido,
+            (cuerpo) => cuerpo !== resultadoAsignado,
         )],
-        criterio: "Resultado actualizado con la última corrección registrada para este código postal.",
+        criterio: "Resultado actualizado con la última validación registrada para este código postal.",
       } : orientacionCalculada;
       establecerOrientacion(
         correccionGuardada.resultadoConfirmado === orientacionPersistida.principal
