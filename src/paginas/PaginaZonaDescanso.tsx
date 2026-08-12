@@ -5,6 +5,7 @@ import { JuegoCasoAsesino } from "../componentes/JuegoCasoAsesino";
 import { JuegoHundirFlota } from "../componentes/JuegoHundirFlota";
 import { JuegoDesactivarPanel } from "../componentes/JuegoDesactivarPanel";
 import { JuegoInfiltrado } from "../componentes/JuegoInfiltrado";
+import { JuegoCraSocial } from "../componentes/JuegoCraSocial";
 
 interface Pistas {
   exactas: number;
@@ -51,9 +52,11 @@ const CANTIDAD_COLORES_CODIGO = 5;
 
 const operadores = Array.from(
   new Map(
-    CUADRANTES.flatMap((cuadrante) => cuadrante.operadores)
-      .map((operador) => [operador.matricula, operador])
-  ).values()
+    CUADRANTES.flatMap((cuadrante) => cuadrante.operadores).map((operador) => [
+      operador.matricula,
+      operador,
+    ]),
+  ).values(),
 ).sort((operadorA, operadorB) => {
   if (operadorA.matricula === "RMI") return -1;
   if (operadorB.matricula === "RMI") return 1;
@@ -63,7 +66,8 @@ const operadores = Array.from(
 const CLAVE_MATRICULA_JUEGO = "cra-zona-descanso-matricula";
 
 const nombreOperador = (matricula: string) =>
-  operadores.find((operador) => operador.matricula === matricula)?.nombre ?? "Operador CRA";
+  operadores.find((operador) => operador.matricula === matricula)?.nombre ??
+  "Operador CRA";
 
 const formatearTiempo = (segundos: number) => {
   const minutos = Math.floor(segundos / 60);
@@ -74,28 +78,39 @@ const formatearTiempo = (segundos: number) => {
 /** Primer juego de la zona de descanso: descubre cinco colores en ocho intentos. */
 export const PaginaZonaDescanso: React.FC = () => {
   const [esAdministrador, establecerEsAdministrador] = React.useState(false);
-  const [juegosInvitados, establecerJuegosInvitados] = React.useState<string[]>(["codigo", "palabra", "asesino", "flota"]);
-  const [juegoActivo, establecerJuegoActivo] = React.useState<"codigo" | "palabra" | "asesino" | "flota" | "panel" | "infiltrado">("codigo");
+  const [juegosInvitados, establecerJuegosInvitados] = React.useState<string[]>(
+    ["codigo", "palabra", "asesino", "flota"],
+  );
+  const [juegoActivo, establecerJuegoActivo] = React.useState<
+    "codigo" | "palabra" | "asesino" | "flota" | "panel" | "social"
+  >("codigo");
   const [matricula, establecerMatricula] = React.useState(
-    () => localStorage.getItem(CLAVE_MATRICULA_JUEGO) ?? "RMI"
+    () => localStorage.getItem(CLAVE_MATRICULA_JUEGO) ?? "RMI",
   );
   const [partidaId, establecerPartidaId] = React.useState("");
-  const [modoCodigo, establecerModoCodigo] = React.useState<ModoCodigo>("basico");
+  const [modoCodigo, establecerModoCodigo] =
+    React.useState<ModoCodigo>("basico");
   const [jugada, establecerJugada] = React.useState<number[]>([]);
   const [intentos, establecerIntentos] = React.useState<Intento[]>([]);
   const [segundos, establecerSegundos] = React.useState(0);
   const [jugando, establecerJugando] = React.useState(false);
   const [pausado, establecerPausado] = React.useState(false);
   const [terminada, establecerTerminada] = React.useState(false);
-  const [secretoVisible, establecerSecretoVisible] = React.useState<number[] | null>(null);
-  const [mensaje, establecerMensaje] = React.useState("Selecciona tu matrícula y comienza.");
+  const [secretoVisible, establecerSecretoVisible] = React.useState<
+    number[] | null
+  >(null);
+  const [mensaje, establecerMensaje] = React.useState(
+    "Selecciona tu matrícula y comienza.",
+  );
   const [cargando, establecerCargando] = React.useState(false);
   const [ranking, establecerRanking] = React.useState<EntradaRanking[]>([]);
 
   const cargarRanking = React.useCallback(async () => {
     try {
-      const respuesta = await fetch("/api/codigo-secreto", { credentials: "same-origin" });
-      const datos = await respuesta.json() as { ranking?: EntradaRanking[] };
+      const respuesta = await fetch("/api/codigo-secreto", {
+        credentials: "same-origin",
+      });
+      const datos = (await respuesta.json()) as { ranking?: EntradaRanking[] };
       if (respuesta.ok) establecerRanking(datos.ranking ?? []);
     } catch {
       // El juego sigue disponible aunque el ranking no pueda cargarse.
@@ -109,25 +124,55 @@ export const PaginaZonaDescanso: React.FC = () => {
   React.useEffect(() => {
     fetch("/api/sesion", { credentials: "same-origin" })
       .then((respuesta) => respuesta.json())
-      .then((sesion: { rol?: string }) => establecerEsAdministrador(sesion.rol === "administrador"))
+      .then((sesion: { rol?: string }) =>
+        establecerEsAdministrador(sesion.rol === "administrador"),
+      )
       .catch(() => establecerEsAdministrador(false));
   }, []);
 
   React.useEffect(() => {
-    const cargarJuegos = () => fetch("/api/juegos-disponibles", { credentials: "same-origin", cache: "no-store" })
-      .then((respuesta) => respuesta.json())
-      .then((datos: { juegos?: string[] }) => establecerJuegosInvitados(datos.juegos ?? ["codigo"]))
-      .catch(() => establecerJuegosInvitados(["codigo", "palabra", "asesino", "flota"]));
+    const cargarJuegos = () =>
+      fetch("/api/juegos-disponibles", {
+        credentials: "same-origin",
+        cache: "no-store",
+      })
+        .then((respuesta) => respuesta.json())
+        .then((datos: { juegos?: string[] }) =>
+          establecerJuegosInvitados(datos.juegos ?? ["codigo"]),
+        )
+        .catch(() =>
+          establecerJuegosInvitados(["codigo", "palabra", "asesino", "flota"]),
+        );
     cargarJuegos();
     window.addEventListener("focus", cargarJuegos);
-    const actualizarAlVolver = () => { if (document.visibilityState === "visible") cargarJuegos(); };
+    const actualizarAlVolver = () => {
+      if (document.visibilityState === "visible") cargarJuegos();
+    };
     document.addEventListener("visibilitychange", actualizarAlVolver);
-    return () => { window.removeEventListener("focus", cargarJuegos); document.removeEventListener("visibilitychange", actualizarAlVolver); };
+    return () => {
+      window.removeEventListener("focus", cargarJuegos);
+      document.removeEventListener("visibilitychange", actualizarAlVolver);
+    };
   }, []);
 
   React.useEffect(() => {
-    if (esAdministrador || juegosInvitados.includes(juegoActivo)) return;
-    establecerJuegoActivo((juegosInvitados[0] ?? "codigo") as "codigo" | "palabra" | "asesino" | "flota" | "panel" | "infiltrado");
+    if (
+      esAdministrador ||
+      juegoActivo === "social" ||
+      juegosInvitados.includes(juegoActivo)
+    ) {
+      return;
+    }
+
+    establecerJuegoActivo(
+      (juegosInvitados[0] ?? "codigo") as
+        | "codigo"
+        | "palabra"
+        | "asesino"
+        | "flota"
+        | "panel"
+        | "social",
+    );
   }, [esAdministrador, juegoActivo, juegosInvitados]);
 
   React.useEffect(() => {
@@ -147,13 +192,21 @@ export const PaginaZonaDescanso: React.FC = () => {
     const accion = pausado ? "reanudar" : "pausar";
     try {
       const respuesta = await fetch("/api/codigo-secreto", {
-        method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ accion, partidaId }),
       });
       if (!respuesta.ok) throw new Error();
       establecerPausado(!pausado);
-      establecerMensaje(pausado ? "Partida reanudada." : "Partida pausada. El tiempo está detenido.");
-    } catch { establecerMensaje("No se pudo cambiar la pausa."); }
+      establecerMensaje(
+        pausado
+          ? "Partida reanudada."
+          : "Partida pausada. El tiempo está detenido.",
+      );
+    } catch {
+      establecerMensaje("No se pudo cambiar la pausa.");
+    }
   };
 
   const iniciarPartida = async () => {
@@ -166,7 +219,10 @@ export const PaginaZonaDescanso: React.FC = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ accion: "iniciar", modo: modoCodigo }),
       });
-      const datos = await respuesta.json() as { partidaId?: string; error?: string };
+      const datos = (await respuesta.json()) as {
+        partidaId?: string;
+        error?: string;
+      };
       if (!respuesta.ok || !datos.partidaId) {
         throw new Error(datos.error || "No se pudo iniciar la partida.");
       }
@@ -181,11 +237,13 @@ export const PaginaZonaDescanso: React.FC = () => {
       establecerMensaje(
         modoCodigo === "pro"
           ? "Modo Pro: elige cinco colores distintos entre siete opciones."
-          : "Modo Básico: usa los cinco colores una sola vez."
+          : "Modo Básico: usa los cinco colores una sola vez.",
       );
     } catch (error) {
       establecerJugando(false);
-      establecerMensaje(error instanceof Error ? error.message : "No se pudo iniciar.");
+      establecerMensaje(
+        error instanceof Error ? error.message : "No se pudo iniciar.",
+      );
     } finally {
       establecerCargando(false);
     }
@@ -193,13 +251,14 @@ export const PaginaZonaDescanso: React.FC = () => {
 
   const agregarColor = (color: number) => {
     if (
-      !jugando
-      || pausado
-      || terminada
-      || cargando
-      || jugada.length >= CANTIDAD_COLORES_CODIGO
-      || jugada.includes(color)
-    ) return;
+      !jugando ||
+      pausado ||
+      terminada ||
+      cargando ||
+      jugada.length >= CANTIDAD_COLORES_CODIGO ||
+      jugada.includes(color)
+    )
+      return;
     establecerJugada((actual) => [...actual, color]);
     establecerMensaje("");
   };
@@ -211,7 +270,14 @@ export const PaginaZonaDescanso: React.FC = () => {
   };
 
   const comprobar = async () => {
-    if (!partidaId || jugada.length !== CANTIDAD_COLORES_CODIGO || pausado || terminada || cargando) return;
+    if (
+      !partidaId ||
+      jugada.length !== CANTIDAD_COLORES_CODIGO ||
+      pausado ||
+      terminada ||
+      cargando
+    )
+      return;
     establecerCargando(true);
     establecerMensaje("Comprobando la combinación…");
     try {
@@ -226,11 +292,14 @@ export const PaginaZonaDescanso: React.FC = () => {
           jugada,
         }),
       });
-      const datos = await respuesta.json() as RespuestaComprobacion;
+      const datos = (await respuesta.json()) as RespuestaComprobacion;
       if (!respuesta.ok || !datos.pistas) {
         throw new Error(datos.error || "No se pudo comprobar la combinación.");
       }
-      establecerIntentos((actuales) => [...actuales, { jugada: [...jugada], pistas: datos.pistas as Pistas }]);
+      establecerIntentos((actuales) => [
+        ...actuales,
+        { jugada: [...jugada], pistas: datos.pistas as Pistas },
+      ]);
       establecerJugada([]);
 
       if (datos.victoria) {
@@ -239,25 +308,29 @@ export const PaginaZonaDescanso: React.FC = () => {
         establecerSecretoVisible(datos.secreto ?? null);
         establecerSegundos(datos.duracionSegundos ?? segundos);
         establecerMensaje(
-          `¡Código descubierto en ${datos.intentos} intentos y ${formatearTiempo(datos.duracionSegundos ?? segundos)}!`
+          `¡Código descubierto en ${datos.intentos} intentos y ${formatearTiempo(datos.duracionSegundos ?? segundos)}!`,
         );
         cargarRanking();
       } else if (datos.agotada) {
         establecerTerminada(true);
         establecerJugando(false);
         establecerSecretoVisible(datos.secreto ?? null);
-        establecerMensaje("Se agotaron los ocho intentos. Prueba con una nueva combinación.");
+        establecerMensaje(
+          "Se agotaron los ocho intentos. Prueba con una nueva combinación.",
+        );
       } else {
         establecerMensaje(
           modoCodigo === "pro"
             ? `${datos.pistas.exactas} ${datos.pistas.exactas === 1 ? "posición exacta" : "posiciones exactas"} y ${datos.pistas.colores} ${datos.pistas.colores === 1 ? "color desplazado" : "colores desplazados"}.`
             : datos.pistas.exactas === 0
               ? "Ningún color está en la posición correcta. Cambia completamente el orden."
-              : `${datos.pistas.exactas} de 5 ${datos.pistas.exactas === 1 ? "posición correcta" : "posiciones correctas"}. Reordena los demás colores.`
+              : `${datos.pistas.exactas} de 5 ${datos.pistas.exactas === 1 ? "posición correcta" : "posiciones correctas"}. Reordena los demás colores.`,
         );
       }
     } catch (error) {
-      establecerMensaje(error instanceof Error ? error.message : "No se pudo comprobar.");
+      establecerMensaje(
+        error instanceof Error ? error.message : "No se pudo comprobar.",
+      );
     } finally {
       establecerCargando(false);
     }
@@ -271,7 +344,13 @@ export const PaginaZonaDescanso: React.FC = () => {
           <h1>Zona de descanso</h1>
           <p>Partidas rápidas para desconectar unos minutos.</p>
         </div>
-        <button type="button" onClick={() => window.close()} aria-label="Cerrar ventana">×</button>
+        <button
+          type="button"
+          onClick={() => window.close()}
+          aria-label="Cerrar ventana"
+        >
+          ×
+        </button>
       </header>
 
       <nav className="zona-descanso-selector" aria-label="Juegos disponibles">
@@ -282,217 +361,358 @@ export const PaginaZonaDescanso: React.FC = () => {
           onClick={() => establecerJuegoActivo("codigo")}
         >
           <span aria-hidden="true">◆</span>
-          <div><strong>Código secreto</strong><small>Combinación de colores</small></div>
+          <div>
+            <strong>Código secreto</strong>
+            <small>Combinación de colores</small>
+          </div>
         </button>
+        <button
+          type="button"
+          hidden={!esAdministrador && !juegosInvitados.includes("palabra")}
+          className={juegoActivo === "palabra" ? "activo" : ""}
+          onClick={() => establecerJuegoActivo("palabra")}
+        >
+          <span aria-hidden="true">A</span>
+          <div>
+            <strong>Palabra clave</strong>
+            <small>Cinco letras y temáticas</small>
+          </div>
+        </button>
+        <button
+          type="button"
+          hidden={!esAdministrador && !juegosInvitados.includes("asesino")}
+          className={juegoActivo === "asesino" ? "activo" : ""}
+          onClick={() => establecerJuegoActivo("asesino")}
+        >
+          <span aria-hidden="true">⌕</span>
+          <div>
+            <strong>Caso del asesino</strong>
+            <small>Deducción lógica</small>
+          </div>
+        </button>
+        <button
+          type="button"
+          hidden={!esAdministrador && !juegosInvitados.includes("flota")}
+          className={juegoActivo === "flota" ? "activo" : ""}
+          onClick={() => establecerJuegoActivo("flota")}
+        >
+          <span aria-hidden="true">⚓</span>
+          <div>
+            <strong>Hundir la flota</strong>
+            <small>Nuevo · Dos jugadores</small>
+          </div>
+        </button>
+        <button
+          type="button"
+          className={juegoActivo === "social" ? "activo" : ""}
+          onClick={() => establecerJuegoActivo("social")}
+        >
+          <span aria-hidden="true">💬</span>
+
+          <div>
+            <strong>CRA Social</strong>
+            <small>Muévete y habla con operadores</small>
+          </div>
+        </button>
+        {(esAdministrador || juegosInvitados.includes("panel")) && (
           <button
-            type="button"
-            hidden={!esAdministrador && !juegosInvitados.includes("palabra")}
-            className={juegoActivo === "palabra" ? "activo" : ""}
-            onClick={() => establecerJuegoActivo("palabra")}
-          >
-            <span aria-hidden="true">A</span>
-            <div><strong>Palabra clave</strong><small>Cinco letras y temáticas</small></div>
-          </button>
-          <button
-            type="button"
-            hidden={!esAdministrador && !juegosInvitados.includes("asesino")}
-            className={juegoActivo === "asesino" ? "activo" : ""}
-            onClick={() => establecerJuegoActivo("asesino")}
-          >
-            <span aria-hidden="true">⌕</span>
-            <div><strong>Caso del asesino</strong><small>Deducción lógica</small></div>
-          </button>
-          <button
-            type="button"
-            hidden={!esAdministrador && !juegosInvitados.includes("flota")}
-            className={juegoActivo === "flota" ? "activo" : ""}
-            onClick={() => establecerJuegoActivo("flota")}
-          >
-            <span aria-hidden="true">⚓</span>
-            <div><strong>Hundir la flota</strong><small>Nuevo · Dos jugadores</small></div>
-          </button>
-          {(esAdministrador || juegosInvitados.includes("panel")) && <button
             type="button"
             className={juegoActivo === "panel" ? "activo" : ""}
             onClick={() => establecerJuegoActivo("panel")}
           >
             <span aria-hidden="true">⚡</span>
-            <div><strong>Desactivar el panel</strong><small>Nuevo · Solo administrador</small></div>
-          </button>}
-          <button
-            type="button"
-            hidden={!esAdministrador && !juegosInvitados.includes("infiltrado")}
-            className={juegoActivo === "infiltrado" ? "activo" : ""}
-            onClick={() => establecerJuegoActivo("infiltrado")}
-          >
-            <span aria-hidden="true">?</span>
-            <div><strong>El infiltrado</strong><small>Nuevo · 3 a 10 jugadores</small></div>
+            <div>
+              <strong>Desactivar el panel</strong>
+              <small>Nuevo · Solo administrador</small>
+            </div>
           </button>
+        )}
+        <button
+          type="button"
+          hidden={!esAdministrador && !juegosInvitados.includes("infiltrado")}
+          className={juegoActivo === "infiltrado" ? "activo" : ""}
+          onClick={() => establecerJuegoActivo("infiltrado")}
+        >
+          <span aria-hidden="true">?</span>
+          <div>
+            <strong>El infiltrado</strong>
+            <small>Nuevo · 3 a 10 jugadores</small>
+          </div>
+        </button>
       </nav>
 
-      <section className={`zona-descanso-contenido ${juegoActivo === "asesino" ? "modo-murdoku" : ""} ${juegoActivo === "flota" ? "modo-flota" : ""} ${juegoActivo === "infiltrado" ? "modo-infiltrado" : ""}`}>
-        {juegoActivo === "infiltrado" ? <JuegoInfiltrado /> : juegoActivo === "panel" ? <JuegoDesactivarPanel /> : juegoActivo === "palabra" ? <JuegoPalabraClave esAdministrador={esAdministrador} /> :
-          juegoActivo === "asesino" ? <JuegoCasoAsesino /> : (
-          juegoActivo === "flota" ? <JuegoHundirFlota /> : (
+      <section
+        className={`zona-descanso-contenido ${juegoActivo === "asesino" ? "modo-murdoku" : ""} ${juegoActivo === "flota" ? "modo-flota" : ""} ${juegoActivo === "infiltrado" ? "modo-infiltrado" : ""}`}
+      >
+        {juegoActivo === "infiltrado" ? (
+          <JuegoInfiltrado />
+        ) : juegoActivo === "social" ? (
+          <JuegoCraSocial />
+        ) : juegoActivo === "panel" ? (
+          <JuegoDesactivarPanel />
+        ) : juegoActivo === "palabra" ? (
+          <JuegoPalabraClave esAdministrador={esAdministrador} />
+        ) : juegoActivo === "asesino" ? (
+          <JuegoCasoAsesino />
+        ) : juegoActivo === "flota" ? (
+          <JuegoHundirFlota />
+        ) : (
           <>
-        <div className={`codigo-secreto-juego ${jugando && !terminada ? "partida-activa" : ""}`}>
-          <header className="codigo-secreto-titulo">
-            <div>
-              <span>Juego de lógica</span>
-              <h2>Código secreto</h2>
-            </div>
-            <div className="murdoku-controles-tiempo">
-              <strong>{formatearTiempo(segundos)}</strong>
-              {jugando && !terminada && <button type="button" onClick={cambiarPausa}>{pausado ? "Reanudar" : "Pausar"}</button>}
-            </div>
-          </header>
-
-          <div className="codigo-secreto-identificacion">
-            <label>
-              Jugador
-              <select
-                value={matricula}
-                disabled={jugando}
-                onChange={(evento) => establecerMatricula(evento.target.value)}
-              >
-                {operadores.map((operador) => (
-                  <option value={operador.matricula} key={operador.matricula}>
-                    {operador.matricula} · {operador.nombre}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Modo
-              <select
-                value={modoCodigo}
-                disabled={jugando}
-                onChange={(evento) => establecerModoCodigo(evento.target.value as ModoCodigo)}
-              >
-                <option value="basico">Básico · 5 colores sin repetir</option>
-                <option value="pro">Pro · 5 distintos entre 7 colores</option>
-              </select>
-            </label>
-            <button type="button" onClick={iniciarPartida} disabled={cargando}>
-              {jugando ? "Reiniciar partida" : "Nueva partida"}
-            </button>
-          </div>
-
-          {pausado && <section className="juego-pausado-capa"><span>Ⅱ</span><h3>Partida en pausa</h3><p>La combinación está oculta y el cronómetro detenido.</p><button type="button" onClick={cambiarPausa}>Reanudar</button></section>}
-
-          <div className="codigo-secreto-oculto" aria-label="Código secreto">
-            {Array.from({ length: CANTIDAD_COLORES_CODIGO }, (_, indice) => {
-              const color = secretoVisible?.[indice];
-              return (
-                <span
-                  className={color === undefined ? "ficha-secreta oculta" : `ficha-secreta color-${color}`}
-                  key={indice}
-                >
-                  {color === undefined ? "?" : ""}
-                </span>
-              );
-            })}
-          </div>
-
-          <div className="codigo-secreto-tablero">
-            {Array.from({ length: 8 }, (_, indice) => {
-              const intento = intentos[indice];
-              const esActual = jugando && indice === intentos.length;
-              const coloresFila = intento?.jugada ?? (esActual ? jugada : []);
-              return (
-                <div className={`codigo-secreto-fila ${esActual ? "actual" : ""}`} key={indice}>
-                  <span className="codigo-secreto-numero">{indice + 1}</span>
-                  <div className="codigo-secreto-fichas">
-                    {Array.from({ length: CANTIDAD_COLORES_CODIGO }, (_, posicion) => {
-                      const color = coloresFila[posicion];
-                      return (
-                        <span
-                          className={color === undefined ? "ficha-juego vacia" : `ficha-juego color-${color}`}
-                          key={posicion}
-                        />
-                      );
-                    })}
-                  </div>
-                  <div className="codigo-secreto-pistas" aria-label="Pistas">
-                    {Array.from({ length: CANTIDAD_COLORES_CODIGO }, (_, posicion) => {
-                      const clase = modoCodigo === "basico"
-                        ? intento?.pistas.posiciones?.[posicion] ? "otro-color" : ""
-                        : intento?.pistas.posiciones?.[posicion]
-                          ? "otro-color"
-                          : intento?.pistas.desplazadas?.[posicion] ? "desplazada" : "";
-                      return <span className={clase} key={posicion} />;
-                    })}
-                  </div>
+            <div
+              className={`codigo-secreto-juego ${jugando && !terminada ? "partida-activa" : ""}`}
+            >
+              <header className="codigo-secreto-titulo">
+                <div>
+                  <span>Juego de lógica</span>
+                  <h2>Código secreto</h2>
                 </div>
-              );
-            })}
-          </div>
+                <div className="murdoku-controles-tiempo">
+                  <strong>{formatearTiempo(segundos)}</strong>
+                  {jugando && !terminada && (
+                    <button type="button" onClick={cambiarPausa}>
+                      {pausado ? "Reanudar" : "Pausar"}
+                    </button>
+                  )}
+                </div>
+              </header>
 
-          <div className="codigo-secreto-paleta">
-            {COLORES.slice(0, modoCodigo === "pro" ? 7 : 5).map((color, indice) => (
-              <button
-                type="button"
-                disabled={
-                  !jugando
-                  || pausado
-                  || terminada
-                  || cargando
-                  || jugada.length >= CANTIDAD_COLORES_CODIGO
-                  || jugada.includes(indice)
-                }
-                onClick={() => agregarColor(indice)}
-                aria-label={`Añadir ${color.nombre}`}
-                key={color.nombre}
+              <div className="codigo-secreto-identificacion">
+                <label>
+                  Jugador
+                  <select
+                    value={matricula}
+                    disabled={jugando}
+                    onChange={(evento) =>
+                      establecerMatricula(evento.target.value)
+                    }
+                  >
+                    {operadores.map((operador) => (
+                      <option
+                        value={operador.matricula}
+                        key={operador.matricula}
+                      >
+                        {operador.matricula} · {operador.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Modo
+                  <select
+                    value={modoCodigo}
+                    disabled={jugando}
+                    onChange={(evento) =>
+                      establecerModoCodigo(evento.target.value as ModoCodigo)
+                    }
+                  >
+                    <option value="basico">
+                      Básico · 5 colores sin repetir
+                    </option>
+                    <option value="pro">
+                      Pro · 5 distintos entre 7 colores
+                    </option>
+                  </select>
+                </label>
+                <button
+                  type="button"
+                  onClick={iniciarPartida}
+                  disabled={cargando}
+                >
+                  {jugando ? "Reiniciar partida" : "Nueva partida"}
+                </button>
+              </div>
+
+              {pausado && (
+                <section className="juego-pausado-capa">
+                  <span>Ⅱ</span>
+                  <h3>Partida en pausa</h3>
+                  <p>La combinación está oculta y el cronómetro detenido.</p>
+                  <button type="button" onClick={cambiarPausa}>
+                    Reanudar
+                  </button>
+                </section>
+              )}
+
+              <div
+                className="codigo-secreto-oculto"
+                aria-label="Código secreto"
               >
-                <span className={`color-${indice}`} />
-                {color.nombre}
-              </button>
-            ))}
-          </div>
+                {Array.from(
+                  { length: CANTIDAD_COLORES_CODIGO },
+                  (_, indice) => {
+                    const color = secretoVisible?.[indice];
+                    return (
+                      <span
+                        className={
+                          color === undefined
+                            ? "ficha-secreta oculta"
+                            : `ficha-secreta color-${color}`
+                        }
+                        key={indice}
+                      >
+                        {color === undefined ? "?" : ""}
+                      </span>
+                    );
+                  },
+                )}
+              </div>
 
-          <div className="codigo-secreto-acciones">
-            <button type="button" className="secundario" onClick={quitarUltimoColor} disabled={!jugada.length || pausado || cargando}>
-              Borrar último
-            </button>
-            <button type="button" onClick={comprobar} disabled={jugada.length !== CANTIDAD_COLORES_CODIGO || pausado || cargando}>
-              Comprobar combinación
-            </button>
-          </div>
-          <p className="codigo-secreto-mensaje" aria-live="polite">{mensaje}</p>
-          <p className="codigo-secreto-ayuda">
-            {modoCodigo === "pro"
-              ? "● Blanco lleno: color y posición correctos · ○ Blanco hueco: color correcto en otra posición"
-              : "○ Blanco: un color está en su posición correcta · Círculo vacío: posición incorrecta"}
-          </p>
-        </div>
+              <div className="codigo-secreto-tablero">
+                {Array.from({ length: 8 }, (_, indice) => {
+                  const intento = intentos[indice];
+                  const esActual = jugando && indice === intentos.length;
+                  const coloresFila =
+                    intento?.jugada ?? (esActual ? jugada : []);
+                  return (
+                    <div
+                      className={`codigo-secreto-fila ${esActual ? "actual" : ""}`}
+                      key={indice}
+                    >
+                      <span className="codigo-secreto-numero">
+                        {indice + 1}
+                      </span>
+                      <div className="codigo-secreto-fichas">
+                        {Array.from(
+                          { length: CANTIDAD_COLORES_CODIGO },
+                          (_, posicion) => {
+                            const color = coloresFila[posicion];
+                            return (
+                              <span
+                                className={
+                                  color === undefined
+                                    ? "ficha-juego vacia"
+                                    : `ficha-juego color-${color}`
+                                }
+                                key={posicion}
+                              />
+                            );
+                          },
+                        )}
+                      </div>
+                      <div
+                        className="codigo-secreto-pistas"
+                        aria-label="Pistas"
+                      >
+                        {Array.from(
+                          { length: CANTIDAD_COLORES_CODIGO },
+                          (_, posicion) => {
+                            const clase =
+                              modoCodigo === "basico"
+                                ? intento?.pistas.posiciones?.[posicion]
+                                  ? "otro-color"
+                                  : ""
+                                : intento?.pistas.posiciones?.[posicion]
+                                  ? "otro-color"
+                                  : intento?.pistas.desplazadas?.[posicion]
+                                    ? "desplazada"
+                                    : "";
+                            return <span className={clase} key={posicion} />;
+                          },
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
 
-        {(!jugando || terminada) && <aside className="codigo-secreto-ranking" aria-labelledby="titulo-ranking">
-          <header>
-            <span>Clasificación compartida</span>
-            <h2 id="titulo-ranking">Mejores tiempos</h2>
-          </header>
-          {ranking.length ? (
-            <ol>
-              {ranking.map((entrada, indice) => (
-                <li className={entrada.matricula === matricula ? "jugador-actual" : ""} key={entrada.matricula}>
-                  <span>{indice + 1}</span>
-                  <div>
-                    <strong>{entrada.matricula}</strong>
-                    <small>{nombreOperador(entrada.matricula)}</small>
-                  </div>
-                  <p>
-                    <strong>{formatearTiempo(entrada.duracion_segundos)}</strong>
-                    <small>{entrada.intentos} intentos</small>
+              <div className="codigo-secreto-paleta">
+                {COLORES.slice(0, modoCodigo === "pro" ? 7 : 5).map(
+                  (color, indice) => (
+                    <button
+                      type="button"
+                      disabled={
+                        !jugando ||
+                        pausado ||
+                        terminada ||
+                        cargando ||
+                        jugada.length >= CANTIDAD_COLORES_CODIGO ||
+                        jugada.includes(indice)
+                      }
+                      onClick={() => agregarColor(indice)}
+                      aria-label={`Añadir ${color.nombre}`}
+                      key={color.nombre}
+                    >
+                      <span className={`color-${indice}`} />
+                      {color.nombre}
+                    </button>
+                  ),
+                )}
+              </div>
+
+              <div className="codigo-secreto-acciones">
+                <button
+                  type="button"
+                  className="secundario"
+                  onClick={quitarUltimoColor}
+                  disabled={!jugada.length || pausado || cargando}
+                >
+                  Borrar último
+                </button>
+                <button
+                  type="button"
+                  onClick={comprobar}
+                  disabled={
+                    jugada.length !== CANTIDAD_COLORES_CODIGO ||
+                    pausado ||
+                    cargando
+                  }
+                >
+                  Comprobar combinación
+                </button>
+              </div>
+              <p className="codigo-secreto-mensaje" aria-live="polite">
+                {mensaje}
+              </p>
+              <p className="codigo-secreto-ayuda">
+                {modoCodigo === "pro"
+                  ? "● Blanco lleno: color y posición correctos · ○ Blanco hueco: color correcto en otra posición"
+                  : "○ Blanco: un color está en su posición correcta · Círculo vacío: posición incorrecta"}
+              </p>
+            </div>
+
+            {(!jugando || terminada) && (
+              <aside
+                className="codigo-secreto-ranking"
+                aria-labelledby="titulo-ranking"
+              >
+                <header>
+                  <span>Clasificación compartida</span>
+                  <h2 id="titulo-ranking">Mejores tiempos</h2>
+                </header>
+                {ranking.length ? (
+                  <ol>
+                    {ranking.map((entrada, indice) => (
+                      <li
+                        className={
+                          entrada.matricula === matricula
+                            ? "jugador-actual"
+                            : ""
+                        }
+                        key={entrada.matricula}
+                      >
+                        <span>{indice + 1}</span>
+                        <div>
+                          <strong>{entrada.matricula}</strong>
+                          <small>{nombreOperador(entrada.matricula)}</small>
+                        </div>
+                        <p>
+                          <strong>
+                            {formatearTiempo(entrada.duracion_segundos)}
+                          </strong>
+                          <small>{entrada.intentos} intentos</small>
+                        </p>
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <p className="ranking-vacio">
+                    Todavía no hay tiempos registrados. ¡Puedes ser el primero!
                   </p>
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <p className="ranking-vacio">Todavía no hay tiempos registrados. ¡Puedes ser el primero!</p>
-          )}
-        </aside>}
+                )}
+              </aside>
+            )}
           </>
-        ))}
+        )}
       </section>
 
       <footer className="zona-descanso-pie">
