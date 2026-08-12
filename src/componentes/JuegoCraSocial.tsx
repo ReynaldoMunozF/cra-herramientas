@@ -1,11 +1,17 @@
 import React from "react";
 import { CUADRANTES } from "../cuadrante/constantes";
 
+/**
+ * Representa un mensaje dentro de una conversación.
+ */
 interface MensajeChat {
   autor: string;
   texto: string;
 }
 
+/**
+ * Representa un jugador que vemos dentro del mapa.
+ */
 interface Jugador {
   id: string;
   nombre: string;
@@ -14,116 +20,312 @@ interface Jugador {
 }
 
 /**
- * Lista de operadores disponibles.
- * Se genera a partir de los cuadrantes y elimina matrículas duplicadas.
+ * Generamos una lista única de operadores
+ * utilizando los datos de los cuadrantes.
  */
 const operadores = Array.from(
   new Map(
     CUADRANTES.reduce(
-      (todos, cuadrante) => [...todos, ...cuadrante.operadores],
+      (todos, cuadrante) => [
+        ...todos,
+        ...cuadrante.operadores,
+      ],
       [] as (typeof CUADRANTES)[number]["operadores"],
-    ).map((operador) => [operador.matricula, operador]),
+    ).map((operador) => [
+      operador.matricula,
+      operador,
+    ]),
   ).values(),
 );
 
 export const JuegoCraSocial: React.FC = () => {
-  // ─────────────────────────────────────────────
+  // =====================================================
   // JUGADOR LOCAL
-  // ─────────────────────────────────────────────
+  // =====================================================
 
+  /**
+   * Posición de nuestro personaje.
+   */
   const [x, establecerX] = React.useState(100);
   const [y, establecerY] = React.useState(100);
-  const [matricula, establecerMatricula] = React.useState("RMI");
 
-  // ─────────────────────────────────────────────
+  /**
+   * Matrícula que representa al jugador.
+   */
+  const [matricula, establecerMatricula] =
+    React.useState("RMI");
+
+  const nombreJugador = matricula;
+
+  // =====================================================
   // WEBSOCKET
-  // ─────────────────────────────────────────────
+  // =====================================================
 
-  const [conectado, establecerConectado] = React.useState(false);
+  /**
+   * Nos indica si actualmente estamos conectados.
+   */
+  const [conectado, establecerConectado] =
+    React.useState(false);
 
-  const [jugadoresConectados, establecerJugadoresConectados] =
-    React.useState<string[]>([]);
+  /**
+   * Lista de matrículas conectadas.
+   */
+  const [
+    jugadoresConectados,
+    establecerJugadoresConectados,
+  ] = React.useState<string[]>([]);
 
-  const [posicionesRemotas, establecerPosicionesRemotas] = React.useState<
+  /**
+   * Posiciones conocidas de los demás jugadores.
+   *
+   * Ejemplo:
+   *
+   * {
+   *   PMA: { x: 200, y: 150 },
+   *   ABC: { x: 500, y: 300 }
+   * }
+   */
+  const [
+    posicionesRemotas,
+    establecerPosicionesRemotas,
+  ] = React.useState<
     Record<string, { x: number; y: number }>
   >({});
 
-  const socketRef = React.useRef<WebSocket | null>(null);
+  /**
+   * Guardamos el WebSocket sin provocar renders
+   * de React cada vez que cambia.
+   */
+  const socketRef =
+    React.useRef<WebSocket | null>(null);
 
   /**
-   * Convierte las posiciones recibidas por WebSocket
-   * en jugadores que podemos utilizar dentro del mapa.
+   * Convertimos las posiciones remotas
+   * en jugadores que podemos dibujar.
    */
-  const otrosJugadores: Jugador[] = Object.keys(posicionesRemotas).map(
-    (nombre) => ({
-      id: nombre,
-      nombre,
-      x: posicionesRemotas[nombre].x,
-      y: posicionesRemotas[nombre].y,
-    }),
-  );
+  const otrosJugadores: Jugador[] =
+    Object.keys(posicionesRemotas).map(
+      (nombre) => ({
+        id: nombre,
+        nombre,
+        x: posicionesRemotas[nombre].x,
+        y: posicionesRemotas[nombre].y,
+      }),
+    );
+
+  // =====================================================
+  // CHAT
+  // =====================================================
+
+  const [
+    chatAbierto,
+    establecerChatAbierto,
+  ] = React.useState(false);
 
   /**
-   * Abre la conexión WebSocket.
+   * Jugador con el que estamos hablando.
    */
+  const [
+    jugadorEnChat,
+    establecerJugadorEnChat,
+  ] = React.useState<Jugador | null>(null);
+
+  /**
+   * Texto actualmente escrito en el input.
+   */
+  const [mensaje, establecerMensaje] =
+    React.useState("");
+
+  /**
+   * Guardamos una conversación diferente
+   * para cada jugador.
+   *
+   * Ejemplo:
+   *
+   * {
+   *   PMA: [...mensajes],
+   *   ABC: [...mensajes]
+   * }
+   */
+  const [
+    mensajesPorJugador,
+    establecerMensajesPorJugador,
+  ] = React.useState<
+    Record<string, MensajeChat[]>
+  >({});
+
+  /**
+   * Conversación que debemos mostrar actualmente.
+   */
+  const mensajesActuales = jugadorEnChat
+    ? (mensajesPorJugador[jugadorEnChat.id] ?? [])
+    : [];
+
+  // =====================================================
+  // CONEXIÓN
+  // =====================================================
+
   const conectar = () => {
+    /**
+     * Evitamos abrir dos conexiones.
+     */
     if (socketRef.current) {
       return;
     }
 
-    const socket = new WebSocket("ws://localhost:8787");
+    const socket = new WebSocket(
+      "ws://localhost:8787",
+    );
 
     socketRef.current = socket;
 
+    /**
+     * Cuando Cloudflare acepta la conexión.
+     */
     socket.onopen = () => {
       establecerConectado(true);
 
+      /**
+       * Nos identificamos ante el servidor.
+       */
       socket.send(
         JSON.stringify({
           tipo: "entrar",
           nombre: matricula,
         }),
       );
+
+      /**
+       * Enviamos también nuestra posición inicial.
+       *
+       * Así los demás pueden vernos sin necesidad
+       * de que primero tengamos que movernos.
+       */
+      socket.send(
+        JSON.stringify({
+          tipo: "mover",
+          nombre: matricula,
+          x,
+          y,
+        }),
+      );
     };
 
+    /**
+     * Aquí recibimos TODOS los mensajes
+     * procedentes del servidor.
+     */
     socket.onmessage = (evento) => {
-      const datos = JSON.parse(String(evento.data));
+      const datos = JSON.parse(
+        String(evento.data),
+      );
 
-      // Lista de jugadores conectados.
+      // -----------------------------------------
+      // LISTA DE JUGADORES
+      // -----------------------------------------
+
       if (datos.tipo === "jugadores") {
-        establecerJugadoresConectados(datos.jugadores);
+        establecerJugadoresConectados(
+          datos.jugadores,
+        );
+
         return;
       }
 
-      // Movimiento de otro jugador.
+      // -----------------------------------------
+      // MOVIMIENTO REMOTO
+      // -----------------------------------------
+
       if (datos.tipo === "mover") {
-        // No necesitamos guardar nuestro propio movimiento.
+        /**
+         * Ignoramos nuestro propio movimiento.
+         */
         if (datos.nombre === matricula) {
           return;
         }
 
-        establecerPosicionesRemotas((anteriores) => ({
-          ...anteriores,
+        establecerPosicionesRemotas(
+          (anteriores) => ({
+            ...anteriores,
 
-          [datos.nombre]: {
-            x: datos.x,
-            y: datos.y,
-          },
-        }));
+            [datos.nombre]: {
+              x: datos.x,
+              y: datos.y,
+            },
+          }),
+        );
+
+        return;
+      }
+
+      // -----------------------------------------
+      // CHAT RECIBIDO
+      // -----------------------------------------
+
+      if (datos.tipo === "chat") {
+        /**
+         * datos.de contiene la matrícula
+         * del jugador que nos escribió.
+         *
+         * Guardamos el mensaje dentro de
+         * su conversación correspondiente.
+         */
+        establecerMensajesPorJugador(
+          (anteriores) => ({
+            ...anteriores,
+
+            [datos.de]: [
+              ...(anteriores[datos.de] ?? []),
+
+              {
+                autor: datos.de,
+                texto: datos.texto,
+              },
+            ],
+          }),
+        );
+
+        return;
       }
     };
 
+    /**
+     * Si se pierde o cierra la conexión.
+     */
     socket.onclose = () => {
       establecerConectado(false);
       socketRef.current = null;
+
+      establecerJugadoresConectados([]);
+      establecerPosicionesRemotas({});
+    };
+
+    /**
+     * Nos ayuda a detectar problemas
+     * con el WebSocket.
+     */
+    socket.onerror = () => {
+      console.error(
+        "Error en WebSocket de CRA Social",
+      );
     };
   };
 
-  /**
-   * Envía nuestra posición actual al servidor.
-   */
-  const enviarPosicion = (nuevaX: number, nuevaY: number) => {
-    if (socketRef.current?.readyState !== WebSocket.OPEN) {
+  // =====================================================
+  // ENVIAR POSICIÓN
+  // =====================================================
+
+  const enviarPosicion = (
+    nuevaX: number,
+    nuevaY: number,
+  ) => {
+    /**
+     * Solo enviamos si el WebSocket está abierto.
+     */
+    if (
+      socketRef.current?.readyState !==
+      WebSocket.OPEN
+    ) {
       return;
     }
 
@@ -137,195 +339,322 @@ export const JuegoCraSocial: React.FC = () => {
     );
   };
 
-  // ─────────────────────────────────────────────
-  // PROXIMIDAD ENTRE JUGADORES
-  // ─────────────────────────────────────────────
+  // =====================================================
+  // JUGADOR CERCANO
+  // =====================================================
 
-  const jugadorCercano = otrosJugadores.find((jugadorRemoto) => {
-    const distancia = Math.sqrt(
-      Math.pow(x - jugadorRemoto.x, 2) +
-        Math.pow(y - jugadorRemoto.y, 2),
-    );
+  /**
+   * Buscamos si existe algún jugador
+   * a menos de 100 píxeles.
+   */
+  const jugadorCercano =
+    otrosJugadores.find((jugadorRemoto) => {
+      const distancia = Math.sqrt(
+        Math.pow(
+          x - jugadorRemoto.x,
+          2,
+        ) +
+          Math.pow(
+            y - jugadorRemoto.y,
+            2,
+          ),
+      );
 
-    return distancia < 100;
-  });
+      return distancia < 100;
+    });
 
-  // ─────────────────────────────────────────────
-  // CHAT
-  // ─────────────────────────────────────────────
-
-  const [chatAbierto, establecerChatAbierto] = React.useState(false);
-
-  const [jugadorEnChat, establecerJugadorEnChat] =
-    React.useState<Jugador | null>(null);
-
-  const [mensaje, establecerMensaje] = React.useState("");
-
-  const [mensajesPorJugador, establecerMensajesPorJugador] = React.useState<
-    Record<string, MensajeChat[]>
-  >({});
-
-  const mensajesActuales = jugadorEnChat
-    ? (mensajesPorJugador[jugadorEnChat.id] ?? [])
-    : [];
-
-  const nombreJugador = matricula;
+  // =====================================================
+  // ENVIAR MENSAJE DE CHAT
+  // =====================================================
 
   const enviarMensaje = () => {
     const texto = mensaje.trim();
 
-    if (texto === "" || !jugadorEnChat) {
+    if (
+      texto === "" ||
+      !jugadorEnChat
+    ) {
       return;
     }
 
-    establecerMensajesPorJugador((anteriores) => ({
-      ...anteriores,
+    /**
+     * Primero mostramos nuestro mensaje
+     * inmediatamente en nuestro navegador.
+     */
+    establecerMensajesPorJugador(
+      (anteriores) => ({
+        ...anteriores,
 
-      [jugadorEnChat.id]: [
-        ...(anteriores[jugadorEnChat.id] ?? []),
+        [jugadorEnChat.id]: [
+          ...(anteriores[
+            jugadorEnChat.id
+          ] ?? []),
 
-        {
-          autor: nombreJugador,
+          {
+            autor: nombreJugador,
+            texto,
+          },
+        ],
+      }),
+    );
+
+    /**
+     * Después lo mandamos al servidor.
+     */
+    if (
+      socketRef.current?.readyState ===
+      WebSocket.OPEN
+    ) {
+      socketRef.current.send(
+        JSON.stringify({
+          tipo: "chat",
+          de: matricula,
+          para: jugadorEnChat.nombre,
           texto,
-        },
-      ],
-    }));
+        }),
+      );
+    }
 
+    /**
+     * Limpiamos el input.
+     */
     establecerMensaje("");
   };
 
-  // ─────────────────────────────────────────────
-  // COLISIONES DEL MAPA
-  // ─────────────────────────────────────────────
+  // =====================================================
+  // COLISIONES
+  // =====================================================
 
-  const puedeMoverse = (nuevoX: number, nuevoY: number) => {
+  const puedeMoverse = (
+    nuevoX: number,
+    nuevoY: number,
+  ) => {
     const tamanoJugador = 40;
 
-    // Pared vertical que separa Control CRA de Descanso.
+    /**
+     * Pared vertical.
+     */
     const tocaParedVertical =
       nuevoX < 356 &&
       nuevoX + tamanoJugador > 350 &&
       nuevoY < 240;
 
-    // Puerta de acceso a Sala Técnica.
+    /**
+     * Hueco de la puerta hacia
+     * la sala técnica.
+     */
     const estaEnPuertaHorizontal =
       nuevoX >= 300 &&
       nuevoX + tamanoJugador <= 400;
 
-    // Pared horizontal.
+    /**
+     * Pared horizontal.
+     */
     const tocaParedHorizontal =
       nuevoY < 306 &&
       nuevoY + tamanoJugador > 300 &&
       !estaEnPuertaHorizontal;
 
-    return !tocaParedVertical && !tocaParedHorizontal;
+    return (
+      !tocaParedVertical &&
+      !tocaParedHorizontal
+    );
   };
 
-  // ─────────────────────────────────────────────
+  // =====================================================
   // TECLADO
-  // ─────────────────────────────────────────────
+  // =====================================================
 
   React.useEffect(() => {
-    const manejarTecla = (evento: KeyboardEvent) => {
+    const manejarTecla = (
+      evento: KeyboardEvent,
+    ) => {
       const velocidad = 10;
 
-      // Mientras escribimos en el chat no movemos al personaje.
+      /**
+       * Si tenemos el chat abierto,
+       * WASD no debe mover al personaje
+       * mientras escribimos.
+       */
       if (chatAbierto) {
         return;
       }
 
-      // ARRIBA
-      if (evento.key === "w" || evento.key === "W") {
-        establecerY((actual) => {
-          const nuevoY = Math.max(0, actual - velocidad);
+      // ------------------------------
+      // W - ARRIBA
+      // ------------------------------
 
-          if (puedeMoverse(x, nuevoY)) {
-            enviarPosicion(x, nuevoY);
-            return nuevoY;
-          }
-
-          return actual;
-        });
-      }
-
-      // ABAJO
-      if (evento.key === "s" || evento.key === "S") {
-        establecerY((actual) => {
-          const nuevoY = Math.min(410, actual + velocidad);
-
-          if (puedeMoverse(x, nuevoY)) {
-            enviarPosicion(x, nuevoY);
-            return nuevoY;
-          }
-
-          return actual;
-        });
-      }
-
-      // IZQUIERDA
-      if (evento.key === "a" || evento.key === "A") {
-        establecerX((actual) => {
-          const nuevoX = Math.max(0, actual - velocidad);
-
-          if (puedeMoverse(nuevoX, y)) {
-            enviarPosicion(nuevoX, y);
-            return nuevoX;
-          }
-
-          return actual;
-        });
-      }
-
-      // DERECHA
-      if (evento.key === "d" || evento.key === "D") {
-        establecerX((actual) => {
-          const nuevoX = Math.min(660, actual + velocidad);
-
-          if (puedeMoverse(nuevoX, y)) {
-            enviarPosicion(nuevoX, y);
-            return nuevoX;
-          }
-
-          return actual;
-        });
-      }
-
-      // HABLAR
       if (
-        (evento.key === "e" || evento.key === "E") &&
+        evento.key === "w" ||
+        evento.key === "W"
+      ) {
+        establecerY((actual) => {
+          const nuevoY = Math.max(
+            0,
+            actual - velocidad,
+          );
+
+          if (
+            puedeMoverse(x, nuevoY)
+          ) {
+            enviarPosicion(
+              x,
+              nuevoY,
+            );
+
+            return nuevoY;
+          }
+
+          return actual;
+        });
+      }
+
+      // ------------------------------
+      // S - ABAJO
+      // ------------------------------
+
+      if (
+        evento.key === "s" ||
+        evento.key === "S"
+      ) {
+        establecerY((actual) => {
+          const nuevoY = Math.min(
+            410,
+            actual + velocidad,
+          );
+
+          if (
+            puedeMoverse(x, nuevoY)
+          ) {
+            enviarPosicion(
+              x,
+              nuevoY,
+            );
+
+            return nuevoY;
+          }
+
+          return actual;
+        });
+      }
+
+      // ------------------------------
+      // A - IZQUIERDA
+      // ------------------------------
+
+      if (
+        evento.key === "a" ||
+        evento.key === "A"
+      ) {
+        establecerX((actual) => {
+          const nuevoX = Math.max(
+            0,
+            actual - velocidad,
+          );
+
+          if (
+            puedeMoverse(nuevoX, y)
+          ) {
+            enviarPosicion(
+              nuevoX,
+              y,
+            );
+
+            return nuevoX;
+          }
+
+          return actual;
+        });
+      }
+
+      // ------------------------------
+      // D - DERECHA
+      // ------------------------------
+
+      if (
+        evento.key === "d" ||
+        evento.key === "D"
+      ) {
+        establecerX((actual) => {
+          const nuevoX = Math.min(
+            660,
+            actual + velocidad,
+          );
+
+          if (
+            puedeMoverse(nuevoX, y)
+          ) {
+            enviarPosicion(
+              nuevoX,
+              y,
+            );
+
+            return nuevoX;
+          }
+
+          return actual;
+        });
+      }
+
+      // ------------------------------
+      // E - HABLAR
+      // ------------------------------
+
+      if (
+        (evento.key === "e" ||
+          evento.key === "E") &&
         jugadorCercano
       ) {
-        establecerJugadorEnChat(jugadorCercano);
+        establecerJugadorEnChat(
+          jugadorCercano,
+        );
+
         establecerChatAbierto(true);
       }
     };
 
-    window.addEventListener("keydown", manejarTecla);
+    window.addEventListener(
+      "keydown",
+      manejarTecla,
+    );
 
     return () => {
-      window.removeEventListener("keydown", manejarTecla);
+      window.removeEventListener(
+        "keydown",
+        manejarTecla,
+      );
     };
   }, [
     x,
     y,
     chatAbierto,
     jugadorCercano?.id,
-    conectado,
     matricula,
+    conectado,
   ]);
+
+  // =====================================================
+  // INTERFAZ
+  // =====================================================
 
   return (
     <section>
       <h2>CRA Social</h2>
 
-      <p>Muévete con WASD · Pulsa E cerca de otro operador</p>
+      <p>
+        Muévete con WASD · Pulsa E cerca
+        de otro operador
+      </p>
 
-      {/* ESTADO DEL SERVIDOR */}
+      {/* ESTADO DE CONEXIÓN */}
+
       <p>
         {conectado
           ? "🟢 Conectado al servidor"
           : "🔴 Desconectado"}
       </p>
+
+      {/* JUGADORES CONECTADOS */}
 
       <p>
         👥 Conectados:{" "}
@@ -334,26 +663,38 @@ export const JuegoCraSocial: React.FC = () => {
           : "ninguno"}
       </p>
 
-      {/* SELECCIÓN DEL JUGADOR */}
+      {/* SELECTOR DE OPERADOR */}
+
       <label>
         Jugador:{" "}
         <select
           disabled={conectado}
           value={matricula}
           onChange={(evento) =>
-            establecerMatricula(evento.target.value)
+            establecerMatricula(
+              evento.target.value,
+            )
           }
         >
-          {operadores.map((operador) => (
-            <option
-              key={operador.matricula}
-              value={operador.matricula}
-            >
-              {operador.matricula} - {operador.nombre}
-            </option>
-          ))}
+          {operadores.map(
+            (operador) => (
+              <option
+                key={
+                  operador.matricula
+                }
+                value={
+                  operador.matricula
+                }
+              >
+                {operador.matricula} -{" "}
+                {operador.nombre}
+              </option>
+            ),
+          )}
         </select>
       </label>
+
+      {/* BOTÓN DE CONEXIÓN */}
 
       <button
         type="button"
@@ -365,7 +706,10 @@ export const JuegoCraSocial: React.FC = () => {
           : "Entrar a CRA Social"}
       </button>
 
-      {/* MAPA */}
+      {/* =================================================
+          MAPA
+      ================================================= */}
+
       <div
         style={{
           width: "700px",
@@ -375,7 +719,7 @@ export const JuegoCraSocial: React.FC = () => {
           position: "relative",
         }}
       >
-        {/* NOMBRES DE LAS ESTANCIAS */}
+        {/* NOMBRES DE LAS SALAS */}
 
         <span
           style={{
@@ -449,76 +793,100 @@ export const JuegoCraSocial: React.FC = () => {
           }}
         />
 
-        {/* JUGADORES REMOTOS REALES */}
+        {/* =================================================
+            JUGADORES REMOTOS
+        ================================================= */}
 
-        {otrosJugadores.map((jugadorRemoto) => (
-          <div
-            key={jugadorRemoto.id}
-            style={{
-              position: "absolute",
-              left: `${jugadorRemoto.x}px`,
-              top: `${jugadorRemoto.y}px`,
-              width: "40px",
-              height: "40px",
-              transition:
-                "left 0.08s linear, top 0.08s linear",
-            }}
-          >
-            <span
+        {otrosJugadores.map(
+          (jugadorRemoto) => (
+            <div
+              key={jugadorRemoto.id}
               style={{
                 position: "absolute",
-                bottom: "45px",
-                left: "50%",
-                transform: "translateX(-50%)",
-                color: "white",
-                fontSize: "12px",
-                fontWeight: "bold",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {jugadorRemoto.nombre}
-            </span>
-
-            <div
-              style={{
+                left: `${jugadorRemoto.x}px`,
+                top: `${jugadorRemoto.y}px`,
                 width: "40px",
                 height: "40px",
-                borderRadius: "12px",
-                backgroundColor: "#f472b6",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "24px",
+
+                /**
+                 * Hace que el movimiento remoto
+                 * se vea algo más suave.
+                 */
+                transition:
+                  "left 0.08s linear, top 0.08s linear",
               }}
             >
-              👩‍💻
+              {/* MATRÍCULA */}
+
+              <span
+                style={{
+                  position: "absolute",
+                  bottom: "45px",
+                  left: "50%",
+                  transform:
+                    "translateX(-50%)",
+                  color: "white",
+                  fontSize: "12px",
+                  fontWeight: "bold",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {jugadorRemoto.nombre}
+              </span>
+
+              {/* AVATAR */}
+
+              <div
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "12px",
+                  backgroundColor:
+                    "#f472b6",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent:
+                    "center",
+                  fontSize: "24px",
+                }}
+              >
+                👩‍💻
+              </div>
             </div>
-          </div>
-        ))}
-
-        {/* AVISO PARA HABLAR */}
-
-        {jugadorCercano && !chatAbierto && (
-          <div
-            style={{
-              position: "absolute",
-              left: `${jugadorCercano.x}px`,
-              top: `${jugadorCercano.y - 50}px`,
-              backgroundColor: "white",
-              color: "#182337",
-              padding: "6px 10px",
-              borderRadius: "8px",
-              fontSize: "12px",
-              fontWeight: "bold",
-              zIndex: 5,
-            }}
-          >
-            💬 Pulsa E para hablar con{" "}
-            {jugadorCercano.nombre}
-          </div>
+          ),
         )}
 
-        {/* JUGADOR LOCAL */}
+        {/* =================================================
+            AVISO DE PROXIMIDAD
+        ================================================= */}
+
+        {jugadorCercano &&
+          !chatAbierto && (
+            <div
+              style={{
+                position: "absolute",
+                left: `${jugadorCercano.x}px`,
+                top: `${
+                  jugadorCercano.y - 50
+                }px`,
+                backgroundColor:
+                  "white",
+                color: "#182337",
+                padding: "6px 10px",
+                borderRadius: "8px",
+                fontSize: "12px",
+                fontWeight: "bold",
+                zIndex: 5,
+              }}
+            >
+              💬 Pulsa E para hablar con{" "}
+              {jugadorCercano.nombre}
+            </div>
+          )}
+
+        {/* =================================================
+            NUESTRO JUGADOR
+        ================================================= */}
 
         <div
           style={{
@@ -529,12 +897,15 @@ export const JuegoCraSocial: React.FC = () => {
             height: "40px",
           }}
         >
+          {/* MATRÍCULA */}
+
           <span
             style={{
               position: "absolute",
               bottom: "45px",
               left: "50%",
-              transform: "translateX(-50%)",
+              transform:
+                "translateX(-50%)",
               color: "white",
               fontSize: "12px",
               fontWeight: "bold",
@@ -543,6 +914,8 @@ export const JuegoCraSocial: React.FC = () => {
           >
             {nombreJugador}
           </span>
+
+          {/* AVATAR */}
 
           <div
             style={{
@@ -560,80 +933,120 @@ export const JuegoCraSocial: React.FC = () => {
           </div>
         </div>
 
-        {/* CHAT */}
+        {/* =================================================
+            VENTANA DE CHAT
+        ================================================= */}
 
-        {chatAbierto && jugadorEnChat && (
-          <div
-            style={{
-              position: "absolute",
-              left: "170px",
-              top: "100px",
-              width: "360px",
-              backgroundColor: "#ffffff",
-              color: "#182337",
-              padding: "20px",
-              borderRadius: "12px",
-              zIndex: 10,
-            }}
-          >
-            <h3>💬 {jugadorEnChat.nombre}</h3>
+        {chatAbierto &&
+          jugadorEnChat && (
+            <div
+              style={{
+                position: "absolute",
+                left: "170px",
+                top: "100px",
+                width: "360px",
+                backgroundColor:
+                  "#ffffff",
+                color: "#182337",
+                padding: "20px",
+                borderRadius: "12px",
+                zIndex: 10,
+              }}
+            >
+              <h3>
+                💬 {jugadorEnChat.nombre}
+              </h3>
 
-            <p>
-              Conversación con {jugadorEnChat.nombre}
-            </p>
+              <p>
+                Conversación con{" "}
+                {jugadorEnChat.nombre}
+              </p>
 
-            <div>
-              {mensajesActuales.map(
-                (mensajeChat, indice) => (
-                  <p
-                    key={indice}
-                    style={{
-                      textAlign:
-                        mensajeChat.autor === nombreJugador
-                          ? "right"
-                          : "left",
-                    }}
-                  >
-                    <strong>{mensajeChat.autor}:</strong>{" "}
-                    {mensajeChat.texto}
-                  </p>
-                ),
-              )}
-            </div>
+              {/* MENSAJES */}
 
-            <input
-              type="text"
-              value={mensaje}
-              onChange={(evento) =>
-                establecerMensaje(evento.target.value)
-              }
-              onKeyDown={(evento) => {
-                if (evento.key === "Enter") {
-                  enviarMensaje();
+              <div>
+                {mensajesActuales.map(
+                  (
+                    mensajeChat,
+                    indice,
+                  ) => (
+                    <p
+                      key={indice}
+                      style={{
+                        textAlign:
+                          mensajeChat.autor ===
+                          nombreJugador
+                            ? "right"
+                            : "left",
+                      }}
+                    >
+                      <strong>
+                        {
+                          mensajeChat.autor
+                        }
+                        :
+                      </strong>{" "}
+                      {
+                        mensajeChat.texto
+                      }
+                    </p>
+                  ),
+                )}
+              </div>
+
+              {/* INPUT */}
+
+              <input
+                type="text"
+                value={mensaje}
+                onChange={(evento) =>
+                  establecerMensaje(
+                    evento.target
+                      .value,
+                  )
                 }
-              }}
-              placeholder="Escribe un mensaje..."
-            />
+                onKeyDown={(evento) => {
+                  if (
+                    evento.key ===
+                    "Enter"
+                  ) {
+                    enviarMensaje();
+                  }
+                }}
+                placeholder="Escribe un mensaje..."
+              />
 
-            <button
-              type="button"
-              onClick={enviarMensaje}
-            >
-              Enviar
-            </button>
+              {/* ENVIAR */}
 
-            <button
-              type="button"
-              onClick={() => {
-                establecerChatAbierto(false);
-                establecerJugadorEnChat(null);
-                establecerMensaje("");
-              }}
-            >
-              Cerrar
-            </button>
-          </div>
-        )}
+              <button
+                type="button"
+                onClick={
+                  enviarMensaje
+                }
+              >
+                Enviar
+              </button>
+
+              {/* CERRAR */}
+
+              <button
+                type="button"
+                onClick={() => {
+                  establecerChatAbierto(
+                    false,
+                  );
+
+                  establecerJugadorEnChat(
+                    null,
+                  );
+
+                  establecerMensaje("");
+                }}
+              >
+                Cerrar
+              </button>
+            </div>
+          )}
       </div>
     </section>
   );
