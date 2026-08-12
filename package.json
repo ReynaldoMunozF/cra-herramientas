@@ -18,6 +18,7 @@
     "@babel/preset-env": "^7.17.10",
     "@babel/preset-react": "^7.17.12",
     "@babel/preset-typescript": "^7.16.7",
+    "@cloudflare/workers-types": "^5.20260812.1",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.4",
     "babel-loader": "^8.2.5",
