@@ -1,4 +1,5 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const webpack = require("webpack");
 const path = require("path");
 const basePath = __dirname;
 
@@ -64,6 +65,10 @@ module.exports = {
     ],
   },
   plugins: [
+    // URL del Worker de CRA Social. En local se usa localhost:8787.
+    new webpack.DefinePlugin({
+      __CRA_SOCIAL_WS_URL__: JSON.stringify(process.env.CRA_SOCIAL_WS_URL || ""),
+    }),
     // Genera index.html en dist e incorpora automáticamente el bundle compilado.
     new HtmlWebpackPlugin({
       filename: "index.html", //Name of file in ./dist/

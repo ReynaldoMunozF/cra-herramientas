@@ -77,12 +77,23 @@ const formatearTiempo = (segundos: number) => {
 
 /** Primer juego de la zona de descanso: descubre cinco colores en ocho intentos. */
 export const PaginaZonaDescanso: React.FC = () => {
-  const [esAdministrador, establecerEsAdministrador] = React.useState(false);
+  const esDesarrolloLocal =
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1";
+  const [esAdministrador, establecerEsAdministrador] = React.useState(
+    esDesarrolloLocal,
+  );
   const [juegosInvitados, establecerJuegosInvitados] = React.useState<string[]>(
     ["codigo", "palabra", "asesino", "flota"],
   );
   const [juegoActivo, establecerJuegoActivo] = React.useState<
-    "codigo" | "palabra" | "asesino" | "flota" | "panel" | "social"
+    | "codigo"
+    | "palabra"
+    | "asesino"
+    | "flota"
+    | "panel"
+    | "infiltrado"
+    | "social"
   >("codigo");
   const [matricula, establecerMatricula] = React.useState(
     () => localStorage.getItem(CLAVE_MATRICULA_JUEGO) ?? "RMI",
@@ -122,13 +133,17 @@ export const PaginaZonaDescanso: React.FC = () => {
   }, [cargarRanking]);
 
   React.useEffect(() => {
+    if (esDesarrolloLocal) {
+      establecerEsAdministrador(true);
+      return;
+    }
     fetch("/api/sesion", { credentials: "same-origin" })
       .then((respuesta) => respuesta.json())
       .then((sesion: { rol?: string }) =>
         establecerEsAdministrador(sesion.rol === "administrador"),
       )
       .catch(() => establecerEsAdministrador(false));
-  }, []);
+  }, [esDesarrolloLocal]);
 
   React.useEffect(() => {
     const cargarJuegos = () =>
@@ -158,7 +173,6 @@ export const PaginaZonaDescanso: React.FC = () => {
   React.useEffect(() => {
     if (
       esAdministrador ||
-      juegoActivo === "social" ||
       juegosInvitados.includes(juegoActivo)
     ) {
       return;
@@ -171,6 +185,7 @@ export const PaginaZonaDescanso: React.FC = () => {
         | "asesino"
         | "flota"
         | "panel"
+        | "infiltrado"
         | "social",
     );
   }, [esAdministrador, juegoActivo, juegosInvitados]);
@@ -402,18 +417,19 @@ export const PaginaZonaDescanso: React.FC = () => {
             <small>Nuevo · Dos jugadores</small>
           </div>
         </button>
-        <button
-          type="button"
-          className={juegoActivo === "social" ? "activo" : ""}
-          onClick={() => establecerJuegoActivo("social")}
-        >
-          <span aria-hidden="true">💬</span>
-
-          <div>
-            <strong>CRA Social</strong>
-            <small>Muévete y habla con operadores</small>
-          </div>
-        </button>
+        {(esAdministrador || juegosInvitados.includes("social")) && (
+          <button
+            type="button"
+            className={juegoActivo === "social" ? "activo" : ""}
+            onClick={() => establecerJuegoActivo("social")}
+          >
+            <span aria-hidden="true">💬</span>
+            <div>
+              <strong>CRA Social</strong>
+              <small>{esAdministrador && !juegosInvitados.includes("social") ? "Solo administradores" : "Multijugador CRA"}</small>
+            </div>
+          </button>
+        )}
         {(esAdministrador || juegosInvitados.includes("panel")) && (
           <button
             type="button"
@@ -442,11 +458,11 @@ export const PaginaZonaDescanso: React.FC = () => {
       </nav>
 
       <section
-        className={`zona-descanso-contenido ${juegoActivo === "asesino" ? "modo-murdoku" : ""} ${juegoActivo === "flota" ? "modo-flota" : ""} ${juegoActivo === "infiltrado" ? "modo-infiltrado" : ""}`}
+        className={`zona-descanso-contenido ${juegoActivo === "asesino" ? "modo-murdoku" : ""} ${juegoActivo === "flota" ? "modo-flota" : ""} ${juegoActivo === "infiltrado" ? "modo-infiltrado" : ""} ${juegoActivo === "social" ? "modo-social" : ""}`}
       >
         {juegoActivo === "infiltrado" ? (
           <JuegoInfiltrado />
-        ) : juegoActivo === "social" ? (
+        ) : juegoActivo === "social" && (esAdministrador || juegosInvitados.includes("social")) ? (
           <JuegoCraSocial />
         ) : juegoActivo === "panel" ? (
           <JuegoDesactivarPanel />

@@ -37,6 +37,7 @@ import "./estilos/feedback.css";
 import "./estilos/estadisticas.css";
 import "./estilos/computo-anual.css";
 import "./estilos/zona-descanso.css";
+import "./estilos/cra-social.css";
 import "./estilos/codigos-operativos.css";
 import "./cuadrante/cuadrante.css";
 
