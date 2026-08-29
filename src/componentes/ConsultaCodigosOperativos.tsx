@@ -4,6 +4,7 @@ import { MENSAJES_SMS } from "../paginas/PaginaCodigosOperativos";
 import iconoResolucionesSms from "../recursos/herramientas/resoluciones-y-sms.svg";
 
 type CategoriaCodigo = "resoluciones" | "sms";
+interface CodigoOperativo { id?: number; codigo: string; descripcion: string; categoria?: CategoriaCodigo; }
 
 const normalizarCodigo = (texto: string) => texto
   .toLocaleLowerCase("es")
@@ -12,12 +13,27 @@ const normalizarCodigo = (texto: string) => texto
   .trim();
 
 /** Buscador administrativo de resoluciones y comandos integrado en la barra rápida. */
-export const ConsultaCodigosOperativos: React.FC = () => {
+export const ConsultaCodigosOperativos: React.FC<{ esAdministrador?: boolean }> = ({ esAdministrador = false }) => {
   const [abierto, establecerAbierto] = React.useState(false);
   const [categoria, establecerCategoria] = React.useState<CategoriaCodigo | null>(null);
   const [consulta, establecerConsulta] = React.useState("");
   const [codigoCopiado, establecerCodigoCopiado] = React.useState<string | null>(null);
   const [errorCopia, establecerErrorCopia] = React.useState<string | null>(null);
+  const [personalizados, establecerPersonalizados] = React.useState<CodigoOperativo[]>([]);
+  const [mostrarGestion, establecerMostrarGestion] = React.useState(false);
+  const [nuevoCodigo, establecerNuevoCodigo] = React.useState("");
+  const [nuevaDescripcion, establecerNuevaDescripcion] = React.useState("");
+  const [estadoGuardado, establecerEstadoGuardado] = React.useState<"reposo" | "guardando" | "correcto" | "error">("reposo");
+  const [mensajeGuardado, establecerMensajeGuardado] = React.useState("");
+
+  const cargarPersonalizados = React.useCallback(() => {
+    fetch("/api/codigos-operativos", { credentials: "same-origin" })
+      .then((respuesta) => respuesta.ok ? respuesta.json() : Promise.reject())
+      .then((datos: { codigos?: CodigoOperativo[] }) => establecerPersonalizados(datos.codigos ?? []))
+      .catch(() => establecerPersonalizados([]));
+  }, []);
+
+  React.useEffect(() => { cargarPersonalizados(); }, [cargarPersonalizados]);
 
   React.useEffect(() => {
     const cerrarAlAbrirOtra = (evento: Event) => {
@@ -41,7 +57,8 @@ export const ConsultaCodigosOperativos: React.FC = () => {
     }
   };
 
-  const datos = categoria === "sms" ? MENSAJES_SMS : RESOLUCIONES;
+  const base = categoria === "sms" ? MENSAJES_SMS : RESOLUCIONES;
+  const datos = [...base, ...personalizados.filter((item) => item.categoria === categoria)];
   const termino = normalizarCodigo(consulta);
   const resultados = termino
     ? datos.filter((item) => normalizarCodigo(`${item.codigo} ${item.descripcion}`).includes(termino))
@@ -52,6 +69,33 @@ export const ConsultaCodigosOperativos: React.FC = () => {
     establecerConsulta("");
     establecerCodigoCopiado(null);
     establecerErrorCopia(null);
+    establecerMostrarGestion(false);
+    establecerEstadoGuardado("reposo");
+  };
+
+  const guardarEntrada = async (evento: React.FormEvent) => {
+    evento.preventDefault();
+    if (!categoria || !nuevoCodigo.trim() || !nuevaDescripcion.trim()) return;
+    establecerEstadoGuardado("guardando");
+    establecerMensajeGuardado("");
+    try {
+      const respuesta = await fetch("/api/administracion/codigos-operativos", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ categoria, codigo: nuevoCodigo, descripcion: nuevaDescripcion }),
+      });
+      const resultado = await respuesta.json() as { error?: string };
+      if (!respuesta.ok) throw new Error(resultado.error || "No se pudo guardar.");
+      establecerNuevoCodigo("");
+      establecerNuevaDescripcion("");
+      establecerEstadoGuardado("correcto");
+      establecerMensajeGuardado(categoria === "sms" ? "Mensaje añadido." : "Resolución añadida.");
+      cargarPersonalizados();
+    } catch (error) {
+      establecerEstadoGuardado("error");
+      establecerMensajeGuardado(error instanceof Error ? error.message : "No se pudo guardar.");
+    }
   };
 
   const copiarCodigo = async (codigo: string, documento: Document) => {
@@ -116,6 +160,17 @@ export const ConsultaCodigosOperativos: React.FC = () => {
           </button>
           <strong>{categoria === "sms" ? "Comandos SMS" : "Resoluciones"}</strong>
         </div>
+        {esAdministrador && <div className="codigos-rapidos-admin">
+          <button type="button" className="codigos-rapidos-admin-activador" onClick={() => establecerMostrarGestion((valor) => !valor)} aria-expanded={mostrarGestion}>
+            <span>＋</span> {categoria === "sms" ? "Añadir mensaje" : "Añadir resolución"}
+          </button>
+          {mostrarGestion && <form onSubmit={guardarEntrada}>
+            <label>Código<input value={nuevoCodigo} onChange={(evento) => establecerNuevoCodigo(evento.target.value)} maxLength={40} placeholder={categoria === "sms" ? "Ej. 0NUEVO" : "Ej. 2XX"} required /></label>
+            <label>Descripción<textarea value={nuevaDescripcion} onChange={(evento) => establecerNuevaDescripcion(evento.target.value)} maxLength={300} rows={2} placeholder="Explica cuándo debe utilizarse" required /></label>
+            <button type="submit" disabled={estadoGuardado === "guardando"}>{estadoGuardado === "guardando" ? "Guardando…" : "Guardar"}</button>
+            {mensajeGuardado && <p className={estadoGuardado === "error" ? "error" : "correcto"}>{mensajeGuardado}</p>}
+          </form>}
+        </div>}
         <label className="codigos-rapidos-busqueda">
           <span aria-hidden="true">⌕</span>
           <input autoFocus value={consulta} onChange={(evento) => establecerConsulta(evento.target.value)}

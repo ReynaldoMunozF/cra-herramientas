@@ -6,6 +6,7 @@ import { JuegoHundirFlota } from "../componentes/JuegoHundirFlota";
 import { JuegoDesactivarPanel } from "../componentes/JuegoDesactivarPanel";
 import { JuegoInfiltrado } from "../componentes/JuegoInfiltrado";
 import { JuegoCraSocial } from "../componentes/JuegoCraSocial";
+import { JuegoArtilleria } from "../componentes/JuegoArtilleria";
 
 interface Pistas {
   exactas: number;
@@ -94,6 +95,7 @@ export const PaginaZonaDescanso: React.FC = () => {
     | "panel"
     | "infiltrado"
     | "social"
+    | "artilleria"
   >("codigo");
   const [matricula, establecerMatricula] = React.useState(
     () => localStorage.getItem(CLAVE_MATRICULA_JUEGO) ?? "RMI",
@@ -186,7 +188,8 @@ export const PaginaZonaDescanso: React.FC = () => {
         | "flota"
         | "panel"
         | "infiltrado"
-        | "social",
+        | "social"
+        | "artilleria",
     );
   }, [esAdministrador, juegoActivo, juegosInvitados]);
 
@@ -417,6 +420,19 @@ export const PaginaZonaDescanso: React.FC = () => {
             <small>Nuevo · Dos jugadores</small>
           </div>
         </button>
+        {esAdministrador && (
+          <button
+            type="button"
+            className={juegoActivo === "artilleria" ? "activo" : ""}
+            onClick={() => establecerJuegoActivo("artilleria")}
+          >
+            <span aria-hidden="true">◎</span>
+            <div>
+              <strong>CRA Artillería</strong>
+              <small>Nuevo · Hasta 4 jugadores</small>
+            </div>
+          </button>
+        )}
         {(esAdministrador || juegosInvitados.includes("social")) && (
           <button
             type="button"
@@ -458,9 +474,11 @@ export const PaginaZonaDescanso: React.FC = () => {
       </nav>
 
       <section
-        className={`zona-descanso-contenido ${juegoActivo === "asesino" ? "modo-murdoku" : ""} ${juegoActivo === "flota" ? "modo-flota" : ""} ${juegoActivo === "infiltrado" ? "modo-infiltrado" : ""} ${juegoActivo === "social" ? "modo-social" : ""}`}
+        className={`zona-descanso-contenido ${juegoActivo === "asesino" ? "modo-murdoku" : ""} ${juegoActivo === "flota" ? "modo-flota" : ""} ${juegoActivo === "infiltrado" ? "modo-infiltrado" : ""} ${juegoActivo === "social" || juegoActivo === "artilleria" ? "modo-social" : ""}`}
       >
-        {juegoActivo === "infiltrado" ? (
+        {juegoActivo === "artilleria" && esAdministrador ? (
+          <JuegoArtilleria />
+        ) : juegoActivo === "infiltrado" ? (
           <JuegoInfiltrado />
         ) : juegoActivo === "social" && (esAdministrador || juegosInvitados.includes("social")) ? (
           <JuegoCraSocial />

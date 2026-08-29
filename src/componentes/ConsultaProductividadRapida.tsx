@@ -88,6 +88,14 @@ const convertirRegistro = (registro: RegistroProductividad): CantidadesFormulari
   tramosEmail: registro.tramos_email ?? [],
 });
 
+const registroCoincide = (registro: RegistroProductividad, formulario: CantidadesFormulario) =>
+  registro.total_alarmas === formulario.totalAlarmas
+  && registro.horas_trabajadas === formulario.horasTrabajadas
+  && registro.citas === formulario.citas
+  && registro.llamadas_entrantes === formulario.llamadasEntrantes
+  && registro.gestiones_administrativas === formulario.gestionesAdministrativas
+  && JSON.stringify(registro.tramos_email ?? []) === JSON.stringify(formulario.tramosEmail);
+
 const minutosHora = (hora: string) => {
   const [horas, minutos] = hora.split(":").map(Number);
   return horas * 60 + minutos;
@@ -124,6 +132,42 @@ const obtenerEstadoProductividad = (productividad: number) => {
 };
 
 const CLAVE_MATRICULA_PRODUCTIVIDAD = "cra-productividad-matricula";
+const CLAVE_RESPALDOS_PRODUCTIVIDAD = "cra-productividad-pendientes-v1";
+
+interface RespaldoProductividad extends CantidadesFormulario {
+  matricula: string;
+  fecha: string;
+  guardadoLocalEn: string;
+}
+
+const leerRespaldosProductividad = (): RespaldoProductividad[] => {
+  try {
+    const datos = JSON.parse(localStorage.getItem(CLAVE_RESPALDOS_PRODUCTIVIDAD) ?? "[]");
+    return Array.isArray(datos) ? datos : [];
+  } catch {
+    return [];
+  }
+};
+
+const guardarRespaldoProductividad = (respaldo: RespaldoProductividad) => {
+  const restantes = leerRespaldosProductividad()
+    .filter((elemento) => elemento.matricula !== respaldo.matricula || elemento.fecha !== respaldo.fecha);
+  localStorage.setItem(CLAVE_RESPALDOS_PRODUCTIVIDAD, JSON.stringify([...restantes, respaldo]));
+};
+
+const eliminarRespaldoProductividad = (matricula: string, fecha: string) => {
+  const restantes = leerRespaldosProductividad()
+    .filter((elemento) => elemento.matricula !== matricula || elemento.fecha !== fecha);
+  localStorage.setItem(CLAVE_RESPALDOS_PRODUCTIVIDAD, JSON.stringify(restantes));
+};
+
+const respuestaJsonSegura = async <T,>(respuesta: Response): Promise<T> => {
+  const tipo = respuesta.headers.get("content-type") ?? "";
+  if (!tipo.includes("application/json")) {
+    throw new Error("La sesión ha caducado. Vuelve a iniciar sesión; el día queda protegido en este equipo.");
+  }
+  return respuesta.json() as Promise<T>;
+};
 
 /** Calculadora diaria editable y sincronizada mediante la base de datos de Cloudflare. */
 export const ConsultaProductividadRapida: React.FC = () => {
@@ -140,26 +184,30 @@ export const ConsultaProductividadRapida: React.FC = () => {
   const [mensaje, establecerMensaje] = React.useState("");
   const [inicioEmail, establecerInicioEmail] = React.useState("");
   const [finEmail, establecerFinEmail] = React.useState("");
+  const solicitudMesActual = React.useRef(0);
 
   const mesSeleccionado = fecha.slice(0, 7);
   const registroSeleccionado = registros.find((registro) => registro.fecha === fecha);
 
   const cargarMes = React.useCallback(async () => {
+    const numeroSolicitud = ++solicitudMesActual.current;
     establecerCargando(true);
     establecerMensaje("");
     try {
       const respuesta = await fetch(
         `/api/productividad?matricula=${encodeURIComponent(matricula)}&mes=${mesSeleccionado}`,
-        { credentials: "same-origin" }
+        { credentials: "same-origin", cache: "no-store" }
       );
-      if (!respuesta.ok) throw new Error();
-      const datos = await respuesta.json() as { registros: RegistroProductividad[] };
+      const datos = await respuestaJsonSegura<{ registros: RegistroProductividad[]; error?: string }>(respuesta);
+      if (!respuesta.ok) throw new Error(datos.error || "No se pudieron cargar los registros.");
+      if (numeroSolicitud !== solicitudMesActual.current) return;
       establecerRegistros(datos.registros);
-    } catch {
+    } catch (error) {
+      if (numeroSolicitud !== solicitudMesActual.current) return;
       establecerRegistros([]);
-      establecerMensaje("No se pudieron cargar los registros.");
+      establecerMensaje(error instanceof Error ? error.message : "No se pudieron cargar los registros.");
     } finally {
-      establecerCargando(false);
+      if (numeroSolicitud === solicitudMesActual.current) establecerCargando(false);
     }
   }, [matricula, mesSeleccionado]);
 
@@ -181,8 +229,15 @@ export const ConsultaProductividadRapida: React.FC = () => {
 
   React.useEffect(() => {
     const encontrado = registros.find((registro) => registro.fecha === fecha);
-    establecerFormulario(encontrado ? convertirRegistro(encontrado) : { ...FORMULARIO_VACIO });
-  }, [fecha, registros]);
+    const respaldo = leerRespaldosProductividad()
+      .find((elemento) => elemento.matricula === matricula && elemento.fecha === fecha);
+    establecerFormulario(encontrado
+      ? convertirRegistro(encontrado)
+      : respaldo
+        ? { ...respaldo, tramosEmail: respaldo.tramosEmail ?? [] }
+        : { ...FORMULARIO_VACIO });
+    if (!encontrado && respaldo) establecerMensaje("Día recuperado del respaldo de este equipo. Pulsa guardar para sincronizarlo.");
+  }, [fecha, matricula, registros]);
 
   const alternar = () => {
     const seAbrira = !abierto;
@@ -256,6 +311,13 @@ export const ConsultaProductividadRapida: React.FC = () => {
       return;
     }
 
+    const respaldo: RespaldoProductividad = {
+      matricula,
+      fecha,
+      ...formulario,
+      guardadoLocalEn: new Date().toISOString(),
+    };
+    guardarRespaldoProductividad(respaldo);
     establecerGuardando(true);
     establecerMensaje("");
     try {
@@ -265,20 +327,35 @@ export const ConsultaProductividadRapida: React.FC = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ matricula, fecha, ...formulario }),
       });
-      const datos = await respuesta.json() as {
+      const datos = await respuestaJsonSegura<{
         registro?: RegistroProductividad;
         error?: string;
-      };
+      }>(respuesta);
       if (!respuesta.ok || !datos.registro) {
         throw new Error(datos.error || "No se pudo guardar.");
       }
+
+      // Una segunda lectura confirma que D1 devuelve el registro recién escrito.
+      const comprobacion = await fetch(
+        `/api/productividad?matricula=${encodeURIComponent(matricula)}&mes=${fecha.slice(0, 7)}&v=${Date.now()}`,
+        { credentials: "same-origin", cache: "no-store" }
+      );
+      const datosComprobacion = await respuestaJsonSegura<{ registros?: RegistroProductividad[]; error?: string }>(comprobacion);
+      const confirmado = datosComprobacion.registros?.find((registro) => registro.fecha === fecha);
+      if (!comprobacion.ok || !confirmado || !registroCoincide(confirmado, formulario)) {
+        throw new Error(datosComprobacion.error || "Cloudflare no confirmó el registro. El día sigue protegido en este equipo.");
+      }
+      eliminarRespaldoProductividad(matricula, fecha);
       establecerRegistros((actuales) => [
         ...actuales.filter((registro) => registro.fecha !== fecha),
-        datos.registro as RegistroProductividad,
+        confirmado,
       ].sort((a, b) => a.fecha.localeCompare(b.fecha)));
-      establecerMensaje(registroSeleccionado ? "Día actualizado correctamente." : "Día guardado correctamente.");
+      establecerMensaje(registroSeleccionado
+        ? "Día actualizado y verificado en Cloudflare."
+        : "Día guardado y verificado en Cloudflare.");
     } catch (error) {
-      establecerMensaje(error instanceof Error ? error.message : "No se pudo guardar el día.");
+      const detalle = error instanceof Error ? error.message : "No se pudo guardar el día.";
+      establecerMensaje(`${detalle} No cierres este navegador: conservamos una copia local para recuperarlo.`);
     } finally {
       establecerGuardando(false);
     }

@@ -88,6 +88,8 @@ const IconoNovedad: React.FC<{ tipo: string }> = ({ tipo }) => {
     juegos: <><path d="M7 8h10a4 4 0 0 1 3.8 5.2l-1.4 4.2a2 2 0 0 1-3.2.9L14 16h-4l-2.2 2.3a2 2 0 0 1-3.2-.9l-1.4-4.2A4 4 0 0 1 7 8Z" /><path d="M7 12h4M9 10v4M16 11h.01M18 13h.01" /></>,
     productividad: <><path d="M4 19V9M10 19V5M16 19v-7M22 19V3" /><path d="M2 19h22M5 6l5-3 6 5 6-6" /></>,
     computo: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2M7 3l-2 2M17 3l2 2" /></>,
+    telefonos: <><path d="M7.2 4.5c1.2-.4 3.4 3.4 2.8 4.7l-1.6 1.2c1.2 2.6 2.7 4.1 5.3 5.3l1.2-1.6c1.3-.6 5.1 1.6 4.7 2.8-.5 2-2.2 3-4.3 2.5C10 18 6 14 4.7 8.8c-.5-2.1.5-3.8 2.5-4.3Z" /><path d="M14 4h6v6M20 4l-6 6" /></>,
+    mensajes: <><path d="M4 5h16v11H9l-5 4V5Z" /><path d="M8 9h8M8 12h5" /><path d="m15.5 18 1.5 1.5 3-3" /></>,
   };
   return <svg viewBox="0 0 24 24" aria-hidden="true">{rutas[tipo]}</svg>;
 };
@@ -100,35 +102,72 @@ const NovedadesInvitados: React.FC = () => (
       <p>Nuevas herramientas y mejoras pensadas para agilizar la gestión diaria.</p>
     </header>
 
+    <article className="novedad-cuadrante novedad-cuadrante-principal">
+      <div className="novedad-icono"><IconoNovedad tipo="cuadrante" /></div>
+      <div>
+        <span className="novedad-actualizacion">Actualización del día</span>
+        <h3>Cuadrante de septiembre disponible</h3>
+        <p>Ya puedes consultar los días, turnos y horas del nuevo cuadrante mensual.</p>
+        <strong className="novedad-fecha-cuadrante">✓ Actualizado el 21 de agosto de 2026</strong>
+      </div>
+    </article>
+
+    <article className="novedad-telefonos">
+      <div className="novedad-icono"><IconoNovedad tipo="telefonos" /></div>
+      <div className="novedad-telefonos-contenido">
+        <span>Nueva herramienta</span>
+        <h3>Teléfonos de interés compartidos</h3>
+        <p>Ya está disponible un directorio común con acceso rápido a los números importantes para el servicio.</p>
+        <strong>¿Falta algún contacto útil? Envía al administrador los teléfonos que consideres importantes. Se comprobarán antes de incorporarlos a la lista.</strong>
+        <Link to="/herramientas-rapidas" target="_blank" rel="noopener">Consultar teléfonos <b aria-hidden="true">→</b></Link>
+      </div>
+    </article>
+
+    <article className="novedad-general novedad-herramientas-destacada">
+      <div className="novedad-icono"><IconoNovedad tipo="general" /></div>
+      <div className="novedad-herramientas-contenido">
+        <span><b>Nueva</b> · Barra flotante</span>
+        <h3>Todas las herramientas ocupando mucho menos espacio</h3>
+        <p>La nueva barra flotante reúne todas las consultas auxiliares en una sola fila de iconos. Solo despliega la herramienta que estás usando, deja más espacio libre en pantalla y puede mantenerse visible mientras trabajas.</p>
+        <div className="novedad-herramientas-resumen" aria-label="Resumen de herramientas rápidas">
+          <b>Fuerzas de Seguridad</b>
+          <b>Clima</b>
+          <b>Cuadrante</b>
+          <b>Comentarios</b>
+          <b>Localización</b>
+          <b>Alfabeto fonético</b>
+          <b>Productividad</b>
+          <b>Teléfonos de interés</b>
+          <b>Resoluciones y SMS</b>
+        </div>
+        <small>Busca en el encabezado el botón <strong>«NUEVA · Barra flotante»</strong> para abrirla.</small>
+      </div>
+    </article>
+
+    <article className="novedad-mensajes">
+      <div className="novedad-icono"><IconoNovedad tipo="mensajes" /></div>
+      <div className="novedad-mensajes-contenido">
+        <span>Nueva herramienta incluida</span>
+        <h3>Mensajes de cierre y SMS preparados para usar</h3>
+        <p>Encuentra rápidamente el texto o código adecuado para cerrar una gestión o comunicar una incidencia al cliente, sin tener que buscarlo fuera de la aplicación.</p>
+        <div className="novedad-mensajes-opciones">
+          <b><i>✓</i><span>Resoluciones<small>Mensajes para el cierre de gestiones</small></span></b>
+          <b><i>SMS</i><span>Comandos SMS<small>Plantillas rápidas de comunicación</small></span></b>
+        </div>
+        <strong>Disponible dentro de la nueva barra flotante en el icono de documento.</strong>
+      </div>
+    </article>
+
     <article className="novedad-juegos">
       <div className="novedad-icono"><IconoNovedad tipo="juegos" /></div>
       <div className="novedad-juegos-contenido">
-        <span>Nuevo · Pausas activas</span>
+        <span>Pausas activas</span>
         <h3>Zona de descanso</h3>
         <p>Aprovecha los tiempos muertos con partidas rápidas, desde unos segundos hasta aproximadamente cinco minutos.</p>
         <div className="novedad-juegos-etiquetas"><b>Código secreto</b><b>Palabra clave</b><b>Caso del asesino</b><b>Hundir la flota</b><b>Desactivar el panel</b></div>
         <strong>El administrador irá activando y rotando los juegos periódicamente para mantener nuevos retos disponibles.</strong>
       </div>
     </article>
-
-    <article className="novedad-general">
-      <div className="novedad-icono"><IconoNovedad tipo="general" /></div>
-      <div><span>Herramientas rápidas</span><h3>Más compactas y adaptadas al móvil</h3><p>Accesos reorganizados, resultados más visibles y mejor aprovechamiento del espacio.</p></div>
-    </article>
-
-    <div className="novedades-listado">
-      <article><div className="novedad-icono"><IconoNovedad tipo="fse" /></div><div><h3>Fuerzas de Seguridad</h3><p>Confirma si el resultado es correcto o corrígelo para mejorar próximas consultas.</p></div></article>
-      <article><div className="novedad-icono"><IconoNovedad tipo="comentarios" /></div><div><h3>Comentarios frecuentes</h3><p>Crea, elimina y ordena tus comentarios personales para copiar primero los más utilizados.</p></div></article>
-      <article className="novedad-productividad"><div className="novedad-icono"><IconoNovedad tipo="productividad" /></div><div><h3>Gestión de productividad</h3><p>Registra alarmas y gestiones con un toque, ajusta las horas trabajadas o extras y consulta la productividad diaria y acumulada.</p><small>Permite corregir días anteriores y descontar el tiempo de gestiones largas comunicadas por correo.</small></div></article>
-      <article className="novedad-computo"><div className="novedad-icono"><IconoNovedad tipo="computo" /></div><div><h3>Cómputo anual de horas</h3><p>Registra o modifica tus turnos y consulta automáticamente las horas trabajadas, nocturnas y el saldo anual por matrícula.</p></div></article>
-      <article className="novedad-cuadrante"><div className="novedad-icono"><IconoNovedad tipo="cuadrante" /></div><div><h3>Cuadrante</h3><p>Consulta los días y turnos con un diseño más compacto y fácil de leer.</p><strong className="novedad-fecha-cuadrante">✓ Actualizado hasta el 24 de julio de 2026</strong></div></article>
-      <article><div className="novedad-icono"><IconoNovedad tipo="ubicacion" /></div><div><h3>Localización</h3><p>Busca mediante latitud y longitud separadas o pegando una dirección completa.</p></div></article>
-      <article className="novedad-destacada">
-        <span className="novedad-nueva">★ Nueva herramienta de gestión</span>
-        <div className="novedad-icono"><IconoNovedad tipo="alfabeto" /></div>
-        <div><h3>Alfabeto fonético</h3><p>Consulta el alfabeto o escribe una palabra, matrícula o número para obtener y copiar su deletreo.</p></div>
-      </article>
-    </div>
   </section>
 );
 

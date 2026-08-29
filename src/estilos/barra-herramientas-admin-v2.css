@@ -1,0 +1,751 @@
+/*
+ * Sistema visual exclusivo de la barra administrativa V2.
+ * Inspiración: panel modular azul, tarjetas marino y acciones naranja.
+ */
+.barra-herramientas-admin-flotante {
+  --v2-cielo: #5ea7f2;
+  --v2-cielo-claro: #ddebfb;
+  --v2-marino: #304e78;
+  --v2-marino-oscuro: #213b61;
+  --v2-naranja: #ffad27;
+  --v2-naranja-claro: #ffc052;
+  --v2-blanco: #f8fbff;
+  background: var(--v2-cielo);
+  border: 0;
+  border-bottom: 5px solid var(--v2-naranja);
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(28, 57, 96, .34);
+}
+
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos {
+  gap: 5px;
+  padding: 6px 7px 8px;
+  background: var(--v2-cielo);
+  border-radius: 20px;
+}
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos > * > button[data-nombre] {
+  background: var(--v2-marino) !important;
+  border: 0 !important;
+  border-radius: 13px !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.13), 0 3px 8px rgba(25,49,83,.2) !important;
+  transition: background 150ms ease, transform 150ms ease, box-shadow 150ms ease !important;
+}
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos > * > button[data-nombre]:hover {
+  background: var(--v2-marino-oscuro) !important;
+  transform: translateY(-2px) !important;
+}
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos > * > button[data-nombre][aria-expanded="true"] {
+  background: var(--v2-naranja) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.45), 0 4px 10px rgba(102,64,4,.25) !important;
+}
+.barra-herramientas-admin-flotante button[data-nombre] .herramienta-menu-icono {
+  filter: drop-shadow(0 2px 2px rgba(13,37,68,.2));
+}
+
+/* Lienzo común de todos los desplegables. */
+.barra-herramientas-admin-flotante :is(
+  .fse-rapido-panel,
+  .clima-rapido-panel,
+  .cuadrante-rapido-panel,
+  .comentarios-rapidos-panel,
+  .ubicacion-rapida-panel,
+  .alfabeto-rapido-panel,
+  .productividad-rapida-panel,
+  .telefonos-interes-panel,
+  .codigos-rapidos-panel
+) {
+  color: #173454 !important;
+  background: var(--v2-cielo-claro) !important;
+  border: 7px solid var(--v2-cielo) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 18px 42px rgba(23,53,91,.34) !important;
+  scrollbar-color: var(--v2-naranja) rgba(48,78,120,.12);
+}
+
+.barra-herramientas-admin-flotante :is(
+  .fse-rapido-panel,
+  .clima-rapido-panel,
+  .cuadrante-rapido-panel,
+  .comentarios-rapidos-panel,
+  .ubicacion-rapida-panel,
+  .alfabeto-rapido-panel,
+  .productividad-rapida-panel,
+  .telefonos-interes-panel,
+  .codigos-rapidos-panel
+) > header {
+  min-height: 72px;
+  padding: 15px 19px !important;
+  color: var(--v2-blanco) !important;
+  background: var(--v2-marino) !important;
+  border: 0 !important;
+  border-bottom: 5px solid var(--v2-naranja) !important;
+  border-radius: 16px 16px 0 0;
+}
+.barra-herramientas-admin-flotante :is(
+  .fse-rapido-panel,
+  .clima-rapido-panel,
+  .cuadrante-rapido-panel,
+  .comentarios-rapidos-panel,
+  .ubicacion-rapida-panel,
+  .alfabeto-rapido-panel,
+  .productividad-rapida-panel,
+  .telefonos-interes-panel,
+  .codigos-rapidos-panel
+) > header :is(span,small) {
+  color: var(--v2-naranja-claro) !important;
+  letter-spacing: .09em;
+}
+.barra-herramientas-admin-flotante :is(
+  .fse-rapido-panel,
+  .clima-rapido-panel,
+  .cuadrante-rapido-panel,
+  .comentarios-rapidos-panel,
+  .ubicacion-rapida-panel,
+  .alfabeto-rapido-panel,
+  .productividad-rapida-panel,
+  .telefonos-interes-panel,
+  .codigos-rapidos-panel
+) > header > button {
+  width: 40px !important;
+  height: 40px !important;
+  color: white !important;
+  background: rgba(94,167,242,.25) !important;
+  border: 1px solid rgba(255,255,255,.42) !important;
+  border-radius: 12px !important;
+}
+
+/* Formularios blancos, como los módulos del tablero de referencia. */
+.barra-herramientas-admin-flotante :is(
+  .fse-rapido-panel form,
+  .clima-rapido-panel form,
+  .cuadrante-rapido-filtros,
+  .ubicacion-rapida-panel form,
+  .telefonos-interes-formulario,
+  .productividad-rapida-formulario,
+  .comentario-personal-formulario
+) {
+  background: var(--v2-blanco) !important;
+}
+.barra-herramientas-admin-flotante :is(input,select,textarea) {
+  color: #173454 !important;
+  background: white !important;
+  border: 2px solid #93b9df !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+.barra-herramientas-admin-flotante :is(input,select,textarea):focus {
+  outline: 3px solid rgba(255,173,39,.28) !important;
+  border-color: var(--v2-naranja) !important;
+}
+
+/* El naranja queda reservado para acciones y estados activos. */
+.barra-herramientas-admin-flotante :is(
+  .fse-rapido-panel form button,
+  .clima-rapido-panel form button,
+  .ubicacion-rapida-panel form button,
+  .telefonos-interes-formulario > button,
+  .codigos-rapidos-subcabecera button,
+  .codigos-rapidos-resultados article button,
+  .productividad-rapida-panel button[type="submit"]
+) {
+  color: #203b60 !important;
+  font-weight: 950 !important;
+  background: var(--v2-naranja) !important;
+  border: 0 !important;
+  border-bottom: 3px solid #df8611 !important;
+  border-radius: 11px !important;
+}
+
+.barra-herramientas-admin-flotante :is(
+  .fse-resultado,
+  .clima-rapido-resultado,
+  .ubicacion-rapida-resultado,
+  .codigos-rapidos-contenido,
+  .productividad-rapida-resultado
+) {
+  color: var(--v2-blanco) !important;
+  background: var(--v2-marino) !important;
+}
+.barra-herramientas-admin-flotante :is(
+  .fse-resultado,
+  .clima-rapido-resultado,
+  .ubicacion-rapida-resultado,
+  .codigos-rapidos-contenido,
+  .productividad-rapida-resultado
+) :is(h3,strong,b) { color: var(--v2-blanco); }
+.barra-herramientas-admin-flotante :is(
+  .fse-resultado,
+  .clima-rapido-resultado,
+  .ubicacion-rapida-resultado,
+  .codigos-rapidos-contenido,
+  .productividad-rapida-resultado
+) :is(p,small,span,dt,dd) { color: #dcecff; }
+
+.barra-herramientas-admin-flotante :is(
+  .comentarios-rapidos-pestanas button.esta-activa,
+  .fse-validacion-botones button,
+  .productividad-rapida-pestanas button.activa
+) {
+  color: #203b60 !important;
+  background: var(--v2-naranja) !important;
+  border-color: var(--v2-naranja) !important;
+}
+
+.barra-herramientas-admin-flotante :is(
+  .telefonos-interes-lista article,
+  .comentarios-rapidos-lista article,
+  .alfabeto-rapido-lista li,
+  .codigos-rapidos-resultados article
+) {
+  border-radius: 14px !important;
+  box-shadow: 0 5px 12px rgba(38,71,111,.09);
+}
+
+@media (max-width: 520px) {
+  .barra-herramientas-admin-flotante .barra-herramientas-admin-accesos { gap: 2px; }
+  .barra-herramientas-admin-flotante :is(
+    .fse-rapido-panel,
+    .clima-rapido-panel,
+    .cuadrante-rapido-panel,
+    .comentarios-rapidos-panel,
+    .ubicacion-rapida-panel,
+    .alfabeto-rapido-panel,
+    .productividad-rapida-panel,
+    .telefonos-interes-panel,
+    .codigos-rapidos-panel
+  ) { border-width: 4px !important; border-radius: 18px !important; }
+}
+
+/* V2.1: contraste alto y separación real entre bloques. */
+.barra-herramientas-admin-flotante :is(
+  .productividad-contenido,
+  .comentarios-rapidos-contenido,
+  .alfabeto-deletreador,
+  .alfabeto-listado,
+  .codigos-rapidos-categorias
+) { color: #142f50 !important; }
+
+.barra-herramientas-admin-flotante :is(
+  .productividad-identificacion,
+  .productividad-datos-base,
+  .productividad-email,
+  .productividad-progreso,
+  .productividad-resumen > div,
+  .comentario-personal,
+  .comentario-personal-formulario,
+  .alfabeto-resultado,
+  .alfabeto-listado > div,
+  .codigos-rapidos-categorias > button
+) {
+  color: #142f50 !important;
+  background: #fff !important;
+  border: 1px solid #a9c8e7 !important;
+  box-shadow: 0 4px 10px rgba(33,59,97,.09) !important;
+}
+
+.barra-herramientas-admin-flotante :is(
+  .productividad-identificacion label,
+  .productividad-datos-base label,
+  .productividad-email label,
+  .productividad-email strong,
+  .productividad-contador span,
+  .productividad-contador strong,
+  .productividad-progreso strong,
+  .productividad-resumen strong,
+  .comentarios-operador-selector,
+  .comentario-personal p,
+  .comentario-personal-formulario label,
+  .alfabeto-deletreador label,
+  .alfabeto-listado span
+) { color: #142f50 !important; opacity: 1 !important; }
+
+.barra-herramientas-admin-flotante :is(
+  .productividad-email span,
+  .productividad-progreso span,
+  .productividad-resumen span,
+  .productividad-resumen small
+) { color: #4d6784 !important; opacity: 1 !important; }
+
+.barra-herramientas-admin-flotante .productividad-contador {
+  margin-bottom: 7px;
+  border: 1px solid #a9c8e7 !important;
+  border-radius: 12px !important;
+  background: #fff !important;
+  box-shadow: 0 3px 8px rgba(33,59,97,.08);
+}
+.barra-herramientas-admin-flotante .productividad-contador > button {
+  color: #173454 !important;
+  background: #fff !important;
+  opacity: 1 !important;
+}
+.barra-herramientas-admin-flotante .productividad-contador small { color: #178cb9 !important; }
+.barra-herramientas-admin-flotante .productividad-contador b { color: #d87900 !important; }
+.barra-herramientas-admin-flotante .productividad-estado {
+  color: #5c4900 !important;
+  background: #fff3b5 !important;
+  border: 1px solid #e8c747 !important;
+}
+.barra-herramientas-admin-flotante .productividad-email-formulario > button,
+.barra-herramientas-admin-flotante .productividad-guardar,
+.barra-herramientas-admin-flotante .comentario-personal button,
+.barra-herramientas-admin-flotante .comentario-personal-formulario button,
+.barra-herramientas-admin-flotante .alfabeto-resultado button {
+  color: #193657 !important;
+  background: var(--v2-naranja) !important;
+  border-color: #dd8611 !important;
+  font-weight: 900 !important;
+}
+
+.barra-herramientas-admin-flotante .comentarios-rapidos-pestanas button:not(.esta-activa) {
+  color: #2d4b6e !important;
+  background: #fff !important;
+  border: 1px solid #a9c8e7 !important;
+}
+.barra-herramientas-admin-flotante .comentarios-rapidos-lista { gap: 9px !important; }
+.barra-herramientas-admin-flotante .comentario-personal { padding: 12px !important; }
+.barra-herramientas-admin-flotante .comentarios-rapidos-vacio,
+.barra-herramientas-admin-flotante .comentarios-rapidos-mensaje { color: #294867 !important; }
+
+.barra-herramientas-admin-flotante .alfabeto-listado { gap: 6px !important; }
+.barra-herramientas-admin-flotante .alfabeto-listado > div { border-left: 4px solid var(--v2-cielo) !important; }
+.barra-herramientas-admin-flotante .alfabeto-listado strong {
+  color: #173454 !important;
+  background: var(--v2-naranja) !important;
+}
+
+/* Resoluciones: panel más legible, compacto y con alta administrativa. */
+.barra-herramientas-admin-flotante .codigos-rapidos-panel {
+  width: calc(100% - 20px) !important;
+  min-height: 0 !important;
+  max-height: calc(100vh - 72px) !important;
+}
+.barra-herramientas-admin-flotante .codigos-rapidos-categorias > button {
+  grid-template-columns: 52px 1fr 24px;
+  min-height: 78px;
+}
+.barra-herramientas-admin-flotante .codigos-rapidos-categorias :is(small,strong) { color: #173454 !important; }
+.barra-herramientas-admin-flotante .codigos-rapidos-contenido {
+  padding: 14px !important;
+  background: #e9f3fd !important;
+}
+.barra-herramientas-admin-flotante .codigos-rapidos-subcabecera > strong,
+.barra-herramientas-admin-flotante .codigos-rapidos-ayuda,
+.barra-herramientas-admin-flotante .codigos-rapidos-contador { color: #173454 !important; }
+.barra-herramientas-admin-flotante .codigos-rapidos-resultados article {
+  color: #173454 !important;
+  background: #fff !important;
+  border: 1px solid #a9c8e7 !important;
+}
+.barra-herramientas-admin-flotante .codigos-rapidos-resultados article strong { color: #bc6300 !important; }
+.barra-herramientas-admin-flotante .codigos-rapidos-resultados article span { color: #294867 !important; }
+
+.barra-herramientas-admin-flotante .codigos-rapidos-admin {
+  margin: 0 0 12px;
+  padding: 9px;
+  background: #fff;
+  border: 1px solid #91b8df;
+  border-left: 5px solid var(--v2-naranja);
+  border-radius: 12px;
+}
+.barra-herramientas-admin-flotante .codigos-rapidos-admin-activador {
+  width: 100%;
+  min-height: 38px;
+  color: #fff;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+  background: var(--v2-marino);
+  border: 0;
+  border-radius: 9px;
+}
+.barra-herramientas-admin-flotante .codigos-rapidos-admin-activador span { color: var(--v2-naranja); font-size: 1.15rem; }
+.barra-herramientas-admin-flotante .codigos-rapidos-admin form {
+  display: grid;
+  margin-top: 10px;
+  grid-template-columns: minmax(120px,.35fr) minmax(220px,1fr) auto;
+  align-items: end;
+  gap: 8px;
+}
+.barra-herramientas-admin-flotante .codigos-rapidos-admin label { color: #173454; font-size: .68rem; font-weight: 900; }
+.barra-herramientas-admin-flotante .codigos-rapidos-admin :is(input,textarea) { display: block; width: 100%; min-height: 39px; margin-top: 4px; padding: 8px 10px; font: inherit; resize: vertical; }
+.barra-herramientas-admin-flotante .codigos-rapidos-admin button[type="submit"] { min-height: 41px; padding: 8px 14px; color: #173454; font: inherit; font-weight: 950; background: var(--v2-naranja); border: 0; border-radius: 9px; }
+.barra-herramientas-admin-flotante .codigos-rapidos-admin form p { grid-column: 1 / -1; margin: 0; padding: 6px 8px; font-size: .7rem; border-radius: 7px; }
+.barra-herramientas-admin-flotante .codigos-rapidos-admin form p.correcto { color: #12603e; background: #dff6eb; }
+.barra-herramientas-admin-flotante .codigos-rapidos-admin form p.error { color: #8d2632; background: #ffe7ea; }
+
+@media (max-width: 620px) {
+  .barra-herramientas-admin-flotante .codigos-rapidos-admin form { grid-template-columns: 1fr; }
+  .barra-herramientas-admin-flotante .codigos-rapidos-resultados article { grid-template-columns: 64px minmax(0,1fr); }
+  .barra-herramientas-admin-flotante .codigos-rapidos-resultados article button { grid-column: 1 / -1; width: 100%; }
+}
+
+/* Apertura moderna desde la esquina superior derecha. */
+@keyframes herramienta-v2-aparecer {
+  0% {
+    opacity: 0;
+    transform: translate3d(18px, -10px, 0) scale(.94);
+    filter: blur(2px);
+  }
+  65% {
+    opacity: 1;
+    transform: translate3d(-2px, 1px, 0) scale(1.008);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes fondo-ventana-v2-desplegar {
+  0% { opacity: .76; background-color: rgba(94,167,242,.08); }
+  55% { opacity: 1; background-color: rgba(94,167,242,.2); }
+  100% { opacity: 1; background-color: transparent; }
+}
+
+.pagina-barra-admin-activa {
+  transform-origin: top right;
+  transition: background-color 280ms ease;
+}
+
+.pagina-barra-admin-activa:has(.barra-herramientas-admin-flotante button[data-nombre][aria-expanded="true"]) {
+  animation: fondo-ventana-v2-desplegar 360ms cubic-bezier(.22,.9,.28,1) both;
+}
+
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos :is(
+  .fse-rapido-panel,
+  .clima-rapido-panel,
+  .cuadrante-rapido-panel,
+  .comentarios-rapidos-panel,
+  .ubicacion-rapida-panel,
+  .alfabeto-rapido-panel,
+  .productividad-rapida-panel,
+  .telefonos-interes-panel,
+  .codigos-rapidos-panel
+) {
+  right: 8px !important;
+  left: auto !important;
+  width: min(720px, calc(100% - 16px)) !important;
+  margin-inline: 0 !important;
+  transform-origin: top right;
+  will-change: transform, opacity;
+  animation: herramienta-v2-aparecer 320ms cubic-bezier(.22,.9,.28,1) both;
+}
+
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos > * > button[data-nombre][aria-expanded="true"] .herramienta-menu-icono {
+  animation: herramienta-v2-icono 280ms cubic-bezier(.2,.8,.2,1);
+}
+
+@keyframes herramienta-v2-icono {
+  0% { transform: scale(.86); }
+  60% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barra-herramientas-admin-flotante .barra-herramientas-admin-accesos :is(
+    .fse-rapido-panel,
+    .clima-rapido-panel,
+    .cuadrante-rapido-panel,
+    .comentarios-rapidos-panel,
+    .ubicacion-rapida-panel,
+    .alfabeto-rapido-panel,
+    .productividad-rapida-panel,
+    .telefonos-interes-panel,
+    .codigos-rapidos-panel
+  ),
+  .barra-herramientas-admin-flotante .barra-herramientas-admin-accesos > * > button[data-nombre][aria-expanded="true"] .herramienta-menu-icono {
+    animation-duration: 1ms !important;
+  }
+}
+
+/* Tema nocturno exclusivo de la nueva barra flotante. */
+.barra-herramientas-admin-flotante.modo-noche {
+  --v2-cielo: #071724;
+  --v2-cielo-claro: #0d2233;
+  --v2-marino: #142f47;
+  --v2-marino-oscuro: #0a1d2d;
+  --v2-blanco: #172f45;
+  color-scheme: dark;
+  background: #071724;
+}
+.barra-herramientas-admin-flotante.modo-noche .barra-herramientas-admin-accesos { background: #071724; }
+.barra-herramientas-admin-flotante.modo-noche :is(
+  .fse-rapido-panel,
+  .clima-rapido-panel,
+  .cuadrante-rapido-panel,
+  .comentarios-rapidos-panel,
+  .ubicacion-rapida-panel,
+  .alfabeto-rapido-panel,
+  .productividad-rapida-panel,
+  .telefonos-interes-panel,
+  .codigos-rapidos-panel
+) {
+  color: #edf6ff !important;
+  background: #0d2233 !important;
+  border-color: #173f5e !important;
+}
+.barra-herramientas-admin-flotante.modo-noche :is(
+  form,
+  .cuadrante-rapido-filtros,
+  .productividad-identificacion,
+  .productividad-datos-base,
+  .productividad-email,
+  .productividad-progreso,
+  .productividad-resumen > div,
+  .productividad-contador,
+  .comentario-personal,
+  .comentario-personal-formulario,
+  .alfabeto-resultado,
+  .alfabeto-listado > div,
+  .telefonos-interes-lista article,
+  .codigos-rapidos-categorias > button,
+  .codigos-rapidos-resultados article,
+  .codigos-rapidos-admin
+) {
+  color: #edf6ff !important;
+  background: #172f45 !important;
+  border-color: #315a79 !important;
+}
+.barra-herramientas-admin-flotante.modo-noche :is(input,select,textarea) {
+  color: #f5f9fd !important;
+  background: #091b29 !important;
+  border-color: #416b8c !important;
+}
+.barra-herramientas-admin-flotante.modo-noche :is(
+  label,p,span,strong,small,h2,h3,
+  .productividad-identificacion label,
+  .productividad-datos-base label,
+  .productividad-email label,
+  .productividad-email strong,
+  .productividad-contador span,
+  .productividad-contador strong,
+  .productividad-progreso strong,
+  .productividad-resumen strong,
+  .comentarios-operador-selector,
+  .comentario-personal p,
+  .comentario-personal-formulario label,
+  .alfabeto-deletreador label,
+  .alfabeto-listado span,
+  .codigos-rapidos-categorias small,
+  .codigos-rapidos-categorias strong,
+  .codigos-rapidos-resultados article span
+) { color: #edf6ff !important; opacity: 1 !important; }
+.barra-herramientas-admin-flotante.modo-noche :is(
+  .productividad-email span,
+  .productividad-progreso span,
+  .productividad-resumen span,
+  .productividad-resumen small,
+  .codigos-rapidos-ayuda,
+  .codigos-rapidos-contador
+) { color: #b8cada !important; }
+.barra-herramientas-admin-flotante.modo-noche .codigos-rapidos-contenido { background: #0d2233 !important; }
+.barra-herramientas-admin-flotante.modo-noche .barra-flotante-tema { color: #172f45; background: var(--v2-naranja); }
+
+/* Productividad: contraste reforzado en todos sus niveles y estados. */
+.barra-herramientas-admin-flotante.modo-noche .productividad-contenido {
+  color: #f4f8fc !important;
+  background: #0d2233 !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .productividad-contenido :is(label, p, span, strong, small) {
+  color: #f4f8fc !important;
+  opacity: 1 !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .productividad-contenido :is(input, select) {
+  color: #ffffff !important;
+  background: #071724 !important;
+  border-color: #6f9cbd !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .productividad-contenido :is(input, select)::placeholder {
+  color: #b9cede !important;
+  opacity: 1 !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .productividad-contador > button {
+  color: #ffffff !important;
+  background: #244966 !important;
+  border-color: #527d9e !important;
+  opacity: 1 !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .productividad-contador > button:disabled {
+  color: #b9cede !important;
+  background: #19384f !important;
+  opacity: .8 !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .productividad-contador small,
+.barra-herramientas-admin-flotante.modo-noche .productividad-email-titulo span,
+.barra-herramientas-admin-flotante.modo-noche .productividad-resumen small {
+  color: #9edfff !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .productividad-contador b,
+.barra-herramientas-admin-flotante.modo-noche .productividad-email-titulo b {
+  color: #ffd166 !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .productividad-estado {
+  color: #fff4c2 !important;
+  background: #594711 !important;
+  border-color: #d4a926 !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .productividad-email-lista > div {
+  color: #f4f8fc !important;
+  background: #0b1f30 !important;
+  border-color: #416b8c !important;
+}
+
+/* Cuadrante V2: calendario completo, sin recortes y con turnos distinguibles. */
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos .cuadrante-rapido-panel {
+  max-height: none !important;
+  overflow: visible !important;
+}
+.barra-herramientas-admin-flotante .cuadrante-rapido-actualizacion {
+  padding: 8px 16px !important;
+  color: #544000 !important;
+  background: #fff1ad !important;
+  border-bottom: 1px solid #ddb935 !important;
+}
+.barra-herramientas-admin-flotante .cuadrante-rapido-filtros {
+  padding: 12px 16px !important;
+  gap: 12px !important;
+  border-bottom: 1px solid rgba(92, 132, 167, .32) !important;
+}
+.barra-herramientas-admin-flotante .cuadrante-rapido-resultados {
+  z-index: 120 !important;
+  top: calc(100% - 6px) !important;
+  right: 16px !important;
+  width: calc(50% - 22px) !important;
+  max-height: 280px !important;
+  overflow-y: auto !important;
+  border: 2px solid #5e8eb3 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 16px 34px rgba(0, 13, 24, .45) !important;
+}
+.barra-herramientas-admin-flotante .cuadrante-rapido-resultados button {
+  min-height: 46px;
+  padding: 9px 12px !important;
+}
+.barra-herramientas-admin-flotante .cuadrante-rapido-calendario {
+  padding: 12px 16px 16px !important;
+}
+.barra-herramientas-admin-flotante .cuadrante-rapido-calendario > div:first-child {
+  margin-bottom: 10px;
+  padding: 10px 12px !important;
+  background: rgba(94, 167, 242, .11);
+  border: 1px solid rgba(94, 167, 242, .28);
+  border-radius: 12px;
+}
+.barra-herramientas-admin-flotante .cuadrante-rapido-calendario .calendar {
+  gap: 5px !important;
+}
+.barra-herramientas-admin-flotante .cuadrante-rapido-calendario .calendar-weekday {
+  padding: 4px 2px !important;
+  color: #41627e !important;
+  font-size: .6rem !important;
+  font-weight: 950 !important;
+  letter-spacing: .06em;
+}
+.barra-herramientas-admin-flotante .cuadrante-rapido-calendario :is(.calendar-day, .calendar-blank) {
+  min-height: 43px !important;
+  border: 1px solid rgba(74, 111, 143, .28) !important;
+  border-radius: 9px !important;
+}
+.barra-herramientas-admin-flotante .cuadrante-rapido-calendario .calendar-day {
+  padding: 15px 4px 4px !important;
+}
+.barra-herramientas-admin-flotante .cuadrante-rapido-calendario .calendar-date {
+  top: 4px !important;
+  left: 5px !important;
+  font-size: .55rem !important;
+  font-weight: 900 !important;
+}
+.barra-herramientas-admin-flotante .cuadrante-rapido-calendario .calendar-shift strong {
+  color: inherit !important;
+  font-size: .7rem !important;
+  font-weight: 950 !important;
+}
+
+.barra-herramientas-admin-flotante.modo-noche .cuadrante-rapido-filtros,
+.barra-herramientas-admin-flotante.modo-noche .cuadrante-rapido-calendario {
+  color: #edf6ff !important;
+  background: #0d2233 !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .cuadrante-rapido-calendario > div:first-child {
+  background: #142f47 !important;
+  border-color: #315a79 !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .cuadrante-rapido-calendario .calendar-weekday {
+  color: #8edcff !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .cuadrante-rapido-calendario .calendar-blank {
+  background: #091a28 !important;
+  border-color: #18374e !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .cuadrante-rapido-calendario .calendar-day {
+  color: #f7fbff !important;
+  background: #1b3b53 !important;
+  border-color: #416b8c !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.08), 0 2px 5px rgba(0,0,0,.2) !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .cuadrante-rapido-calendario .calendar-day.morning {
+  color: #2c2100 !important;
+  background: #ffd35a !important;
+  border-color: #f4b920 !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .cuadrante-rapido-calendario .calendar-day.afternoon {
+  color: #321400 !important;
+  background: #ff9e55 !important;
+  border-color: #e97824 !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .cuadrante-rapido-calendario .calendar-day.night {
+  color: #f7fbff !important;
+  background: #4169a9 !important;
+  border-color: #6f9fdf !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .cuadrante-rapido-calendario .calendar-day.vacation {
+  color: #062d24 !important;
+  background: #5bd6ae !important;
+  border-color: #27b689 !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .cuadrante-rapido-calendario .calendar-day.leave {
+  color: #fdf8ff !important;
+  background: #7655a8 !important;
+  border-color: #a889d2 !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .cuadrante-rapido-calendario .calendar-day.other {
+  color: #182531 !important;
+  background: #b9cedd !important;
+  border-color: #91afc4 !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .cuadrante-rapido-calendario .calendar-day.off {
+  color: #a9c0d1 !important;
+  background: #122b3e !important;
+  border-color: #284b64 !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .cuadrante-rapido-calendario .calendar-day :is(.calendar-date, .calendar-shift strong) {
+  color: inherit !important;
+  opacity: 1 !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .cuadrante-rapido-resultados {
+  background: #102a3e !important;
+  border-color: #5e8eb3 !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .cuadrante-rapido-resultados button {
+  color: #f3f8fc !important;
+  background: #102a3e !important;
+  border-bottom: 1px solid #315a79 !important;
+}
+.barra-herramientas-admin-flotante.modo-noche .cuadrante-rapido-resultados button:hover {
+  color: #182b3d !important;
+  background: #ffd35a !important;
+}
+
+@media (max-height: 620px) {
+  .barra-herramientas-admin-flotante .barra-herramientas-admin-accesos .cuadrante-rapido-panel {
+    max-height: calc(100vh - 72px) !important;
+    overflow-y: auto !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .herramientas-cabecera .boton-barra-herramientas-admin.compacto strong { font-size: .58rem; }
+  .herramientas-cabecera .boton-barra-herramientas-admin.compacto b { display: none; }
+}

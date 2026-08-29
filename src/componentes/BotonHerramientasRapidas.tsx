@@ -86,8 +86,11 @@ export const BotonHerramientasRapidas: React.FC = () => {
   return (
     <>
       <button className="boton-herramientas-rapidas" type="button" onClick={abrirHerramientas}>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM4 9h16M8 5v4"/><path d="M8 13h3M8 16h6"/></svg>
-        <span>Herramientas rápidas</span><small>↗</small>
+        <span className="acceso-cabecera-icono" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 9h16M8 5v4"/><path d="M8 13h3M8 16h6"/></svg>
+        </span>
+        <span className="acceso-cabecera-texto"><small>Acceso clásico</small><strong>Herramientas rápidas</strong></span>
+        <span className="acceso-cabecera-flecha" aria-hidden="true">↗</span>
       </button>
       {contenedorFlotante && ventanaFlotante && createPortal(
         <PaginaHerramientasRapidas

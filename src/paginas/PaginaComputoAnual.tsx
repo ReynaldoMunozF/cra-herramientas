@@ -17,8 +17,18 @@ const MESES = [
 const DIAS_CORTOS = ["D", "L", "M", "X", "J", "V", "S"];
 const CODIGOS: CodigoTurno[] = ["", "M", "T", "N", "1", "2", "B", "P", "V"];
 const OBJETIVO_MENSUAL = 162;
-const OBJETIVO_ANUAL = OBJETIVO_MENSUAL * 12;
 const CLAVE_MATRICULA = "cra-computo-anual-matricula";
+
+// Ajustes reproducidos de la plantilla oficial de cómputo de 2026.
+const objetivoMes = (anio: number, mes: number) =>
+  OBJETIVO_MENSUAL + (anio === 2026 && mes === 1 ? -8 : 0);
+
+const ajusteHorasMes = (anio: number, mes: number) =>
+  anio === 2026 && mes === 2 ? 4 : 0;
+
+const objetivoAnual = (anio: number) =>
+  Array.from({ length: 12 }, (_, indice) => objetivoMes(anio, indice + 1))
+    .reduce((total, horas) => total + horas, 0);
 
 const operadores = Array.from(
   new Map(
@@ -39,7 +49,7 @@ const diasDelMes = (anio: number, mes: number) => new Date(anio, mes, 0).getDate
 const horasCodigo = (codigo: CodigoTurno) => {
   if (["M", "T", "N", "P", "B"].includes(codigo)) return 8;
   if (codigo === "1" || codigo === "2") return 12;
-  if (codigo === "V") return 5.32;
+  if (codigo === "V") return 5.23;
   return 0;
 };
 
@@ -131,22 +141,26 @@ export const PaginaComputoAnual: React.FC = () => {
   const codigosMes = Array.from({ length: cantidadDias }, (_, indice) =>
     turnos[fechaClave(anio, mes, indice + 1)] ?? ""
   );
-  const horasMes = codigosMes.reduce((total, codigo) => total + horasCodigo(codigo), 0);
+  const objetivoMesActual = objetivoMes(anio, mes);
+  const horasMes = codigosMes.reduce((total, codigo) => total + horasCodigo(codigo), 0)
+    + ajusteHorasMes(anio, mes);
   const nocturnasMes = codigosMes.reduce(
     (total, codigo) => total + horasNocturnasCodigo(codigo),
     0
   );
-  const diferenciaMes = horasMes - OBJETIVO_MENSUAL;
+  const diferenciaMes = horasMes - objetivoMesActual;
 
   const codigosAnio = Object.entries(turnos)
     .filter(([fecha]) => fecha.startsWith(`${anio}-`))
     .map(([, codigo]) => codigo);
-  const horasAnio = codigosAnio.reduce((total, codigo) => total + horasCodigo(codigo), 0);
+  const horasAnio = codigosAnio.reduce((total, codigo) => total + horasCodigo(codigo), 0)
+    + ajusteHorasMes(anio, 2);
   const nocturnasAnio = codigosAnio.reduce(
     (total, codigo) => total + horasNocturnasCodigo(codigo),
     0
   );
-  const diferenciaAnio = horasAnio - OBJETIVO_ANUAL;
+  const objetivoAnioActual = objetivoAnual(anio);
+  const diferenciaAnio = horasAnio - objetivoAnioActual;
 
   return (
     <main className="pagina-computo-anual">
@@ -206,7 +220,7 @@ export const PaginaComputoAnual: React.FC = () => {
         <section className="computo-mes" aria-label={`Cómputo de ${MESES[mes - 1]}`}>
           <header>
             <h2>{MESES[mes - 1].toUpperCase()} {anio}</h2>
-            <span>Objetivo mensual: {OBJETIVO_MENSUAL} h</span>
+            <span>Objetivo mensual: {objetivoMesActual} h</span>
           </header>
 
           <div className="computo-tabla-contenedor">
@@ -282,10 +296,10 @@ export const PaginaComputoAnual: React.FC = () => {
               <span>Resumen automático</span>
               <h2 id="titulo-resumen-anual">Acumulado de {anio}</h2>
             </div>
-            <strong>{formatearHoras(horasAnio)} / {OBJETIVO_ANUAL} h</strong>
+            <strong>{formatearHoras(horasAnio)} / {objetivoAnioActual} h</strong>
           </header>
           <div className="computo-progreso">
-            <span style={{ width: `${Math.min(100, (horasAnio / OBJETIVO_ANUAL) * 100)}%` }} />
+            <span style={{ width: `${Math.min(100, (horasAnio / objetivoAnioActual) * 100)}%` }} />
           </div>
           <div className="computo-resumen-datos">
             <p><span>Horas registradas</span><strong>{formatearHoras(horasAnio)} h</strong></p>

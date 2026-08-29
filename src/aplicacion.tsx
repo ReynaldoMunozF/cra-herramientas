@@ -14,6 +14,8 @@ import { FeedbackGlobal } from "./componentes/FeedbackGlobal";
 import { ConsejosOperador } from "./componentes/ConsejosOperador";
 import { PaginaComputoAnual } from "./paginas/PaginaComputoAnual";
 import { PaginaZonaDescanso } from "./paginas/PaginaZonaDescanso";
+import { PaginaBarraHerramientasAdmin } from "./paginas/PaginaBarraHerramientasAdmin";
+import { BotonBarraHerramientasAdmin } from "./componentes/BotonBarraHerramientasAdmin";
 
 // Las hojas se importan en orden: fundamentos, estructura y módulos concretos.
 // Mantener este orden evita que una regla general sobrescriba estilos específicos.
@@ -29,6 +31,8 @@ import "./estilos/reloj.css";
 import "./estilos/administracion-manual.css";
 import "./estilos/avisos-meteorologicos.css";
 import "./estilos/herramientas-rapidas.css";
+import "./estilos/barra-herramientas-admin.css";
+import "./estilos/telefonos-interes.css";
 import "./estilos/ubicacion.css";
 import "./estilos/alfabeto-fonetico.css";
 import "./estilos/productividad.css";
@@ -38,8 +42,11 @@ import "./estilos/estadisticas.css";
 import "./estilos/computo-anual.css";
 import "./estilos/zona-descanso.css";
 import "./estilos/cra-social.css";
+import "./estilos/artilleria.css";
+import "./estilos/artilleria-movimiento.css";
 import "./estilos/codigos-operativos.css";
 import "./cuadrante/cuadrante.css";
+import "./estilos/barra-herramientas-admin-v2.css";
 
 /**
  * Componente raíz de la aplicación.
@@ -50,7 +57,8 @@ const ContenidoAplicacion: React.FC = () => {
   const rutaActual = useLocation().pathname;
   const esVentanaHerramientas = rutaActual === "/herramientas-rapidas";
   const esVentanaZonaDescanso = rutaActual === "/zona-descanso";
-  const esVentanaAuxiliar = esVentanaHerramientas || esVentanaZonaDescanso;
+  const esBarraHerramientasAdmin = rutaActual === "/administracion/barra-herramientas";
+  const esVentanaAuxiliar = esVentanaHerramientas || esVentanaZonaDescanso || esBarraHerramientasAdmin;
   // Conservamos los avisos meteorológicos preparados, pero quedan ocultos
   // temporalmente hasta decidir su nueva ubicación en la portada.
   const MOSTRAR_AVISOS_METEOROLOGICOS = false;
@@ -64,6 +72,7 @@ const ContenidoAplicacion: React.FC = () => {
           <RelojGlobal />
           <div className="herramientas-cabecera">
             <BotonHerramientasRapidas />
+            <BotonBarraHerramientasAdmin compacto />
           </div>
         </div>
         <a className="boton-cerrar-sesion" href="/cerrar-sesion" aria-label="Cerrar sesión">Salir</a>
@@ -74,6 +83,7 @@ const ContenidoAplicacion: React.FC = () => {
       <Rutas>
         <Ruta path="/herramientas-rapidas" element={<PaginaHerramientasRapidas />} />
         <Ruta path="/zona-descanso" element={<PaginaZonaDescanso />} />
+        <Ruta path="/administracion/barra-herramientas" element={<PaginaBarraHerramientasAdmin />} />
 
         {/* Portada privada y escalable con acceso a todas las herramientas. */}
         <Ruta path="/" element={<PaginaInicio />} />

@@ -1,0 +1,19 @@
+.artilleria-movimiento {
+  display: grid;
+  grid-template-columns: auto 46px minmax(100px, 1fr) 46px;
+  align-items: center;
+  gap: 9px;
+  margin-top: 10px;
+  padding: 9px 14px;
+  color: #effaff;
+  background: #091827;
+  border: 1px solid #68cdea33;
+  border-radius: 10px;
+}
+.artilleria-movimiento > div:first-child { display: grid; min-width: 105px; }
+.artilleria-movimiento small { color: #70daf5; font-size: .58rem; font-weight: 900; letter-spacing: .12em; }
+.artilleria-movimiento button { height: 36px; color: #eafaff; background: #17344b; border: 1px solid #63d9f655; border-radius: 7px; cursor: pointer; }
+.artilleria-movimiento button:disabled { opacity: .35; cursor: not-allowed; }
+.artilleria-movimiento-barra { height: 7px; overflow: hidden; background: #020b14; border-radius: 8px; }
+.artilleria-movimiento-barra i { display: block; height: 100%; background: linear-gradient(90deg,#62efaf,#71dcf5); border-radius: 8px; transition: width .15s; }
+@media (max-width: 600px) { .artilleria-movimiento { grid-template-columns: 46px 1fr 46px; } .artilleria-movimiento > div:first-child { grid-column: 1 / 4; } }

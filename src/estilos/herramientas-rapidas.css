@@ -1,6 +1,23 @@
-.boton-herramientas-rapidas { display: inline-flex; min-height: 33px; padding: 4px 9px 4px 5px; align-items: center; gap: 7px; color: white; font: inherit; font-size: .72rem; font-weight: 800; cursor: pointer; background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.38); border-bottom: 2px solid var(--prosegur-yellow); border-radius: 9px; }
-.boton-herramientas-rapidas svg { width: 23px; height: 23px; padding: 4px; fill: none; stroke: var(--ink); stroke-width: 1.7; background: var(--prosegur-yellow); border-radius: 6px; }
-.boton-herramientas-rapidas small { color: rgba(255,255,255,.65); font-size: .65rem; }.boton-herramientas-rapidas:hover { background: rgba(255,255,255,.17); }
+.boton-herramientas-rapidas {
+  display: inline-flex; min-width: 174px; min-height: 46px; padding: 5px 9px 5px 6px; align-items: center; gap: 8px;
+  color: white; font: inherit; cursor: pointer; background: linear-gradient(135deg,rgba(255,255,255,.13),rgba(255,255,255,.06));
+  border: 1px solid rgba(255,255,255,.25); border-radius: 11px; box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+  transition: transform .18s ease, background .18s ease, border-color .18s ease;
+}
+.boton-herramientas-rapidas .acceso-cabecera-icono { display:grid; width:34px; height:34px; flex:0 0 34px; place-items:center; background:var(--prosegur-yellow); border-radius:9px; box-shadow:0 4px 10px rgba(0,0,0,.2); }
+.boton-herramientas-rapidas svg { width:21px; height:21px; padding:0; fill:none; stroke:var(--ink); stroke-width:1.8; background:none; border-radius:0; }
+.boton-herramientas-rapidas .acceso-cabecera-texto { display:block; min-width:0; text-align:left; line-height:1.05; }
+.boton-herramientas-rapidas .acceso-cabecera-texto small { display:block; margin-bottom:3px; color:#aee9ff; font-size:.48rem; font-weight:850; letter-spacing:.08em; text-transform:uppercase; }
+.boton-herramientas-rapidas .acceso-cabecera-texto strong { display:block; font-size:.7rem; white-space:nowrap; }
+.boton-herramientas-rapidas .acceso-cabecera-flecha { margin-left:auto; color:rgba(255,255,255,.72); font-size:.75rem; }
+.boton-herramientas-rapidas:hover { background:rgba(255,255,255,.18); border-color:rgba(255,255,255,.5); transform:translateY(-1px); }
+.boton-herramientas-rapidas:focus-visible { outline:3px solid rgba(255,212,0,.5); outline-offset:2px; }
+@media (max-width:560px) {
+  .boton-herramientas-rapidas { min-width:0; flex:1 1 50%; }
+  .boton-herramientas-rapidas .acceso-cabecera-texto small { display:none; }
+  .boton-herramientas-rapidas .acceso-cabecera-texto strong { font-size:.62rem; }
+  .boton-herramientas-rapidas .acceso-cabecera-flecha { display:none; }
+}
 .ventana-herramientas { position: relative; min-height: 100vh; padding-bottom: 24px; color: var(--ink); background: linear-gradient(160deg, #eef7fb, #f8fafc 45%, #e8f1f6); }
 .ventana-herramientas > header { display: flex; padding: 18px 20px; align-items: center; justify-content: space-between; gap: 12px; color: white; background: linear-gradient(120deg, #10283e, #176a9b); border-bottom: 4px solid var(--prosegur-yellow); }
 .ventana-herramientas > header span { color: var(--prosegur-yellow); font-size: .62rem; font-weight: 900; letter-spacing: .09em; text-transform: uppercase; }.ventana-herramientas > header h1 { margin-top: 3px; font-size: 1.35rem; }

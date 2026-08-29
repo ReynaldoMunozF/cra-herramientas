@@ -1,4 +1,5 @@
 import { ContextoPagina, responderJson } from "./_utilidades";
+import catalogoPostalJson from "../_datos/codigos-postales-es.json";
 
 interface LocalizacionPostal {
   nombre: string;
@@ -8,6 +9,10 @@ interface LocalizacionPostal {
   longitud: number;
   fuente: string;
 }
+
+type EntradaCatalogoPostal = [string, string, string, number, number, "a" | "c", string];
+
+const catalogoPostal = catalogoPostalJson as Record<string, EntradaCatalogoPostal>;
 
 const provinciasPorPrefijo: Record<string, string> = {
   "01":"Álava","02":"Albacete","03":"Alicante","04":"Almería","05":"Ávila","06":"Badajoz",
@@ -159,7 +164,24 @@ export const onRequestGet = async (contexto: ContextoPagina) => {
     `SELECT municipio AS nombre, comunidad, provincia, latitud, longitud, fuente
      FROM codigos_postales_cache WHERE codigo_postal = ?`,
   ).bind(codigoPostal).first<LocalizacionPostal>();
-  if (cache?.fuente.includes(VERSION_CACHE)) return responderJson(cache);
+  // Los códigos que ya funcionaban se conservan con prioridad, aunque procedan
+  // de una versión anterior del servicio externo.
+  if (cache?.nombre) return responderJson(cache);
+
+  const entradaCatalogo = catalogoPostal[codigoPostal];
+  if (entradaCatalogo) {
+    const [nombre, provinciaCatalogo, comunidad, latitud, longitud, vigencia, fuentes] = entradaCatalogo;
+    return responderJson({
+      nombre,
+      comunidad,
+      provincia: provinciaCatalogo,
+      latitud,
+      longitud,
+      fuente: vigencia === "a"
+        ? `Catálogo nacional · INE 2026-07 · ${fuentes}`
+        : `Catálogo nacional complementario · ${fuentes}`,
+    });
+  }
 
   let localizacion: LocalizacionPostal | null = null;
   try {

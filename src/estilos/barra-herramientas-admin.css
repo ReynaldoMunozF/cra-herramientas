@@ -1,0 +1,312 @@
+.barra-herramientas-admin {
+  position: sticky;
+  z-index: 75;
+  top: 8px;
+  width: min(calc(100% - 32px), 1180px);
+  margin: 14px auto 20px;
+  color: white;
+  background: rgba(5, 47, 73, .97);
+  border: 1px solid rgba(126, 220, 255, .38);
+  border-bottom: 4px solid var(--prosegur-yellow);
+  border-radius: 15px;
+  box-shadow: 0 12px 35px rgba(0, 28, 47, .25);
+  backdrop-filter: blur(12px);
+}
+
+.acceso-barra-herramientas-admin { width: min(calc(100% - 32px), 1180px); margin: 14px auto 20px; }
+.boton-barra-herramientas-admin {
+  display: flex;
+  width: 100%;
+  padding: 11px 14px;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  text-align: left;
+  cursor: pointer;
+  background: linear-gradient(120deg, #073b5b, #075f87);
+  border: 1px solid #60c9ec;
+  border-bottom: 4px solid var(--prosegur-yellow);
+  border-radius: 13px;
+  box-shadow: 0 9px 24px rgba(0, 38, 61, .16);
+}
+.boton-barra-herramientas-admin > span { display: grid; width: 35px; height: 35px; flex: 0 0 35px; place-items: center; color: #12364f; background: var(--prosegur-yellow); border-radius: 9px; }
+.boton-barra-herramientas-admin small,
+.boton-barra-herramientas-admin strong { display: block; }
+.boton-barra-herramientas-admin small { color: #a6e8ff; font-size: .58rem; font-weight: 900; text-transform: uppercase; }
+.boton-barra-herramientas-admin strong { margin-top: 2px; font-size: .85rem; }
+.boton-barra-herramientas-admin b { margin-left: auto; font-size: 1.15rem; }
+.boton-barra-herramientas-admin:hover { filter: brightness(1.08); }
+
+/* Versión compacta situada junto a Herramientas rápidas en el encabezado. */
+.herramientas-cabecera .boton-barra-herramientas-admin.compacto {
+  width: auto;
+  min-width: 174px;
+  min-height: 46px;
+  margin: 0;
+  padding: 5px 9px 5px 6px;
+  gap: 8px;
+  background: linear-gradient(135deg,#0875a0,#07506f);
+  border: 1px solid #6ddcff;
+  border-radius: 11px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
+  transition: transform .18s ease, filter .18s ease, border-color .18s ease;
+}
+.herramientas-cabecera .boton-barra-herramientas-admin.compacto > span { width: 34px; height: 34px; flex-basis: 34px; font-size:1.05rem; border-radius: 9px; box-shadow:0 4px 10px rgba(0,0,0,.2); }
+.herramientas-cabecera .boton-barra-herramientas-admin.compacto small {
+  color: #ffe26a;
+  width: fit-content;
+  margin-bottom: 3px;
+  padding: 0;
+  font-size: .48rem;
+  letter-spacing: .08em;
+  background: none;
+  border-radius: 0;
+  animation: none;
+}
+.herramientas-cabecera .boton-barra-herramientas-admin.compacto strong { margin: 0; font-size: .7rem; white-space: nowrap; }
+.herramientas-cabecera .boton-barra-herramientas-admin.compacto b { color:rgba(255,255,255,.72); font-size: .75rem; }
+.herramientas-cabecera .boton-barra-herramientas-admin.compacto:hover { transform:translateY(-1px); }
+.herramientas-cabecera .boton-barra-herramientas-admin.compacto:focus-visible { outline:3px solid rgba(109,220,255,.45); outline-offset:2px; }
+@media (max-width:560px) {
+  .herramientas-cabecera .boton-barra-herramientas-admin.compacto { min-width:0; flex:1 1 50%; }
+  .herramientas-cabecera .boton-barra-herramientas-admin.compacto small { display:none; }
+  .herramientas-cabecera .boton-barra-herramientas-admin.compacto strong { font-size:.62rem; }
+}
+@keyframes etiqueta-nueva-pulso { 50% { filter: brightness(1.18); box-shadow: 0 0 0 3px rgba(255,212,0,.14); } }
+
+.barra-herramientas-admin-flotante {
+  position: relative;
+  top: auto;
+  width: calc(100% - 4px);
+  margin: 2px;
+  box-sizing: border-box;
+}
+.barra-herramientas-admin-flotante .barra-herramientas-admin-cabecera { display: none; }
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos {
+  grid-auto-columns: minmax(0, 1fr);
+  height: 58px;
+  padding: 4px 5px 6px;
+  box-sizing: border-box;
+}
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos > * { height: 46px !important; }
+.barra-herramientas-admin-flotante .barra-flotante-tema {
+  display: grid;
+  width: 100%;
+  height: 46px !important;
+  min-width: 0;
+  min-height: 46px;
+  padding: 3px;
+  place-items: center;
+  color: #fff;
+  font-size: 1.25rem;
+  cursor: pointer;
+  background: #213b61;
+  border: 0;
+  border-radius: 13px;
+}
+.barra-herramientas-admin-flotante .barra-flotante-tema:hover { background: #172c49; }
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos > * > button[data-nombre] {
+  height: 46px !important;
+  min-height: 46px !important;
+  max-height: 46px !important;
+  padding: 3px !important;
+  justify-content: center !important;
+}
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos button[data-nombre]::after { display: none !important; }
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos button[data-nombre] .herramienta-menu-icono {
+  width: 39px !important;
+  height: 39px !important;
+  min-width: 39px !important;
+  flex-basis: 39px !important;
+}
+.pagina-barra-admin-activa { min-width: 0 !important; overflow: hidden !important; background: transparent !important; }
+.barra-admin-estado { display: grid; min-height: 100vh; padding: 20px; place-items: center; color: white; font-weight: 800; background: #052f49; }
+
+.barra-herramientas-admin-cabecera {
+  display: flex;
+  min-height: 45px;
+  padding: 7px 12px;
+  align-items: center;
+  gap: 9px;
+  border-bottom: 1px solid rgba(255, 255, 255, .12);
+}
+.barra-herramientas-admin-cabecera > span {
+  display: grid;
+  width: 29px;
+  height: 29px;
+  flex: 0 0 29px;
+  place-items: center;
+  color: #12364f;
+  font-size: .9rem;
+  background: var(--prosegur-yellow);
+  border-radius: 8px;
+}
+.barra-herramientas-admin-cabecera small,
+.barra-herramientas-admin-cabecera strong { display: block; }
+.barra-herramientas-admin-cabecera small { color: #8edfff; font-size: .56rem; font-weight: 900; text-transform: uppercase; }
+.barra-herramientas-admin-cabecera strong { margin-top: 1px; font-size: .84rem; }
+.barra-herramientas-admin-cabecera em { margin-left: auto; color: #c8e3ef; font-size: .65rem; font-style: normal; }
+
+.barra-herramientas-admin-accesos {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(92px, 1fr);
+  gap: 3px;
+  padding: 5px 7px 7px;
+  overflow: visible;
+}
+
+/* Convierte los activadores existentes en pestañas compactas sin cambiar su lógica. */
+.barra-herramientas-admin-accesos > * {
+  position: static !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: 50px !important;
+}
+.barra-herramientas-admin-accesos > * > button[data-nombre] {
+  position: relative !important;
+  display: flex !important;
+  width: 100% !important;
+  height: 50px !important;
+  min-width: 0 !important;
+  min-height: 50px !important;
+  max-height: 50px !important;
+  margin: 0 !important;
+  padding: 4px 5px !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 5px !important;
+  overflow: hidden !important;
+  color: #f6fbfe !important;
+  background: rgba(255, 255, 255, .055) !important;
+  border: 1px solid transparent !important;
+  border-radius: 9px !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+.barra-herramientas-admin-accesos > * > button[data-nombre]:hover {
+  background: rgba(255, 255, 255, .12) !important;
+  border-color: rgba(126, 220, 255, .35) !important;
+}
+.barra-herramientas-admin-accesos > * > button[data-nombre][aria-expanded="true"] {
+  color: #082e47 !important;
+  background: var(--prosegur-yellow) !important;
+  border-color: #fff09a !important;
+}
+.barra-herramientas-admin-accesos button[data-nombre] .herramienta-menu-icono {
+  display: block !important;
+  width: 35px !important;
+  height: 35px !important;
+  min-width: 35px !important;
+  flex: 0 0 35px !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.barra-herramientas-admin-accesos button[data-nombre] .herramienta-menu-icono img { width: 100%; height: 100%; object-fit: contain; }
+.barra-herramientas-admin-accesos button[data-nombre]::after {
+  content: attr(data-nombre);
+  min-width: 0;
+  overflow: hidden;
+  font-size: .6rem;
+  font-weight: 850;
+  line-height: 1.08;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+.barra-herramientas-admin-accesos button[data-nombre] > :not(.herramienta-menu-icono) { display: none !important; }
+
+/* Todos los paneles se despliegan bajo la barra y nunca como ventana exterior. */
+.barra-herramientas-admin-accesos .fse-rapido-panel,
+.barra-herramientas-admin-accesos .clima-rapido-panel,
+.barra-herramientas-admin-accesos .cuadrante-rapido-panel,
+.barra-herramientas-admin-accesos .comentarios-rapidos-panel,
+.barra-herramientas-admin-accesos .ubicacion-rapida-panel,
+.barra-herramientas-admin-accesos .alfabeto-rapido-panel,
+.barra-herramientas-admin-accesos .productividad-rapida-panel,
+.barra-herramientas-admin-accesos .telefonos-interes-panel,
+.barra-herramientas-admin-accesos .codigos-rapidos-panel {
+  position: absolute !important;
+  z-index: 90 !important;
+  top: calc(100% + 7px) !important;
+  right: 8px !important;
+  bottom: auto !important;
+  left: 8px !important;
+  width: auto !important;
+  max-width: 720px !important;
+  max-height: min(64vh, 540px) !important;
+  margin-inline: auto !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  border-radius: 14px !important;
+  box-shadow: 0 22px 55px rgba(0, 22, 38, .38) !important;
+}
+
+@media (max-width: 700px) {
+  .barra-herramientas-admin { top: 4px; width: calc(100% - 16px); }
+  .barra-herramientas-admin-cabecera em { display: none; }
+  .barra-herramientas-admin-accesos {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+  }
+  .barra-herramientas-admin-accesos > * > button[data-nombre] { justify-content: center !important; }
+  .barra-herramientas-admin-accesos button[data-nombre]::after { display: none; }
+  .barra-herramientas-admin-accesos .fse-rapido-panel,
+  .barra-herramientas-admin-accesos .clima-rapido-panel,
+  .barra-herramientas-admin-accesos .cuadrante-rapido-panel,
+  .barra-herramientas-admin-accesos .comentarios-rapidos-panel,
+  .barra-herramientas-admin-accesos .ubicacion-rapida-panel,
+  .barra-herramientas-admin-accesos .alfabeto-rapido-panel,
+  .barra-herramientas-admin-accesos .productividad-rapida-panel,
+  .barra-herramientas-admin-accesos .telefonos-interes-panel,
+  .barra-herramientas-admin-accesos .codigos-rapidos-panel { max-height: 68vh !important; }
+}
+
+/* La ventana flotante conserva siempre una sola fila, incluso siendo estrecha. */
+@media (max-width: 700px) {
+  .barra-herramientas-admin-flotante {
+    top: auto;
+    width: calc(100% - 4px);
+    margin: 2px;
+  }
+  .barra-herramientas-admin-flotante .barra-herramientas-admin-accesos {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+  }
+}
+
+/* En la ventana real se utiliza toda la altura: evita el scroll prematuro del 64%. */
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos .fse-rapido-panel,
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos .clima-rapido-panel,
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos .cuadrante-rapido-panel,
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos .comentarios-rapidos-panel,
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos .ubicacion-rapida-panel,
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos .alfabeto-rapido-panel,
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos .productividad-rapida-panel,
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos .telefonos-interes-panel,
+.barra-herramientas-admin-flotante .barra-herramientas-admin-accesos .codigos-rapidos-panel {
+  top: calc(100% + 5px) !important;
+  max-height: calc(100vh - 72px) !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+}
+
+/* Chrome puede recordar un ancho anterior; los nueve accesos siguen entrando. */
+@media (max-width: 520px) {
+  .barra-herramientas-admin-flotante .barra-herramientas-admin-accesos {
+    gap: 1px;
+    padding-inline: 3px;
+  }
+  .barra-herramientas-admin-flotante .barra-herramientas-admin-accesos button[data-nombre] .herramienta-menu-icono {
+    width: clamp(27px, 8.2vw, 37px) !important;
+    height: clamp(27px, 8.2vw, 37px) !important;
+    min-width: clamp(27px, 8.2vw, 37px) !important;
+    flex-basis: clamp(27px, 8.2vw, 37px) !important;
+  }
+}

@@ -1,9 +1,10 @@
 import datosJulio from "./datos-julio-2026.json";
 import datosAgosto from "./datos-agosto-2026.json";
+import datosSeptiembre from "./datos-septiembre-2026.json";
 import { CuadranteMensual, OperadorCuadrante, OperadorJson } from "./tipos";
 
 /** Fecha indicada por la empresa para esta edición de los dos cuadrantes. */
-export const FECHA_ACTUALIZACION_CUADRANTES = "1 de agosto de 2026";
+export const FECHA_ACTUALIZACION_CUADRANTES = "21 de agosto de 2026";
 
 /** Días abreviados utilizados en la cabecera del calendario de escritorio. */
 export const DIAS_SEMANA = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
@@ -13,7 +14,6 @@ export const DIAS_SEMANA_COMPLETOS = [
   "lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo",
 ];
 
-/** Agosto de 2026 comienza en sábado: cinco huecos desde una semana que empieza en lunes. */
 /**
  * Convierte las claves técnicas del JSON a nombres de dominio en español.
  * De esta forma, el resto de la aplicación no depende del formato de extracción del PDF.
@@ -35,6 +35,12 @@ const normalizarOperadores = (operadores: OperadorJson[]): OperadorCuadrante[] =
 
 /** Meses oficiales disponibles, ordenados del más reciente al más antiguo. */
 export const CUADRANTES: CuadranteMensual[] = [
+  {
+    id: "septiembre-2026", mes: "septiembre", mesMayusculas: "SEPTIEMBRE", numeroMes: 9, anio: 2026,
+    // Septiembre de 2026 comienza en martes: un hueco desde una semana que empieza en lunes.
+    desplazamientoPrimerDia: 1,
+    operadores: normalizarOperadores(datosSeptiembre as OperadorJson[]),
+  },
   {
     id: "agosto-2026", mes: "agosto", mesMayusculas: "AGOSTO", numeroMes: 8, anio: 2026,
     desplazamientoPrimerDia: 5,

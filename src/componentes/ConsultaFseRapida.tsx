@@ -1,6 +1,7 @@
 import React from "react";
 import { LocalizacionPostal, localizarCodigoPostal } from "../servicios/localizacionPostal";
 import { registrarUso } from "../servicios/estadisticasUso";
+import { esMunicipioPoliciaNacionalDocumentado } from "../datos/demarcacionesPoliciaNacional";
 import iconoFse from "../recursos/herramientas/fse.svg";
 
 interface OrientacionFse {
@@ -73,6 +74,15 @@ const calcularOrientacion = (codigoPostal: string, ubicacion: LocalizacionPostal
       principal: cuerpoVerificado,
       concurrentes: cuerpoVerificado === "Policía Nacional" ? ["Guardia Civil"] : ["Policía Nacional"],
       criterio: "Demarcación del municipio contrastada mediante fuentes oficiales.",
+      confianza: "media",
+    };
+  }
+
+  if (esMunicipioPoliciaNacionalDocumentado(ubicacion.nombre, ubicacion.provincia || "")) {
+    return {
+      principal: "Policía Nacional",
+      concurrentes: ["Guardia Civil"],
+      criterio: "Municipio incluido en la relación documental de demarcaciones de Policía Nacional.",
       confianza: "media",
     };
   }

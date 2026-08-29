@@ -41,7 +41,11 @@
   to { opacity: 1; transform: translateY(0); }
 }
 .barra-superior-centro { position: relative; display: flex; align-items: center; justify-self: center; flex-direction: column; }
-.herramientas-cabecera { display: flex; margin-top: 2px; justify-content: center; gap: 7px; }
+.herramientas-cabecera {
+  display: flex; margin-top: 4px; padding: 4px; justify-content: center; gap: 5px;
+  background: rgba(3,25,42,.38); border: 1px solid rgba(255,255,255,.13); border-radius: 15px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 7px 16px rgba(0,18,31,.12);
+}
 .herramientas-cabecera .clima-rapido, .herramientas-cabecera .fse-rapido { position: static; display: flex; align-items: center; flex-direction: column; }
 .herramientas-cabecera .clima-rapido-panel, .herramientas-cabecera .fse-rapido-panel { position: absolute; z-index: 120; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); }
 .herramientas-cabecera .clima-rapido-activador, .herramientas-cabecera .fse-activador { min-height: 31px; padding: 3px 9px 3px 4px; gap: 6px; border-bottom-width: 2px; border-radius: 9px; box-shadow: none; }
@@ -60,7 +64,7 @@
   .barra-superior-espacio { display: none; }
   .reloj-global { justify-self: start; gap: 7px; padding-left: 0; }
   .barra-superior-centro { align-items: flex-start; justify-self: start; }
-  .herramientas-cabecera { justify-content: flex-start; }
+  .herramientas-cabecera { width: min(100%, 390px); justify-content: flex-start; }
   .herramientas-cabecera .clima-rapido-panel, .herramientas-cabecera .fse-rapido-panel { position: fixed; top: 94px; right: 12px; left: 12px; width: auto; transform: none; }
   .reloj-icono { width: 34px; height: 34px; }
   .reloj-icono svg { width: 20px; height: 20px; }
