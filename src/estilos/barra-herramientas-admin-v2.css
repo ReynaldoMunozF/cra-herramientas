@@ -398,6 +398,82 @@
   }
 }
 
+/* Avisos claros: conservan fondo amarillo pero nunca heredan texto blanco. */
+.barra-herramientas-admin-flotante.modo-noche :is(
+  .fse-advertencia,
+  .cuadrante-rapido-actualizacion
+),
+.barra-herramientas-admin-flotante.modo-noche :is(
+  .fse-advertencia,
+  .cuadrante-rapido-actualizacion
+) :is(span, strong, b, small) {
+  color: #493700 !important;
+  opacity: 1 !important;
+}
+
+.barra-herramientas-admin-flotante.modo-noche .fse-advertencia {
+  padding: 11px 16px !important;
+  font-size: .78rem !important;
+  background: #fff1b8 !important;
+  border-color: #d8b43c !important;
+}
+
+.barra-herramientas-admin-flotante.modo-noche .fse-rapido-panel .fse-advertencia,
+.barra-herramientas-admin-flotante.modo-noche .fse-rapido-panel .fse-advertencia strong {
+  color: #493700 !important;
+}
+
+.barra-herramientas-admin-flotante.modo-noche .cuadrante-rapido-actualizacion {
+  font-size: .75rem !important;
+  background: #fff1ad !important;
+}
+
+.barra-herramientas-admin-flotante.modo-noche .cuadrante-rapido-panel .cuadrante-rapido-actualizacion :is(strong, b, small) {
+  color: #493700 !important;
+}
+
+.barra-herramientas-admin-flotante.modo-noche .cuadrante-rapido-actualizacion > span {
+  color: #ffffff !important;
+  background: #087db8 !important;
+}
+
+/* Mensajes y resultados: lectura cómoda sin perder el formato compacto. */
+.barra-herramientas-admin-flotante.modo-noche :is(
+  .comentarios-rapidos-pestanas button,
+  .comentarios-operador-selector,
+  .comentarios-rapidos-lista article,
+  .comentarios-rapidos-vacio,
+  .comentarios-rapidos-mensaje,
+  .fse-rapido-panel form,
+  .clima-rapido-panel form,
+  .ubicacion-rapida-panel form
+) {
+  font-size: .78rem !important;
+  line-height: 1.4 !important;
+}
+
+.barra-herramientas-admin-flotante.modo-noche .comentarios-rapidos-lista article {
+  padding: 12px !important;
+  background: var(--v2-superficie-elevada) !important;
+  border: 1px solid var(--v2-borde) !important;
+}
+
+.barra-herramientas-admin-flotante.modo-noche .codigos-rapidos-categorias small {
+  color: #c2d6e5 !important;
+  font-size: .75rem !important;
+}
+
+.barra-herramientas-admin-flotante.modo-noche .codigos-rapidos-categorias strong {
+  color: #ffffff !important;
+  font-size: .95rem !important;
+}
+
+.barra-herramientas-admin-flotante.modo-noche .telefonos-interes-lista article :is(p, span, small) {
+  color: #d7e7f2 !important;
+  font-size: .78rem !important;
+  opacity: 1 !important;
+}
+
 @keyframes fondo-ventana-v2-desplegar {
   0% { opacity: .76; background-color: rgba(94,167,242,.08); }
   55% { opacity: 1; background-color: rgba(94,167,242,.2); }
@@ -742,6 +818,244 @@
   .barra-herramientas-admin-flotante .barra-herramientas-admin-accesos .cuadrante-rapido-panel {
     max-height: calc(100vh - 72px) !important;
     overflow-y: auto !important;
+  }
+}
+
+/* V2.3 · Legibilidad consistente en modo noche.
+ * Estas reglas cierran las fugas de color de los estilos originales de cada
+ * herramienta y mantienen textos útiles por encima de 12 px. */
+.barra-herramientas-admin-flotante.modo-noche {
+  --v2-blanco: #f7fbff;
+  --v2-texto: #f2f8fd;
+  --v2-texto-secundario: #bfd3e3;
+  --v2-superficie: #112a3d;
+  --v2-superficie-elevada: #193a52;
+  --v2-borde: #416b8c;
+}
+
+.barra-herramientas-admin-flotante.modo-noche :is(
+  .fse-rapido-panel,
+  .clima-rapido-panel,
+  .cuadrante-rapido-panel,
+  .comentarios-rapidos-panel,
+  .ubicacion-rapida-panel,
+  .alfabeto-rapido-panel,
+  .productividad-rapida-panel,
+  .telefonos-interes-panel,
+  .codigos-rapidos-panel
+) {
+  color: var(--v2-texto) !important;
+  font-size: 14px;
+}
+
+.barra-herramientas-admin-flotante.modo-noche :is(
+  .fse-rapido-panel,
+  .clima-rapido-panel,
+  .cuadrante-rapido-panel,
+  .comentarios-rapidos-panel,
+  .ubicacion-rapida-panel,
+  .alfabeto-rapido-panel,
+  .productividad-rapida-panel,
+  .telefonos-interes-panel,
+  .codigos-rapidos-panel
+) > header h2 {
+  color: #ffffff !important;
+  font-size: 1.15rem !important;
+  line-height: 1.2;
+}
+
+.barra-herramientas-admin-flotante.modo-noche :is(
+  .fse-rapido-panel,
+  .clima-rapido-panel,
+  .cuadrante-rapido-panel,
+  .comentarios-rapidos-panel,
+  .ubicacion-rapida-panel,
+  .alfabeto-rapido-panel,
+  .productividad-rapida-panel,
+  .telefonos-interes-panel,
+  .codigos-rapidos-panel
+) > header :is(small, span) {
+  color: #ffd166 !important;
+  font-size: .72rem !important;
+  opacity: 1 !important;
+}
+
+.barra-herramientas-admin-flotante.modo-noche :is(label, legend) {
+  color: #f7fbff !important;
+  font-size: .8rem !important;
+  font-weight: 850 !important;
+}
+
+.barra-herramientas-admin-flotante.modo-noche :is(input, select, textarea) {
+  min-height: 44px;
+  color: #ffffff !important;
+  font-size: .9rem !important;
+  background: #071724 !important;
+  border-color: #5f88a8 !important;
+}
+
+.barra-herramientas-admin-flotante.modo-noche :is(input, textarea)::placeholder {
+  color: #aebfcd !important;
+  opacity: 1 !important;
+}
+
+.barra-herramientas-admin-flotante.modo-noche :is(
+  form,
+  .cuadrante-rapido-filtros,
+  .comentario-personal,
+  .comentario-personal-formulario,
+  .telefonos-interes-lista article,
+  .codigos-rapidos-resultados article,
+  .codigos-rapidos-admin
+) {
+  background: var(--v2-superficie-elevada) !important;
+  border-color: var(--v2-borde) !important;
+  box-shadow: 0 5px 14px rgba(0, 8, 15, .28) !important;
+}
+
+.barra-herramientas-admin-flotante.modo-noche :is(
+  .comentarios-rapidos-pestanas button:not(.esta-activa),
+  .productividad-rapida-pestanas button:not(.activa),
+  .codigos-rapidos-categorias > button
+) {
+  color: var(--v2-texto) !important;
+  background: var(--v2-superficie-elevada) !important;
+  border: 1px solid var(--v2-borde) !important;
+}
+
+/* Alfabeto: letras oscuras sobre naranja y palabras claramente ampliadas. */
+.barra-herramientas-admin-flotante.modo-noche .alfabeto-deletreador {
+  padding: 14px !important;
+  background: var(--v2-superficie) !important;
+  border-bottom: 1px solid var(--v2-borde);
+}
+
+.barra-herramientas-admin-flotante.modo-noche .alfabeto-listado {
+  padding: 12px !important;
+  gap: 8px !important;
+}
+
+.barra-herramientas-admin-flotante.modo-noche .alfabeto-listado > div {
+  min-height: 43px;
+  padding: 6px 9px !important;
+  color: var(--v2-texto) !important;
+  background: var(--v2-superficie-elevada) !important;
+  border: 1px solid var(--v2-borde) !important;
+  border-left: 4px solid #62b9ed !important;
+  border-radius: 10px !important;
+}
+
+.barra-herramientas-admin-flotante.modo-noche .alfabeto-listado strong,
+.barra-herramientas-admin-flotante.modo-noche .alfabeto-resultado span {
+  color: #132a3d !important;
+  background: #ffb22e !important;
+  opacity: 1 !important;
+}
+
+.barra-herramientas-admin-flotante.modo-noche .alfabeto-listado strong {
+  width: 32px !important;
+  height: 32px !important;
+  font-size: .88rem !important;
+}
+
+.barra-herramientas-admin-flotante.modo-noche .alfabeto-listado span {
+  color: #ffffff !important;
+  font-size: .86rem !important;
+  font-weight: 850 !important;
+}
+
+.barra-herramientas-admin-flotante.modo-noche .alfabeto-resultado {
+  padding: 10px !important;
+  background: #0a1d2d !important;
+  border: 1px solid #ffb22e !important;
+}
+
+/* Cerrar siempre debe tener contraste, incluso sobre cabeceras claras. */
+.barra-herramientas-admin-flotante.modo-noche :is(
+  .fse-rapido-panel,
+  .clima-rapido-panel,
+  .cuadrante-rapido-panel,
+  .comentarios-rapidos-panel,
+  .ubicacion-rapida-panel,
+  .alfabeto-rapido-panel,
+  .productividad-rapida-panel,
+  .telefonos-interes-panel,
+  .codigos-rapidos-panel
+) > header > button {
+  color: #ffffff !important;
+  background: #244d6b !important;
+  border-color: #75a4c5 !important;
+}
+
+@media (max-width: 720px) {
+  .barra-herramientas-admin-flotante.modo-noche .alfabeto-listado {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+/* Productividad: elimina la tipografía microscópica de la versión compacta. */
+.barra-herramientas-admin-flotante .productividad-identificacion {
+  grid-template-columns: minmax(0, 1fr) 150px !important;
+  gap: 10px !important;
+}
+
+.barra-herramientas-admin-flotante .productividad-datos-base {
+  grid-template-columns: minmax(0, 1fr) 76px !important;
+  gap: 10px !important;
+}
+
+.barra-herramientas-admin-flotante .productividad-resultado-cabecera strong {
+  font-size: 1.15rem !important;
+}
+
+.barra-herramientas-admin-flotante .productividad-resultado-cabecera span,
+.barra-herramientas-admin-flotante .productividad-estado,
+.barra-herramientas-admin-flotante .productividad-contador span,
+.barra-herramientas-admin-flotante .productividad-contador small,
+.barra-herramientas-admin-flotante .productividad-email-titulo strong,
+.barra-herramientas-admin-flotante .productividad-email-titulo span,
+.barra-herramientas-admin-flotante .productividad-email-lista span,
+.barra-herramientas-admin-flotante .productividad-email-lista small,
+.barra-herramientas-admin-flotante .productividad-email > p,
+.barra-herramientas-admin-flotante .productividad-progreso > div:first-child strong,
+.barra-herramientas-admin-flotante .productividad-progreso > div:first-child span,
+.barra-herramientas-admin-flotante .productividad-progreso-marcas,
+.barra-herramientas-admin-flotante .productividad-resumen span,
+.barra-herramientas-admin-flotante .productividad-resumen small {
+  font-size: .75rem !important;
+  line-height: 1.35 !important;
+}
+
+.barra-herramientas-admin-flotante .productividad-contador strong,
+.barra-herramientas-admin-flotante .productividad-resumen strong {
+  font-size: .86rem !important;
+}
+
+.barra-herramientas-admin-flotante .productividad-contenido {
+  gap: 10px !important;
+  padding: 11px !important;
+}
+
+.barra-herramientas-admin-flotante .productividad-contador {
+  min-height: 45px;
+}
+
+.barra-herramientas-admin-flotante .productividad-email,
+.barra-herramientas-admin-flotante .productividad-progreso,
+.barra-herramientas-admin-flotante .productividad-resumen > div {
+  padding: 11px !important;
+}
+
+.barra-herramientas-admin-flotante .productividad-guardar,
+.barra-herramientas-admin-flotante .productividad-email-formulario > button {
+  min-height: 42px !important;
+  font-size: .82rem !important;
+}
+
+@media (max-width: 520px) {
+  .barra-herramientas-admin-flotante .productividad-identificacion,
+  .barra-herramientas-admin-flotante .productividad-datos-base {
+    grid-template-columns: 1fr !important;
   }
 }
 

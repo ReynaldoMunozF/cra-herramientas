@@ -133,7 +133,7 @@ export const ConsultaCodigosOperativos: React.FC<{ esAdministrador?: boolean }> 
   };
 
   return <aside className={`codigos-rapidos ${abierto ? "abierto" : ""}`}>
-    <button className="codigos-rapidos-activador" data-nombre="Resoluciones y SMS" type="button" onClick={alternar} aria-expanded={abierto}>
+    <button className="codigos-rapidos-activador" data-nombre="Resoluciones y SMS" type="button" onClick={alternar} aria-expanded={abierto} aria-label={abierto ? "Cerrar resoluciones y mensajes SMS" : "Abrir resoluciones y mensajes SMS"}>
       <span className="herramienta-menu-icono" aria-hidden="true">
         <img src={iconoResolucionesSms} alt="" />
       </span>
