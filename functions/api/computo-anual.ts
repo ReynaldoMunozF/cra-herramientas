@@ -1,4 +1,5 @@
 import { ContextoPagina, responderJson } from "./_utilidades";
+import { autorizarMatricula } from "./_seguridad-pin";
 
 interface TurnoRecibido {
   dia?: unknown;
@@ -44,6 +45,10 @@ export const onRequest = async (contexto: ContextoPagina) => {
     if (!matricula || !anio) {
       return responderJson({ error: "La matrícula o el año no son válidos." }, 400);
     }
+    const acceso = await autorizarMatricula(contexto, matricula);
+    if (!acceso.autorizado) {
+      return responderJson({ error: "Introduce el PIN de esta matrícula.", requierePin: true, matricula }, 401);
+    }
 
     const resultado = await baseDatos
       .prepare(
@@ -73,6 +78,10 @@ export const onRequest = async (contexto: ContextoPagina) => {
 
     if (!matricula || !anio || !mes || !turnosRecibidos || turnosRecibidos.length > 31) {
       return responderJson({ error: "Revisa la matrícula, el mes y los turnos." }, 400);
+    }
+    const acceso = await autorizarMatricula(contexto, matricula);
+    if (!acceso.autorizado) {
+      return responderJson({ error: "Introduce el PIN de esta matrícula.", requierePin: true, matricula }, 401);
     }
 
     const turnos = turnosRecibidos.map((turno) => ({

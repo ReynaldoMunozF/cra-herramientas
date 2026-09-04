@@ -12,6 +12,9 @@
   margin-inline: auto;
 }
 
+.computo-acceso{display:grid;justify-items:center;width:min(100%,480px);margin:18px auto;padding:30px;color:#eaf8ff;text-align:center;background:linear-gradient(145deg,#12344d,#071521);border:1px solid #69ddef;border-radius:18px;box-shadow:0 18px 45px #0018}
+.computo-acceso>span{font-size:2.3rem}.computo-acceso small{color:#ffd458;font-weight:900;letter-spacing:.14em}.computo-acceso h2{margin:8px 0 4px}.computo-acceso p{color:#bfd2dc}.computo-acceso label{display:grid;width:100%;gap:6px;margin-top:12px;text-align:left;font-weight:800}.computo-acceso select,.computo-acceso input{width:100%;padding:13px;color:#fff;background:#030c13;border:1px solid #6bdcf0;border-radius:9px}.computo-acceso input{text-align:center;font-size:1.1rem;font-weight:900;letter-spacing:.2em}.computo-acceso button{width:100%;margin-top:11px;padding:13px;color:#071521;font-weight:900;background:linear-gradient(180deg,#78e7f5,#3ab9d6);border:0;border-radius:9px}.computo-acceso button:disabled{opacity:.5}.computo-acceso .computo-cambiar-operador{color:#d7edf5;background:#183c54;border:1px solid #52798d}.computo-acceso .mensaje-error{color:#ffd477}
+
 .computo-cabecera {
   display: flex;
   margin-bottom: 22px;

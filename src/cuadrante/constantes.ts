@@ -4,7 +4,7 @@ import datosSeptiembre from "./datos-septiembre-2026.json";
 import { CuadranteMensual, OperadorCuadrante, OperadorJson } from "./tipos";
 
 /** Fecha indicada por la empresa para esta edición de los dos cuadrantes. */
-export const FECHA_ACTUALIZACION_CUADRANTES = "21 de agosto de 2026";
+export const FECHA_ACTUALIZACION_CUADRANTES = "2 de septiembre de 2026";
 
 /** Días abreviados utilizados en la cabecera del calendario de escritorio. */
 export const DIAS_SEMANA = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];

@@ -9,11 +9,12 @@ export interface BaseD1 {
   prepare: (consulta: string) => SentenciaD1;
   batch: (sentencias: SentenciaD1[]) => Promise<unknown[]>;
 }
-export interface EntornoManual { CONTENIDO_DB: BaseD1; }
+export interface EntornoManual { CONTENIDO_DB: BaseD1; SECRETO_SESION?: string; }
 export interface ContextoPagina {
   request: Request;
   env: EntornoManual;
   params: Record<string, string | string[]>;
+  data?: { rol?: "administrador" | "invitado" };
 }
 
 export const responderJson = (datos: unknown, estado = 200) => new Response(JSON.stringify(datos), {

@@ -18,6 +18,7 @@ interface RegistroProductividad {
 interface TramoEmail {
   inicio: string;
   fin: string;
+  codigoAlarma?: string;
 }
 
 interface CantidadesFormulario {
@@ -70,10 +71,9 @@ const fechaLocalIso = () => {
 };
 
 const calcularGestionesAjustadas = (cantidades: CantidadesFormulario) => {
-  const especiales =
-    cantidades.citas + cantidades.llamadasEntrantes + cantidades.gestionesAdministrativas;
-  const alarmasOrdinarias = Math.max(0, cantidades.totalAlarmas - especiales);
-  return alarmasOrdinarias
+  // Cada alarma conserva su valor base. Las gestiones especiales aportan además
+  // su ponderación completa, tal como se contabilizan en la plantilla operativa.
+  return cantidades.totalAlarmas
     + cantidades.citas * 2.71
     + cantidades.llamadasEntrantes * 1.68
     + cantidades.gestionesAdministrativas * 5;
@@ -133,6 +133,7 @@ const obtenerEstadoProductividad = (productividad: number) => {
 
 const CLAVE_MATRICULA_PRODUCTIVIDAD = "cra-productividad-matricula";
 const CLAVE_RESPALDOS_PRODUCTIVIDAD = "cra-productividad-pendientes-v1";
+const claveTokenPin = (matricula: string) => `cra-pin-productividad-${matricula}`;
 
 interface RespaldoProductividad extends CantidadesFormulario {
   matricula: string;
@@ -182,12 +183,20 @@ export const ConsultaProductividadRapida: React.FC = () => {
   const [cargando, establecerCargando] = React.useState(false);
   const [guardando, establecerGuardando] = React.useState(false);
   const [mensaje, establecerMensaje] = React.useState("");
+  const [pinNecesario, establecerPinNecesario] = React.useState(false);
+  const [operadorConfirmado, establecerOperadorConfirmado] = React.useState(false);
+  const [pin, establecerPin] = React.useState("");
+  const [validandoPin, establecerValidandoPin] = React.useState(false);
   const [inicioEmail, establecerInicioEmail] = React.useState("");
   const [finEmail, establecerFinEmail] = React.useState("");
+  const [codigoAlarmaEmail, establecerCodigoAlarmaEmail] = React.useState("");
+  const [mensajeEmail, establecerMensajeEmail] = React.useState("");
+  const [correoCopiado, establecerCorreoCopiado] = React.useState<string | null>(null);
   const solicitudMesActual = React.useRef(0);
 
   const mesSeleccionado = fecha.slice(0, 7);
   const registroSeleccionado = registros.find((registro) => registro.fecha === fecha);
+  const cabecerasPin = React.useCallback(() => { const token = sessionStorage.getItem(claveTokenPin(matricula)); return token ? { "X-Operador-Token": token } : {}; }, [matricula]);
 
   const cargarMes = React.useCallback(async () => {
     const numeroSolicitud = ++solicitudMesActual.current;
@@ -196,12 +205,14 @@ export const ConsultaProductividadRapida: React.FC = () => {
     try {
       const respuesta = await fetch(
         `/api/productividad?matricula=${encodeURIComponent(matricula)}&mes=${mesSeleccionado}`,
-        { credentials: "same-origin", cache: "no-store" }
+        { credentials: "same-origin", cache: "no-store", headers: cabecerasPin() }
       );
-      const datos = await respuestaJsonSegura<{ registros: RegistroProductividad[]; error?: string }>(respuesta);
+      const datos = await respuestaJsonSegura<{ registros: RegistroProductividad[]; error?: string; requierePin?: boolean }>(respuesta);
+      if (respuesta.status === 401 && datos.requierePin) { establecerPinNecesario(true); establecerMensaje(""); return; }
       if (!respuesta.ok) throw new Error(datos.error || "No se pudieron cargar los registros.");
       if (numeroSolicitud !== solicitudMesActual.current) return;
       establecerRegistros(datos.registros);
+      establecerPinNecesario(false);
     } catch (error) {
       if (numeroSolicitud !== solicitudMesActual.current) return;
       establecerRegistros([]);
@@ -209,7 +220,7 @@ export const ConsultaProductividadRapida: React.FC = () => {
     } finally {
       if (numeroSolicitud === solicitudMesActual.current) establecerCargando(false);
     }
-  }, [matricula, mesSeleccionado]);
+  }, [matricula, mesSeleccionado, cabecerasPin]);
 
   React.useEffect(() => {
     const cerrarAlAbrirOtra = (evento: Event) => {
@@ -220,12 +231,15 @@ export const ConsultaProductividadRapida: React.FC = () => {
   }, []);
 
   React.useEffect(() => {
-    if (abierto) cargarMes();
-  }, [abierto, cargarMes]);
+    if (abierto && operadorConfirmado) cargarMes();
+  }, [abierto, operadorConfirmado, cargarMes]);
 
   React.useEffect(() => {
     localStorage.setItem(CLAVE_MATRICULA_PRODUCTIVIDAD, matricula);
+    establecerPinNecesario(false); establecerPin("");
   }, [matricula]);
+
+  const validarPin = async (evento: React.FormEvent) => { evento.preventDefault(); if(!/^\d{4,8}$/.test(pin)){establecerMensaje("Introduce un PIN de 4 a 8 números.");return;} establecerValidandoPin(true);establecerMensaje("");try{const respuesta=await fetch("/api/pin-operador",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({matricula,pin})});const datos=await respuestaJsonSegura<{token?:string;error?:string}>(respuesta);if(!respuesta.ok||!datos.token)throw new Error(datos.error||"No se pudo validar el PIN.");sessionStorage.setItem(claveTokenPin(matricula),datos.token);establecerPin("");establecerPinNecesario(false);await cargarMes();}catch(error){establecerMensaje(error instanceof Error?error.message:"PIN incorrecto.");}finally{establecerValidandoPin(false);}};
 
   React.useEffect(() => {
     const encontrado = registros.find((registro) => registro.fecha === fecha);
@@ -245,6 +259,7 @@ export const ConsultaProductividadRapida: React.FC = () => {
       detail: seAbrira ? "productividad" : "ninguna",
     }));
     establecerAbierto(seAbrira);
+    if (seAbrira) { establecerOperadorConfirmado(false); establecerPinNecesario(false); establecerPin(""); establecerMensaje(""); }
   };
 
   const cambiarCantidad = (
@@ -267,15 +282,20 @@ export const ConsultaProductividadRapida: React.FC = () => {
   ) => cambiarCantidad(campo, formulario[campo] + cambio);
 
   const agregarTramoEmail = () => {
-    if (!inicioEmail || !finEmail || inicioEmail === finEmail) {
-      establecerMensaje("Indica una hora de inicio y otra de finalización.");
+    const codigoAlarma = codigoAlarmaEmail.trim().toUpperCase();
+    if (!codigoAlarma) {
+      establecerMensajeEmail("Falta el código de alarma.");
       return;
     }
-    const nuevoTramo = { inicio: inicioEmail, fin: finEmail };
+    if (!inicioEmail || !finEmail || inicioEmail === finEmail) {
+      establecerMensajeEmail("Indica una hora de inicio y otra de finalización distintas.");
+      return;
+    }
+    const nuevoTramo = { inicio: inicioEmail, fin: finEmail, codigoAlarma };
     const minutosNuevos =
       minutosEmailFormulario(formulario) + duracionTramoEmail(nuevoTramo);
     if (minutosNuevos >= formulario.horasTrabajadas * 60) {
-      establecerMensaje("El tiempo de email debe ser menor que las horas trabajadas.");
+      establecerMensajeEmail("La duración debe ser menor que las horas trabajadas.");
       return;
     }
     establecerFormulario((actual) => ({
@@ -284,7 +304,48 @@ export const ConsultaProductividadRapida: React.FC = () => {
     }));
     establecerInicioEmail("");
     establecerFinEmail("");
+    establecerCodigoAlarmaEmail("");
+    establecerMensajeEmail("Gestión larga añadida. Ya puedes generar el correo.");
     establecerMensaje("");
+  };
+
+  const textoCorreoGestionLarga = (tramo: TramoEmail) =>
+    `Hola,\n\nGestión larga de alarma.\nCódigo de alarma: ${tramo.codigoAlarma || "No indicado"}.\nHora de inicio: ${tramo.inicio}.\nHora de finalización: ${tramo.fin}.\n\nUn saludo.\nGracias.`;
+
+  const copiarTextoCompatible = async (texto: string) => {
+    try {
+      if (navigator.clipboard?.writeText && window.isSecureContext) {
+        await navigator.clipboard.writeText(texto);
+        return true;
+      }
+    } catch {
+      // La ventana flotante puede bloquear la API moderna; se usa el respaldo.
+    }
+    const areaTemporal = document.createElement("textarea");
+    areaTemporal.value = texto;
+    areaTemporal.setAttribute("readonly", "");
+    areaTemporal.style.position = "fixed";
+    areaTemporal.style.left = "-9999px";
+    areaTemporal.style.top = "0";
+    document.body.appendChild(areaTemporal);
+    areaTemporal.focus();
+    areaTemporal.select();
+    areaTemporal.setSelectionRange(0, texto.length);
+    const copiado = document.execCommand("copy");
+    areaTemporal.remove();
+    return copiado;
+  };
+
+  const copiarCorreoGestionLarga = async (tramo: TramoEmail, clave: string) => {
+    try {
+      const copiado = await copiarTextoCompatible(textoCorreoGestionLarga(tramo));
+      if (!copiado) throw new Error("El navegador no permitió copiar el correo.");
+      establecerCorreoCopiado(clave);
+      window.setTimeout(() => establecerCorreoCopiado((actual) => actual === clave ? null : actual), 2200);
+      establecerMensaje("Correo de gestión larga copiado. Ya puedes pegarlo y enviarlo al jefe de sala.");
+    } catch {
+      establecerMensaje("No se pudo copiar automáticamente. Selecciona el texto del correo y cópialo manualmente.");
+    }
   };
 
   const eliminarTramoEmail = (indice: number) => {
@@ -324,7 +385,7 @@ export const ConsultaProductividadRapida: React.FC = () => {
       const respuesta = await fetch("/api/productividad", {
         method: "PUT",
         credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...cabecerasPin() },
         body: JSON.stringify({ matricula, fecha, ...formulario }),
       });
       const datos = await respuestaJsonSegura<{
@@ -338,7 +399,7 @@ export const ConsultaProductividadRapida: React.FC = () => {
       // Una segunda lectura confirma que D1 devuelve el registro recién escrito.
       const comprobacion = await fetch(
         `/api/productividad?matricula=${encodeURIComponent(matricula)}&mes=${fecha.slice(0, 7)}&v=${Date.now()}`,
-        { credentials: "same-origin", cache: "no-store" }
+        { credentials: "same-origin", cache: "no-store", headers: cabecerasPin() }
       );
       const datosComprobacion = await respuestaJsonSegura<{ registros?: RegistroProductividad[]; error?: string }>(comprobacion);
       const confirmado = datosComprobacion.registros?.find((registro) => registro.fecha === fecha);
@@ -414,7 +475,9 @@ export const ConsultaProductividadRapida: React.FC = () => {
             <button type="button" onClick={alternar} aria-label="Cerrar">×</button>
           </header>
 
-          <div className="productividad-contenido">
+          <div className={`productividad-contenido ${pinNecesario || !operadorConfirmado ? "requiere-pin" : ""}`}>
+            {!operadorConfirmado && <form className="productividad-pin productividad-seleccion-operador" onSubmit={e=>{e.preventDefault();establecerOperadorConfirmado(true);establecerMensaje("");}}><div aria-hidden="true">👤</div><small>IDENTIFICACIÓN</small><h3>¿Qué operador eres?</h3><p>Selecciona primero tu matrícula. El PIN solamente se solicitará después si está protegida.</p><label>Matrícula<select value={matricula} onChange={e=>{establecerMatricula(e.target.value);establecerRegistros([]);establecerPinNecesario(false);}}>{operadores.map(operador=><option key={operador.matricula} value={operador.matricula}>{operador.matricula} · {operador.nombre}</option>)}</select></label><button type="submit">Continuar con {matricula}</button></form>}
+            {pinNecesario && <form className="productividad-pin" onSubmit={validarPin}><div aria-hidden="true">🔐</div><small>ACCESO PERSONAL</small><h3>Introduce el PIN de {matricula}</h3><p>Solo podrás consultar y modificar la productividad asociada a esta matrícula.</p><input value={pin} onChange={e=>establecerPin(e.target.value.replace(/\D/g,"").slice(0,8))} type="password" inputMode="numeric" autoComplete="one-time-code" placeholder="PIN de 4 a 8 números" autoFocus/><button type="submit" disabled={validandoPin||pin.length<4}>{validandoPin?"Comprobando…":"Desbloquear mis datos"}</button>{mensaje&&<p role="alert">{mensaje}</p>}</form>}
             <div className="productividad-identificacion">
               <label>
                 Matrícula
@@ -423,6 +486,8 @@ export const ConsultaProductividadRapida: React.FC = () => {
                   onChange={(evento) => {
                     establecerMatricula(evento.target.value);
                     establecerRegistros([]);
+                    establecerOperadorConfirmado(false);
+                    establecerPinNecesario(false);
                   }}
                 >
                   {operadores.map((operador) => (
@@ -499,13 +564,23 @@ export const ConsultaProductividadRapida: React.FC = () => {
                 </div>
                 <b>{minutosEmailHoy} min</b>
               </div>
-              <div className="productividad-email-formulario">
+              <form className="productividad-email-formulario" onSubmit={(evento) => { evento.preventDefault(); agregarTramoEmail(); }}>
+                <label className="productividad-email-codigo">
+                  Código alarma
+                  <input
+                    type="text"
+                    value={codigoAlarmaEmail}
+                    maxLength={30}
+                    placeholder="Ej. 123456"
+                    onChange={(evento) => { establecerCodigoAlarmaEmail(evento.target.value.toUpperCase()); establecerMensajeEmail(""); }}
+                  />
+                </label>
                 <label>
                   Inicio
                   <input
                     type="time"
                     value={inicioEmail}
-                    onChange={(evento) => establecerInicioEmail(evento.target.value)}
+                    onChange={(evento) => { establecerInicioEmail(evento.target.value); establecerMensajeEmail(""); }}
                   />
                 </label>
                 <label>
@@ -513,24 +588,24 @@ export const ConsultaProductividadRapida: React.FC = () => {
                   <input
                     type="time"
                     value={finEmail}
-                    onChange={(evento) => establecerFinEmail(evento.target.value)}
+                    onChange={(evento) => { establecerFinEmail(evento.target.value); establecerMensajeEmail(""); }}
                   />
                 </label>
-                <button type="button" onClick={agregarTramoEmail}>Añadir</button>
-              </div>
+                <button type="submit">Añadir</button>
+              </form>
+              {mensajeEmail && <p className="productividad-email-mensaje" role="status">{mensajeEmail}</p>}
               {formulario.tramosEmail.length > 0 && (
                 <div className="productividad-email-lista">
                   {formulario.tramosEmail.map((tramo, indice) => (
-                    <div key={`${tramo.inicio}-${tramo.fin}-${indice}`}>
-                      <span>
-                        {tramo.inicio}–{tramo.fin}
-                        <small>{duracionTramoEmail(tramo)} min</small>
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => eliminarTramoEmail(indice)}
-                        aria-label={`Eliminar tramo ${tramo.inicio} a ${tramo.fin}`}
-                      >×</button>
+                    <div className="productividad-email-gestion" key={`${tramo.inicio}-${tramo.fin}-${indice}`}>
+                      <div className="productividad-email-gestion-cabecera">
+                        <span>
+                          <b>{tramo.codigoAlarma || "Sin código"}</b> · {tramo.inicio}–{tramo.fin}
+                          <small>{duracionTramoEmail(tramo)} min</small>
+                        </span>
+                        <button className={`productividad-email-copiar ${correoCopiado === `${tramo.inicio}-${tramo.fin}-${indice}` ? "esta-copiado" : ""}`} type="button" onClick={() => copiarCorreoGestionLarga(tramo, `${tramo.inicio}-${tramo.fin}-${indice}`)}>{correoCopiado === `${tramo.inicio}-${tramo.fin}-${indice}` ? "✓ Correo copiado" : "Generar correo"}</button>
+                        <button type="button" onClick={() => eliminarTramoEmail(indice)} aria-label={`Eliminar tramo ${tramo.inicio} a ${tramo.fin}`}>×</button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -573,7 +648,7 @@ export const ConsultaProductividadRapida: React.FC = () => {
               </div>
             </div>
 
-            {mensaje && <p className="productividad-mensaje" role="status">{mensaje}</p>}
+            {!pinNecesario && mensaje && <p className="productividad-mensaje" role="status">{mensaje}</p>}
             <button
               className="productividad-guardar"
               type="button"

@@ -3,15 +3,19 @@ import { ContextoPagina, responderJson } from "./_utilidades";
 type Voto = "carcajada" | "sonrisa" | "cunado";
 interface FilaHistorial { id: number; contenido: string; publicado_en: number; carcajada: number; sonrisa: number; cunado: number; }
 
-const consultarHistorial = async (contexto: ContextoPagina) => {
+const consultarHistorial = async (contexto: ContextoPagina, completo = false) => {
   const resultado = await contexto.env.CONTENIDO_DB.prepare(
-    `SELECT h.id, h.contenido, h.publicado_en,
+    `WITH chistes_seleccionados AS (
+       SELECT id, contenido, publicado_en FROM rincon_javi_historial
+       ORDER BY publicado_en DESC, id DESC LIMIT ${completo ? 50 : 1}
+     )
+     SELECT h.id, h.contenido, h.publicado_en,
       SUM(CASE WHEN v.voto = 'carcajada' THEN 1 ELSE 0 END) AS carcajada,
       SUM(CASE WHEN v.voto = 'sonrisa' THEN 1 ELSE 0 END) AS sonrisa,
       SUM(CASE WHEN v.voto = 'cunado' THEN 1 ELSE 0 END) AS cunado
-     FROM rincon_javi_historial h
+     FROM chistes_seleccionados h
      LEFT JOIN rincon_javi_votos v ON v.chiste_id = h.id
-     GROUP BY h.id ORDER BY h.publicado_en DESC, h.id DESC LIMIT 50`
+     GROUP BY h.id ORDER BY h.publicado_en DESC, h.id DESC`
   ).all<FilaHistorial>();
   return (resultado.results ?? []).map((fila) => ({
     id: fila.id, contenido: fila.contenido, publicadoEn: fila.publicado_en,
@@ -26,7 +30,8 @@ const consultar = async (contexto: ContextoPagina) => {
   ).first<{ contenido: string; visible: number; actualizada_en: number }>();
   const visible = fila?.visible === 1 && Boolean(fila.contenido.trim());
 
-  const historial = await consultarHistorial(contexto);
+  const url = new URL(contexto.request.url);
+  const historial = await consultarHistorial(contexto, url.searchParams.get("historial") === "1");
   return responderJson({
     visible,
     contenido: visible ? fila?.contenido ?? "" : "",
@@ -60,8 +65,19 @@ const votar = async (contexto: ContextoPagina) => {
     "INSERT INTO rincon_javi_votos (chiste_id, votante, voto, votado_en) VALUES (?, ?, ?, unixepoch())"
   ).bind(chisteId, crypto.randomUUID(), voto).run();
 
-  const historial = await consultarHistorial(contexto);
-  return responderJson({ guardado: true, chiste: historial.find((item) => item.id === chisteId) });
+  const resultado = await contexto.env.CONTENIDO_DB.prepare(
+    `SELECT h.id, h.contenido, h.publicado_en,
+      SUM(CASE WHEN v.voto = 'carcajada' THEN 1 ELSE 0 END) AS carcajada,
+      SUM(CASE WHEN v.voto = 'sonrisa' THEN 1 ELSE 0 END) AS sonrisa,
+      SUM(CASE WHEN v.voto = 'cunado' THEN 1 ELSE 0 END) AS cunado
+     FROM rincon_javi_historial h LEFT JOIN rincon_javi_votos v ON v.chiste_id = h.id
+     WHERE h.id = ? GROUP BY h.id`
+  ).bind(chisteId).first<FilaHistorial>();
+  const chiste = resultado ? {
+    id: resultado.id, contenido: resultado.contenido, publicadoEn: resultado.publicado_en,
+    votos: { carcajada: Number(resultado.carcajada), sonrisa: Number(resultado.sonrisa), cunado: Number(resultado.cunado) },
+  } : null;
+  return responderJson({ guardado: true, chiste });
 };
 
 /** Contenido y votación para cualquier usuario que tenga una sesión válida. */

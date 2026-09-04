@@ -9,6 +9,14 @@
       {
         "name": "SALA_CRA",
         "class_name": "SalaCra"
+      },
+      {
+        "name": "SALA_TABERNA",
+        "class_name": "SalaTaberna"
+      },
+      {
+        "name": "SALA_ARTILLERIA",
+        "class_name": "SalaArtilleria"
       }
     ]
   },
@@ -17,6 +25,14 @@
     {
       "tag": "v1",
       "new_sqlite_classes": ["SalaCra"]
+    },
+    {
+      "tag": "v2",
+      "new_sqlite_classes": ["SalaTaberna"]
+    },
+    {
+      "tag": "v3",
+      "new_sqlite_classes": ["SalaArtilleria"]
     }
   ]
 }

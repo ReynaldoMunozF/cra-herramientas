@@ -183,11 +183,13 @@
 }
 .productividad-email-formulario {
   display: grid;
-  grid-template-columns: 88px 88px 52px;
+  grid-template-columns:minmax(110px,1fr) 88px 88px 52px;
   align-items: end;
   justify-content: start;
   gap: 5px;
 }
+.productividad-email-formulario .productividad-email-codigo input{text-transform:uppercase}
+.productividad-email-mensaje{margin:0;padding:5px 7px;color:#fff4b0!important;font-size:.52rem!important;font-weight:800;text-align:left!important;background:rgba(255,209,0,.1);border-left:3px solid #ffd100;border-radius:4px}
 .productividad-email-formulario button {
   min-height: 31px;
   color: #073553;
@@ -208,6 +210,11 @@
   background: rgba(255,255,255,.08);
   border-radius: 5px;
 }
+.productividad-email-lista>.productividad-email-gestion{display:grid;padding:7px;gap:6px;align-items:stretch}
+.productividad-email-gestion-cabecera{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.productividad-email-gestion-cabecera>span>b{color:#ffd100}
+.productividad-email-lista .productividad-email-copiar{width:auto;height:25px;padding:0 8px;color:#073553;font-size:.5rem;font-weight:900;white-space:nowrap;background:#8fdefc;border:0}
+.productividad-email-lista .productividad-email-copiar.esta-copiado{color:#fff;background:#16804a;box-shadow:0 0 0 2px rgba(83,214,156,.2)}
 .productividad-email-lista span { font-size: .58rem; font-weight: 800; }
 .productividad-email-lista small {
   margin-left: 5px;
@@ -316,7 +323,7 @@
   }
   .productividad-rapida-activador { min-height: 38px; padding: 3px; border-radius: 8px; }
   .productividad-rapida-activador svg { width: 26px; height: 26px; padding: 5px; }
-  .productividad-email-formulario { grid-template-columns: 82px 82px 48px; }
+  .productividad-email-formulario { grid-template-columns: 1fr 82px 82px 48px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

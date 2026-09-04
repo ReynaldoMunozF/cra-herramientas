@@ -39,9 +39,10 @@ export const RinconJavi: React.FC<{ esAdministrador: boolean; soloEditor?: boole
   React.useEffect(() => {
     const ruta = esAdministrador ? "/api/administracion/rincon-javi" : "/api/rincon-javi";
     let activo = true;
-    const cargar = async (esPrimeraCarga = false) => {
+    const cargar = async (esPrimeraCarga = false, incluirHistorial = false) => {
+      if (!esPrimeraCarga && document.visibilityState === "hidden") return;
       try {
-        const respuesta = await fetch(ruta, { credentials: "same-origin", cache: "no-store" });
+        const respuesta = await fetch(`${ruta}${incluirHistorial ? "?historial=1" : ""}`, { credentials: "same-origin", cache: "no-store" });
         const datos = await respuesta.json() as ConfiguracionRincon & { error?: string };
         if (!respuesta.ok) throw new Error(datos.error || "No se pudo cargar.");
         if (!activo) return;
@@ -60,12 +61,23 @@ export const RinconJavi: React.FC<{ esAdministrador: boolean; soloEditor?: boole
     cargar(true).catch(() => undefined);
     const intervalo = esAdministrador
       ? undefined
-      : window.setInterval(() => cargar().catch(() => undefined), 3000);
+      : window.setInterval(() => cargar().catch(() => undefined), 60_000);
     return () => {
       activo = false;
       if (intervalo !== undefined) window.clearInterval(intervalo);
     };
   }, [esAdministrador]);
+
+  const alternarHistorial = async () => {
+    const seAbrira = !historialAbierto;
+    establecerHistorialAbierto(seAbrira);
+    if (!seAbrira) return;
+    try {
+      const respuesta = await fetch("/api/rincon-javi?historial=1", { credentials: "same-origin", cache: "no-store" });
+      const datos = await respuesta.json() as ConfiguracionRincon;
+      if (respuesta.ok) establecerHistorial(datos.historial ?? []);
+    } catch { /* El chiste actual continúa disponible aunque falle el historial. */ }
+  };
 
   React.useEffect(() => {
     const sincronizar = (evento: Event) => {
@@ -171,7 +183,7 @@ export const RinconJavi: React.FC<{ esAdministrador: boolean; soloEditor?: boole
           <small>Veredicto del público:</small>
           <div>{opcionesVoto.map((opcion) => <button type="button" className={votoElegido === opcion.id ? "elegido" : ""} disabled={votando} onClick={() => votar(opcion.id)} key={opcion.id}><b aria-hidden="true">{opcion.icono}</b><span>{opcion.texto}</span><em>{actual?.votos[opcion.id] ?? 0}</em></button>)}</div>
         </div>}
-        <button className="rincon-javi-historial-boton" type="button" onClick={() => establecerHistorialAbierto((abierto) => !abierto)} aria-expanded={historialAbierto}>{historialAbierto ? "Cerrar historial" : `Ver historial (${historial.length})`}</button>
+        <button className="rincon-javi-historial-boton" type="button" onClick={alternarHistorial} aria-expanded={historialAbierto}>{historialAbierto ? "Cerrar historial" : "Ver historial"}</button>
         {mensaje && <small className="rincon-javi-mensaje" role="status">{mensaje}</small>}
       </div>
       {historialAbierto && <div className="rincon-javi-historial">

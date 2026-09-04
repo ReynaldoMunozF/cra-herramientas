@@ -322,6 +322,19 @@
   text-align: left;
 }
 
+.novedad-seguridad-pin{position:relative;overflow:hidden;padding:23px;align-items:flex-start;color:#fff;background:linear-gradient(125deg,#430b13 0%,#8e1424 52%,#ca2638 100%);border:1px solid #ff7483;border-left:7px solid #ff3048;box-shadow:0 16px 34px rgba(77,4,16,.38),inset 0 0 42px rgba(255,255,255,.06);animation:entrada-alerta-pin .55s ease-out both}
+.novedad-seguridad-pin::after{position:absolute;right:-55px;top:-72px;width:180px;height:180px;content:"";background:rgba(255,255,255,.07);border:22px solid rgba(255,255,255,.035);border-radius:50%}
+.novedad-seguridad-pin>.novedad-icono{position:relative;z-index:1;width:64px;height:64px;color:#fff;background:linear-gradient(145deg,#ff4055,#980e20);border:2px solid #ff9ba6;border-radius:18px;box-shadow:0 0 0 6px rgba(255,255,255,.09),0 9px 22px rgba(42,0,7,.4)}
+.novedad-seguridad-pin>.novedad-icono svg{width:34px;height:34px;stroke-width:2.2}
+.novedad-seguridad-contenido{position:relative;z-index:1;flex:1;min-width:0}
+.novedad-seguridad-pin .novedad-alerta-pin{display:inline-flex;padding:5px 9px;align-items:center;gap:6px;color:#59101a;font-size:.67rem;font-weight:950;letter-spacing:.09em;background:#fff0f2;border-radius:999px;box-shadow:0 4px 10px rgba(43,0,7,.25)}
+.novedad-alerta-pin>b{display:grid;width:18px;height:18px;place-items:center;color:#fff;background:#d71932;border-radius:50%}
+.novedad-seguridad-pin h3{margin:8px 0 7px;color:#fff;font-size:clamp(1.25rem,2.6vw,1.65rem);line-height:1.08}
+.novedad-seguridad-pin p{max-width:760px;color:#ffe3e7;font-size:.82rem;line-height:1.5}
+.novedad-seguridad-contenido>strong{display:flex;margin-top:13px;padding:11px 13px;align-items:center;gap:10px;color:#5b0b16;font-size:.76rem;background:#fff;border:1px solid #ffc3ca;border-radius:11px;box-shadow:0 7px 18px rgba(45,0,7,.24)}
+.novedad-seguridad-contenido>strong>span:first-child{font-size:1.35rem}.novedad-seguridad-contenido>strong span,.novedad-seguridad-contenido>strong small{display:block}.novedad-seguridad-contenido>strong small{margin-top:2px;color:#8b3541;font-size:.66rem}
+@keyframes entrada-alerta-pin{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+
 .novedad-herramientas-contenido { flex: 1; min-width: 0; }
 .novedad-herramientas-destacada { position: relative; overflow: hidden; padding: 21px; align-items: flex-start; color: white; background: linear-gradient(125deg,#063b5b 0%,#087ead 58%,#019df4 100%); border: 1px solid rgba(134,225,255,.75); border-left: 6px solid var(--prosegur-yellow); box-shadow: 0 14px 28px rgba(1,63,101,.2), inset 0 0 38px rgba(255,255,255,.06); }
 .novedad-herramientas-destacada::after { position: absolute; width: 190px; height: 190px; right: -70px; top: -105px; content: ""; background: rgba(255,255,255,.08); border-radius: 50%; }

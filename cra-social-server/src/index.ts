@@ -8,7 +8,10 @@ import { DurableObject } from "cloudflare:workers";
  */
 interface Env {
   SALA_CRA: DurableObjectNamespace;
+  SALA_TABERNA: DurableObjectNamespace;
+  SALA_ARTILLERIA: DurableObjectNamespace;
   ORIGEN_PERMITIDO?: string;
+  SECRETO_TABERNA?: string;
 }
 
 /**
@@ -679,6 +682,294 @@ export class SalaCra extends DurableObject {
   }
 }
 
+type DatosVisitante = {
+  id?: string;
+  nombre?: string;
+  color?: string;
+  x?: number;
+  y?: number;
+  administrador?: boolean;
+  ultimoMensajeEn?: number;
+  ultimaAccionEn?: number;
+  tienePinta?: boolean;
+  nivelMareo?: number;
+  desmayadoHasta?: number;
+};
+
+type MensajeTaberna = { id: string; nombre: string; texto: string; enviadoEn: number };
+type JuegoFuerza = { empiezaEn: number; terminaEn: number; golpes: Record<string, number> };
+type JuegoCero = { empiezaEn: number; objetivoEn: number; terminaEn: number; intentos: Record<string, number> };
+
+const COLORES_TABERNA = ["turquesa", "coral", "violeta", "dorado", "menta", "cielo"];
+const IDENTIDADES_TABERNA = [
+  "Sir Alfred", "Sir Arturo", "Sir Godofredo", "Sir Tristán", "Sir Lancelot", "Sir Edmundo", "Sir Rolando", "Sir Percival",
+  "Lady Matilde", "Lady Leonor", "Lady Beatriz", "Lady Ginebra", "Lady Isolda", "Lady Alicia", "Lady Elvira", "Lady Jimena",
+  "Lord Teobaldo", "Lord Ramiro", "Dama Urraca", "Dama Constanza",
+];
+
+const emborracharTexto = (texto: string, nivel: number) => {
+  if (nivel <= 0) return texto;
+  const probabilidad = Math.min(.07 * nivel, .34);
+  const letras = texto.split("");
+  for (let i = 1; i < letras.length - 1; i += 1) {
+    if (!/[a-záéíóúñ]/i.test(letras[i]) || Math.random() > probabilidad) continue;
+    const tipo = Math.random();
+    if (tipo < .42 && /[a-záéíóúñ]/i.test(letras[i + 1])) [letras[i], letras[i + 1]] = [letras[i + 1], letras[i]];
+    else if (tipo < .72) letras[i] = letras[i].repeat(2);
+    else letras[i] = "";
+  }
+  if (nivel >= 4 && Math.random() < .55) letras.push("… hip!");
+  return letras.join("");
+};
+
+const estaEnLaBarra = (visitante: DatosVisitante) =>
+  (visitante.x ?? 0) >= 54 && (visitante.x ?? 0) <= 91 && (visitante.y ?? 100) >= 23 && (visitante.y ?? 100) <= 49;
+
+const estaDesmayado = (visitante: DatosVisitante) => (visitante.desmayadoHasta ?? 0) > Date.now();
+
+const base64Url = (bytes: Uint8Array) => {
+  let texto = "";
+  bytes.forEach((byte) => { texto += String.fromCharCode(byte); });
+  return btoa(texto).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+};
+
+const validarTokenAdministrador = async (token: string, secreto?: string) => {
+  if (!secreto || !token) return false;
+  const [carga, firma] = token.split(".");
+  if (!carga || !firma) return false;
+  const clave = await crypto.subtle.importKey("raw", new TextEncoder().encode(secreto), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const calculada = base64Url(new Uint8Array(await crypto.subtle.sign("HMAC", clave, new TextEncoder().encode(carga))));
+  if (calculada.length !== firma.length) return false;
+  let diferencia = 0;
+  for (let i = 0; i < firma.length; i += 1) diferencia |= firma.charCodeAt(i) ^ calculada.charCodeAt(i);
+  if (diferencia !== 0) return false;
+  try {
+    const datos = JSON.parse(atob(carga.replace(/-/g, "+").replace(/_/g, "/"))) as { rol?: string; caduca?: number; uso?: string };
+    return datos.rol === "administrador" && datos.uso === "taberna" && Number(datos.caduca) > Math.floor(Date.now() / 1000);
+  } catch { return false; }
+};
+
+/** Sala social independiente: no comparte estado ni reglas con CRA Social. */
+export class SalaTaberna extends DurableObject<Env> {
+  private mensajes: MensajeTaberna[] = [];
+
+  private difundir(mensaje: Record<string, unknown>) {
+    for (const socket of this.ctx.getWebSockets()) enviar(socket, mensaje);
+  }
+
+  private visitantes() {
+    return this.ctx.getWebSockets().map((socket) => socket.deserializeAttachment() as DatosVisitante | null)
+      .filter((visitante): visitante is DatosVisitante & { id: string; nombre: string; color: string; x: number; y: number } =>
+        Boolean(visitante?.id && visitante.nombre && visitante.color && Number.isFinite(visitante.x) && Number.isFinite(visitante.y)));
+  }
+
+  private enviarEstado() {
+    this.difundir({ tipo: "estado_taberna", visitantes: this.visitantes(), mensajes: this.mensajes });
+  }
+
+  private nombrePorId(id: string) { return this.visitantes().find((v) => v.id === id)?.nombre ?? "Caballero desconocido"; }
+
+  private async programarAlarmaJuegos() {
+    const fuerza = await this.ctx.storage.get<JuegoFuerza>("juegoFuerza");
+    const cero = await this.ctx.storage.get<JuegoCero>("juegoCero");
+    const proximas = [fuerza?.terminaEn, cero?.terminaEn].filter((valor): valor is number => Boolean(valor && valor > Date.now()));
+    if (proximas.length) await this.ctx.storage.setAlarm(Math.min(...proximas));
+  }
+
+  async fetch(request: Request): Promise<Response> {
+    if (request.headers.get("Upgrade") !== "websocket") {
+      return Response.json({ habilitada: (await this.ctx.storage.get<boolean>("habilitada")) ?? false }, {
+        headers: { "Access-Control-Allow-Origin": request.headers.get("Origin") ?? "*", "Cache-Control": "no-store" },
+      });
+    }
+    const url = new URL(request.url);
+    const origen = request.headers.get("Origin") ?? "";
+    const desarrolloLocal = (url.hostname === "localhost" || url.hostname === "127.0.0.1")
+      && (origen.startsWith("http://localhost:") || origen.startsWith("http://127.0.0.1:"));
+    const administrador = desarrolloLocal || await validarTokenAdministrador(url.searchParams.get("admin") ?? "", this.env.SECRETO_TABERNA);
+    const habilitada = (await this.ctx.storage.get<boolean>("habilitada")) ?? false;
+    if (!habilitada && !administrador) return new Response("La taberna está cerrada", { status: 403 });
+    const par = new WebSocketPair();
+    const [cliente, servidor] = Object.values(par);
+    servidor.serializeAttachment({ administrador } satisfies DatosVisitante);
+    this.ctx.acceptWebSocket(servidor);
+    return new Response(null, { status: 101, webSocket: cliente });
+  }
+
+  async webSocketMessage(socket: WebSocket, mensaje: string | ArrayBuffer) {
+    if (typeof mensaje !== "string") return;
+    let datos: Record<string, unknown>;
+    try { datos = JSON.parse(mensaje) as Record<string, unknown>; } catch { return; }
+    const actual = (socket.deserializeAttachment() as DatosVisitante | null) ?? {};
+
+    if (datos.tipo === "entrar_taberna" && !actual.id) {
+      const usados = new Set(this.visitantes().map((visitante) => visitante.nombre));
+      let nombre = "";
+      for (let intento = 0; intento < 30 && (!nombre || usados.has(nombre)); intento += 1) {
+        nombre = actual.administrador ? "El Rey" : IDENTIDADES_TABERNA[Math.floor(Math.random() * IDENTIDADES_TABERNA.length)];
+      }
+      const visitante: DatosVisitante = { ...actual, id: crypto.randomUUID(), nombre, color: actual.administrador ? "dorado" : COLORES_TABERNA[Math.floor(Math.random() * COLORES_TABERNA.length)], x: 18 + Math.random() * 50, y: 45 + Math.random() * 35, tienePinta: false, nivelMareo: 0 };
+      socket.serializeAttachment(visitante);
+      enviar(socket, { tipo: "identidad_taberna", visitante, habilitada: (await this.ctx.storage.get<boolean>("habilitada")) ?? false });
+      this.enviarEstado();
+      return;
+    }
+    if (!actual.id) return;
+    if (datos.tipo === "mover_taberna") {
+      if (estaDesmayado(actual)) return;
+      if (actual.desmayadoHasta && actual.desmayadoHasta <= Date.now()) {
+        actual.desmayadoHasta = undefined;
+        actual.nivelMareo = 0;
+      }
+      const x = Math.max(5, Math.min(94, Number(datos.x)));
+      const y = Math.max(23, Math.min(90, Number(datos.y)));
+      if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+      socket.serializeAttachment({ ...actual, x, y });
+      this.difundir({ tipo: "visitante_movido", id: actual.id, x, y });
+      return;
+    }
+    if (datos.tipo === "chat_taberna" && typeof datos.texto === "string") {
+      if (estaDesmayado(actual)) return;
+      const ahora = Date.now();
+      if (actual.ultimoMensajeEn && ahora - actual.ultimoMensajeEn < 600) return;
+      const textoOriginal = datos.texto.trim().replace(/\s+/g, " ").slice(0, 220);
+      if (!textoOriginal) return;
+      const texto = emborracharTexto(textoOriginal, actual.nivelMareo ?? 0);
+      socket.serializeAttachment({ ...actual, ultimoMensajeEn: ahora });
+      const nuevo = { id: crypto.randomUUID(), nombre: actual.nombre!, texto, enviadoEn: ahora };
+      this.mensajes = [...this.mensajes.slice(-39), nuevo];
+      this.difundir({ tipo: "mensaje_taberna", mensaje: nuevo, visitanteId: actual.id });
+      return;
+    }
+    if (datos.tipo === "accion_barra") {
+      const ahora = Date.now();
+      if (datos.accion === "recuperar" && actual.desmayadoHasta && actual.desmayadoHasta <= ahora) {
+        const visitante = { ...actual, desmayadoHasta: undefined, nivelMareo: 0, tienePinta: false, ultimaAccionEn: ahora };
+        socket.serializeAttachment(visitante);
+        this.difundir({ tipo: "accion_barra", visitante, texto: "Ya vuelvo a estar en pie." });
+        return;
+      }
+      if (estaDesmayado(actual)) return;
+      if (actual.ultimaAccionEn && ahora - actual.ultimaAccionEn < 650) return;
+      let visitante = { ...actual, ultimaAccionEn: ahora };
+      let textoAccion = "";
+      if (datos.accion === "pedir" && !actual.tienePinta && estaEnLaBarra(actual)) {
+        visitante = { ...visitante, tienePinta: true };
+        textoAccion = "¡Una pinta, posadero! 🍺";
+      } else if (datos.accion === "beber" && actual.tienePinta) {
+        visitante = { ...visitante, tienePinta: false, nivelMareo: Math.min(5, (actual.nivelMareo ?? 0) + 1) };
+        if (visitante.nivelMareo! >= 5) {
+          visitante = { ...visitante, desmayadoHasta: ahora + 60_000 };
+          textoAccion = "¡Esta ronda sí que pega fuerte! 💤";
+        } else textoAccion = "¡A vuestra salud! 🍺";
+      } else if (datos.accion === "brindar") {
+        textoAccion = "¡Brindo por la buena guardia! 🍻";
+      } else return;
+      socket.serializeAttachment(visitante);
+      this.difundir({ tipo: "accion_barra", visitante, texto: textoAccion });
+      return;
+    }
+    if (datos.tipo === "minijuego" && !estaDesmayado(actual)) {
+      const ahora = Date.now();
+      if (datos.accion === "iniciar_fuerza") {
+        if (!actual.administrador) return;
+        const existente = await this.ctx.storage.get<JuegoFuerza>("juegoFuerza");
+        const otro = await this.ctx.storage.get<JuegoCero>("juegoCero");
+        if ((existente?.terminaEn && existente.terminaEn > ahora) || (otro?.terminaEn && otro.terminaEn > ahora)) return;
+        const juego: JuegoFuerza = { empiezaEn: ahora + 3_000, terminaEn: ahora + 11_000, golpes: {} };
+        await this.ctx.storage.put("juegoFuerza", juego); await this.programarAlarmaJuegos();
+        this.difundir({ tipo: "juego_fuerza_iniciado", empiezaEn: juego.empiezaEn, terminaEn: juego.terminaEn });
+      } else if (datos.accion === "golpear") {
+        const juego = await this.ctx.storage.get<JuegoFuerza>("juegoFuerza");
+        if (!juego || juego.empiezaEn > ahora || juego.terminaEn <= ahora) return;
+        juego.golpes[actual.id] = (juego.golpes[actual.id] ?? 0) + 1;
+        await this.ctx.storage.put("juegoFuerza", juego);
+        enviar(socket, { tipo: "golpes_fuerza", golpes: juego.golpes[actual.id] });
+      } else if (datos.accion === "iniciar_cero") {
+        if (!actual.administrador) return;
+        const existente = await this.ctx.storage.get<JuegoCero>("juegoCero");
+        const otro = await this.ctx.storage.get<JuegoFuerza>("juegoFuerza");
+        if ((existente?.terminaEn && existente.terminaEn > ahora) || (otro?.terminaEn && otro.terminaEn > ahora)) return;
+        const juego: JuegoCero = { empiezaEn: ahora + 3_000, objetivoEn: ahora + 13_000, terminaEn: ahora + 15_500, intentos: {} };
+        await this.ctx.storage.put("juegoCero", juego); await this.programarAlarmaJuegos();
+        this.difundir({ tipo: "juego_cero_iniciado", empiezaEn: juego.empiezaEn, objetivoEn: juego.objetivoEn, terminaEn: juego.terminaEn });
+      } else if (datos.accion === "pulsar_cero") {
+        const juego = await this.ctx.storage.get<JuegoCero>("juegoCero");
+        if (!juego || juego.empiezaEn > ahora || juego.terminaEn <= ahora || juego.intentos[actual.id] !== undefined) return;
+        juego.intentos[actual.id] = Math.abs(ahora - juego.objetivoEn);
+        await this.ctx.storage.put("juegoCero", juego);
+        enviar(socket, { tipo: "intento_cero_registrado", diferencia: juego.intentos[actual.id] });
+      }
+      return;
+    }
+    if (datos.tipo === "administrar_taberna" && actual.administrador) {
+      if (datos.accion === "habilitar" && typeof datos.valor === "boolean") {
+        await this.ctx.storage.put("habilitada", datos.valor);
+        this.difundir({ tipo: "taberna_habilitada", habilitada: datos.valor });
+        if (!datos.valor) {
+          for (const conexion of this.ctx.getWebSockets()) {
+            const visitante = conexion.deserializeAttachment() as DatosVisitante | null;
+            if (!visitante?.administrador) conexion.close(4001, "La taberna ha cerrado");
+          }
+        }
+      } else if (datos.accion === "expulsar" && typeof datos.id === "string") {
+        const objetivo = this.ctx.getWebSockets().find((conexion) => (conexion.deserializeAttachment() as DatosVisitante | null)?.id === datos.id);
+        const visitante = objetivo?.deserializeAttachment() as DatosVisitante | null;
+        if (objetivo && !visitante?.administrador) {
+          enviar(objetivo, { tipo: "expulsado_taberna" });
+          objetivo.close(4003, "Expulsado por moderación");
+        }
+      }
+    }
+  }
+
+  async webSocketClose() { this.enviarEstado(); }
+  async webSocketError() { this.enviarEstado(); }
+
+  async alarm() {
+    const ahora = Date.now();
+    const fuerza = await this.ctx.storage.get<JuegoFuerza>("juegoFuerza");
+    if (fuerza && fuerza.terminaEn <= ahora) {
+      const orden = Object.entries(fuerza.golpes).sort((a, b) => b[1] - a[1]);
+      this.difundir({ tipo: "juego_fuerza_finalizado", ganador: orden[0] ? this.nombrePorId(orden[0][0]) : null, golpes: orden[0]?.[1] ?? 0 });
+      await this.ctx.storage.delete("juegoFuerza");
+    }
+    const cero = await this.ctx.storage.get<JuegoCero>("juegoCero");
+    if (cero && cero.terminaEn <= ahora) {
+      const orden = Object.entries(cero.intentos).sort((a, b) => a[1] - b[1]);
+      this.difundir({ tipo: "juego_cero_finalizado", ganador: orden[0] ? this.nombrePorId(orden[0][0]) : null, diferencia: orden[0]?.[1] ?? null });
+      await this.ctx.storage.delete("juegoCero");
+    }
+    await this.programarAlarmaJuegos();
+  }
+}
+
+type ParticipanteArtilleria = { id?: string; nombre?: string; anfitrion?: boolean };
+
+/** Lobby aislado por código para las partidas de Artillería. */
+export class SalaArtilleria extends DurableObject<Env> {
+  private participantes() { return this.ctx.getWebSockets().map(s => s.deserializeAttachment() as ParticipanteArtilleria | null).filter((p): p is ParticipanteArtilleria & { id: string; nombre: string } => Boolean(p?.id && p.nombre)); }
+  private difundir(mensaje: Record<string, unknown>) { for (const socket of this.ctx.getWebSockets()) enviar(socket, mensaje); }
+  private estado() { const participantes = this.participantes(); this.difundir({ tipo: "estado_artilleria", participantes, anfitrionId: participantes.find(p => p.anfitrion)?.id ?? null }); }
+  async fetch(request: Request): Promise<Response> {
+    if (request.headers.get("Upgrade") !== "websocket") return new Response("Se requiere WebSocket", { status: 426 });
+    const par = new WebSocketPair(); const [cliente, servidor] = Object.values(par); servidor.serializeAttachment({}); this.ctx.acceptWebSocket(servidor); return new Response(null, { status: 101, webSocket: cliente });
+  }
+  async webSocketMessage(socket: WebSocket, mensaje: string | ArrayBuffer) {
+    if (typeof mensaje !== "string") return; let datos: Record<string, unknown>; try { datos = JSON.parse(mensaje) as Record<string, unknown>; } catch { return; }
+    const actual = (socket.deserializeAttachment() as ParticipanteArtilleria | null) ?? {};
+    if (datos.tipo === "entrar_artilleria" && !actual.id) {
+      if (this.participantes().length >= 4) { enviar(socket, { tipo: "error_artilleria", mensaje: "La sala ya tiene cuatro jugadores." }); socket.close(4004, "Sala completa"); return; }
+      const nombre = String(datos.nombre ?? "Jugador").trim().replace(/[^\p{L}\p{N} _-]/gu, "").slice(0, 24) || "Jugador";
+      const participante = { id: crypto.randomUUID(), nombre, anfitrion: this.participantes().length === 0 }; socket.serializeAttachment(participante); enviar(socket, { tipo: "identidad_artilleria", id: participante.id }); this.estado(); return;
+    }
+    if (datos.tipo === "iniciar_artilleria" && actual.anfitrion) { const participantes = this.participantes(); if (participantes.length >= 2) this.difundir({ tipo: "partida_artilleria", participantes, semilla: Date.now() }); }
+    if (datos.tipo === "accion_artilleria" && actual.id && typeof datos.accion === "string") this.difundir({ tipo: "accion_artilleria", jugadorId: actual.id, accion: datos.accion, valor: datos.valor, angulo: datos.angulo });
+  }
+  async webSocketClose(socket: WebSocket) { const salio = socket.deserializeAttachment() as ParticipanteArtilleria | null; if (salio?.anfitrion) { const siguiente = this.ctx.getWebSockets().find(s => s !== socket); const datos = siguiente?.deserializeAttachment() as ParticipanteArtilleria | null; if (siguiente && datos?.id) siguiente.serializeAttachment({ ...datos, anfitrion: true }); } this.estado(); }
+  async webSocketError(socket: WebSocket) { await this.webSocketClose(socket); }
+}
+
 /**
  * Worker principal.
  *
@@ -702,7 +993,8 @@ export default {
      * Si abrimos localhost:8787 directamente
      * en el navegador veremos este mensaje.
      */
-    if (upgradeHeader !== "websocket") {
+    const url = new URL(request.url);
+    if (upgradeHeader !== "websocket" && url.pathname !== "/taberna/estado") {
       return new Response(
         "CRA Social Server funcionando",
       );
@@ -723,10 +1015,11 @@ export default {
      * sala-turno-tarde
      * sala-turno-noche
      */
-    const idSala =
-      env.SALA_CRA.idFromName("sala-principal");
-
-    const sala = env.SALA_CRA.get(idSala);
+    const esTaberna = url.pathname === "/taberna" || url.pathname === "/taberna/estado", esArtilleria = url.pathname.startsWith("/artilleria/");
+    const espacio = esArtilleria ? env.SALA_ARTILLERIA : esTaberna ? env.SALA_TABERNA : env.SALA_CRA;
+    const codigoArtilleria = url.pathname.split("/")[2]?.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6) || "INVALIDA";
+    const idSala = espacio.idFromName(esArtilleria ? `artilleria-${codigoArtilleria}` : esTaberna ? "taberna-principal" : "sala-principal");
+    const sala = espacio.get(idSala);
 
     return sala.fetch(request);
   },

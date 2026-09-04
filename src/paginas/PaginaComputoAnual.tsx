@@ -18,6 +18,7 @@ const DIAS_CORTOS = ["D", "L", "M", "X", "J", "V", "S"];
 const CODIGOS: CodigoTurno[] = ["", "M", "T", "N", "1", "2", "B", "P", "V"];
 const OBJETIVO_MENSUAL = 162;
 const CLAVE_MATRICULA = "cra-computo-anual-matricula";
+const claveTokenPin = (matricula: string) => `cra-pin-productividad-${matricula}`;
 
 // Ajustes reproducidos de la plantilla oficial de cómputo de 2026.
 const objetivoMes = (anio: number, mes: number) =>
@@ -73,10 +74,18 @@ export const PaginaComputoAnual: React.FC = () => {
   const [cargando, establecerCargando] = React.useState(false);
   const [guardando, establecerGuardando] = React.useState(false);
   const [mensaje, establecerMensaje] = React.useState("");
+  const [operadorConfirmado, establecerOperadorConfirmado] = React.useState(false);
+  const [pinNecesario, establecerPinNecesario] = React.useState(false);
+  const [pin, establecerPin] = React.useState("");
+  const [validandoPin, establecerValidandoPin] = React.useState(false);
 
   const operador = operadores.find((elemento) => elemento.matricula === matricula);
   const cantidadDias = diasDelMes(anio, mes);
   const prefijoMes = `${anio}-${String(mes).padStart(2, "0")}-`;
+  const cabecerasPin = React.useCallback(() => {
+    const token = sessionStorage.getItem(claveTokenPin(matricula));
+    return token ? { "X-Operador-Token": token } : {};
+  }, [matricula]);
 
   const cargarAnio = React.useCallback(async () => {
     establecerCargando(true);
@@ -84,27 +93,62 @@ export const PaginaComputoAnual: React.FC = () => {
     try {
       const respuesta = await fetch(
         `/api/computo-anual?matricula=${encodeURIComponent(matricula)}&anio=${anio}`,
-        { credentials: "same-origin" }
+        { credentials: "same-origin", cache: "no-store", headers: cabecerasPin() }
       );
-      const datos = await respuesta.json() as { turnos?: TurnoGuardado[]; error?: string };
+      const datos = await respuesta.json() as { turnos?: TurnoGuardado[]; error?: string; requierePin?: boolean };
+      if (respuesta.status === 401 && datos.requierePin) {
+        establecerTurnos({});
+        establecerPinNecesario(true);
+        establecerMensaje("");
+        return;
+      }
       if (!respuesta.ok) throw new Error(datos.error || "No se pudo cargar el cómputo.");
       const nuevosTurnos: Record<string, CodigoTurno> = {};
       (datos.turnos ?? []).forEach((turno) => {
         nuevosTurnos[turno.fecha] = turno.codigo;
       });
       establecerTurnos(nuevosTurnos);
+      establecerPinNecesario(false);
     } catch (error) {
       establecerTurnos({});
       establecerMensaje(error instanceof Error ? error.message : "No se pudo cargar el cómputo.");
     } finally {
       establecerCargando(false);
     }
-  }, [matricula, anio]);
+  }, [matricula, anio, cabecerasPin]);
 
   React.useEffect(() => {
     localStorage.setItem(CLAVE_MATRICULA, matricula);
-    cargarAnio();
-  }, [matricula, anio, cargarAnio]);
+    if (operadorConfirmado) cargarAnio();
+  }, [matricula, anio, operadorConfirmado, cargarAnio]);
+
+  const validarPin = async (evento: React.FormEvent) => {
+    evento.preventDefault();
+    if (!/^\d{4,8}$/.test(pin)) {
+      establecerMensaje("Introduce un PIN de 4 a 8 números.");
+      return;
+    }
+    establecerValidandoPin(true);
+    establecerMensaje("");
+    try {
+      const respuesta = await fetch("/api/pin-operador", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ matricula, pin }),
+      });
+      const datos = await respuesta.json() as { token?: string; error?: string };
+      if (!respuesta.ok || !datos.token) throw new Error(datos.error || "No se pudo validar el PIN.");
+      sessionStorage.setItem(claveTokenPin(matricula), datos.token);
+      establecerPin("");
+      establecerPinNecesario(false);
+      await cargarAnio();
+    } catch (error) {
+      establecerMensaje(error instanceof Error ? error.message : "PIN incorrecto.");
+    } finally {
+      establecerValidandoPin(false);
+    }
+  };
 
   const cambiarTurno = (dia: number, codigo: CodigoTurno) => {
     const fecha = fechaClave(anio, mes, dia);
@@ -123,7 +167,7 @@ export const PaginaComputoAnual: React.FC = () => {
       const respuesta = await fetch("/api/computo-anual", {
         method: "PUT",
         credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...cabecerasPin() },
         body: JSON.stringify({ matricula, anio, mes, turnos: turnosMes }),
       });
       const datos = await respuesta.json() as { guardado?: boolean; error?: string };
@@ -174,10 +218,37 @@ export const PaginaComputoAnual: React.FC = () => {
       </header>
 
       <section className="computo-panel" aria-label="Editor del cómputo anual">
+        {!operadorConfirmado && (
+          <form className="computo-acceso" onSubmit={(evento) => { evento.preventDefault(); establecerOperadorConfirmado(true); establecerMensaje(""); }}>
+            <span aria-hidden="true">🔐</span>
+            <small>ACCESO PERSONAL</small>
+            <h2>Selecciona tu matrícula</h2>
+            <p>El PIN se solicitará después solamente si esta matrícula está protegida.</p>
+            <label>Operador
+              <select value={matricula} onChange={(evento) => { establecerMatricula(evento.target.value); establecerTurnos({}); establecerPinNecesario(false); }}>
+                {operadores.map((elemento) => <option value={elemento.matricula} key={elemento.matricula}>{elemento.matricula} · {elemento.nombre}</option>)}
+              </select>
+            </label>
+            <button type="submit">Continuar con {matricula}</button>
+          </form>
+        )}
+        {operadorConfirmado && pinNecesario && (
+          <form className="computo-acceso" onSubmit={validarPin}>
+            <span aria-hidden="true">🔑</span>
+            <small>DATOS PROTEGIDOS</small>
+            <h2>Introduce el PIN de {matricula}</h2>
+            <p>El PIN protege el cómputo anual y la productividad de esta matrícula.</p>
+            <input value={pin} onChange={(evento) => establecerPin(evento.target.value.replace(/\D/g, "").slice(0, 8))} type="password" inputMode="numeric" autoComplete="one-time-code" placeholder="PIN de 4 a 8 números" autoFocus />
+            <button type="submit" disabled={validandoPin || pin.length < 4}>{validandoPin ? "Comprobando…" : "Desbloquear mis datos"}</button>
+            <button className="computo-cambiar-operador" type="button" onClick={() => { establecerOperadorConfirmado(false); establecerPinNecesario(false); establecerPin(""); establecerMensaje(""); }}>Elegir otra matrícula</button>
+            {mensaje && <p className="mensaje-error" role="alert">{mensaje}</p>}
+          </form>
+        )}
+        {operadorConfirmado && !pinNecesario && <>
         <div className="computo-selectores">
           <label>
             Operador
-            <select value={matricula} onChange={(evento) => establecerMatricula(evento.target.value)}>
+            <select value={matricula} onChange={(evento) => { establecerMatricula(evento.target.value); establecerOperadorConfirmado(false); establecerTurnos({}); }}>
               {operadores.map((elemento) => (
                 <option value={elemento.matricula} key={elemento.matricula}>
                   {elemento.matricula} · {elemento.nombre}
@@ -312,6 +383,7 @@ export const PaginaComputoAnual: React.FC = () => {
             </p>
           </div>
         </section>
+        </>}
       </section>
     </main>
   );

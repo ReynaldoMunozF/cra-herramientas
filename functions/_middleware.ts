@@ -15,6 +15,7 @@ interface ContextoCloudflare {
   request: Request;
   env: VariablesEntorno;
   next: () => Promise<Response>;
+  data?: { rol?: RolUsuario };
 }
 
 const NOMBRE_COOKIE = "sesion_cra";
@@ -203,6 +204,8 @@ export const onRequest = async (contexto: ContextoCloudflare) => {
       headers: { "Content-Type": "application/json", "Cache-Control": "private, no-store" },
     });
   }
+
+  contexto.data = { ...(contexto.data ?? {}), rol: sesionActiva.rol };
 
   // Solo después de validar la sesión se permite que Pages entregue el recurso.
   const respuesta = await contexto.next();

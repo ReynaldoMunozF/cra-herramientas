@@ -9,6 +9,7 @@ import { PanelEstadisticasUso } from "../componentes/PanelEstadisticasUso";
 import { EditorCuadranteAdmin } from "../componentes/EditorCuadranteAdmin";
 import { PanelReinicioMarcadores } from "../componentes/PanelReinicioMarcadores";
 import { PanelJuegosInvitados } from "../componentes/PanelJuegosInvitados";
+import { PanelPinesOperadores } from "../componentes/PanelPinesOperadores";
 import { RinconJavi } from "../componentes/RinconJavi";
 
 interface HerramientaPortal {
@@ -90,6 +91,7 @@ const IconoNovedad: React.FC<{ tipo: string }> = ({ tipo }) => {
     computo: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2M7 3l-2 2M17 3l2 2" /></>,
     telefonos: <><path d="M7.2 4.5c1.2-.4 3.4 3.4 2.8 4.7l-1.6 1.2c1.2 2.6 2.7 4.1 5.3 5.3l1.2-1.6c1.3-.6 5.1 1.6 4.7 2.8-.5 2-2.2 3-4.3 2.5C10 18 6 14 4.7 8.8c-.5-2.1.5-3.8 2.5-4.3Z" /><path d="M14 4h6v6M20 4l-6 6" /></>,
     mensajes: <><path d="M4 5h16v11H9l-5 4V5Z" /><path d="M8 9h8M8 12h5" /><path d="m15.5 18 1.5 1.5 3-3" /></>,
+    seguridad: <><path d="M6 10V8a6 6 0 0 1 12 0v2" /><rect x="4" y="10" width="16" height="11" rx="2" /><path d="M12 14v3" /></>,
   };
   return <svg viewBox="0 0 24 24" aria-hidden="true">{rutas[tipo]}</svg>;
 };
@@ -108,7 +110,17 @@ const NovedadesInvitados: React.FC = () => (
         <span className="novedad-actualizacion">Actualización del día</span>
         <h3>Cuadrante de septiembre disponible</h3>
         <p>Ya puedes consultar los días, turnos y horas del nuevo cuadrante mensual.</p>
-        <strong className="novedad-fecha-cuadrante">✓ Actualizado el 21 de agosto de 2026</strong>
+        <strong className="novedad-fecha-cuadrante">✓ Actualizado el 2 de septiembre de 2026</strong>
+      </div>
+    </article>
+
+    <article className="novedad-general novedad-seguridad-pin">
+      <div className="novedad-icono"><IconoNovedad tipo="seguridad" /></div>
+      <div className="novedad-seguridad-contenido">
+        <span className="novedad-alerta-pin"><b aria-hidden="true">!</b> IMPORTANTE · NUEVA PROTECCIÓN</span>
+        <h3>Protege tus datos con un PIN personal</h3>
+        <p>La productividad y el cómputo anual de horas quedan protegidos por matrícula para evitar que otras personas consulten o modifiquen tus datos.</p>
+        <strong><span aria-hidden="true">🔑</span><span>¿Todavía no tienes PIN?<small>Solicítalo al administrador para proteger tu matrícula.</small></span></strong>
       </div>
     </article>
 
@@ -230,6 +242,7 @@ export const PaginaInicio: React.FC = () => {
       {esAdministrador && <PanelEstadisticasUso />}
       {esAdministrador && <EditorCuadranteAdmin />}
       {esAdministrador && <PanelJuegosInvitados />}
+      {esAdministrador && <PanelPinesOperadores />}
       {esAdministrador && <PanelReinicioMarcadores />}
       {esAdministrador && <RinconJavi esAdministrador soloEditor />}
       <p className="inicio-proximamente">Nuevas herramientas se incorporarán próximamente.</p>

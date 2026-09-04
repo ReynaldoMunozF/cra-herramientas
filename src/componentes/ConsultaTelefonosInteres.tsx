@@ -27,6 +27,7 @@ export const ConsultaTelefonosInteres: React.FC<{ esAdministrador: boolean }> = 
   const [copiado, establecerCopiado] = React.useState<number | null>(null);
 
   const cargar = React.useCallback(async (silencioso = false) => {
+    if (silencioso && document.visibilityState === "hidden") return;
     if (!silencioso) establecerCargando(true);
     try {
       const respuesta = await fetch("/api/telefonos-interes", { credentials: "same-origin", cache: "no-store" });
@@ -44,7 +45,7 @@ export const ConsultaTelefonosInteres: React.FC<{ esAdministrador: boolean }> = 
   React.useEffect(() => {
     if (!abierto) return undefined;
     cargar();
-    const intervalo = window.setInterval(() => cargar(true), 4000);
+    const intervalo = window.setInterval(() => cargar(true), 60_000);
     return () => window.clearInterval(intervalo);
   }, [abierto, cargar]);
 

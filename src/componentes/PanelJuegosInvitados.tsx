@@ -8,6 +8,7 @@ const JUEGOS = [
   { id: "panel", nombre: "Desactivar el panel", icono: "⚡" },
   { id: "infiltrado", nombre: "El infiltrado", icono: "?" },
   { id: "social", nombre: "CRA Social", icono: "💬" },
+  { id: "artilleria", nombre: "CRA Artillería", icono: "◎" },
 ];
 
 /** Permite al administrador rotar los juegos visibles para invitados sin desplegar código. */

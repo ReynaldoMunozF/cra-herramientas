@@ -7,6 +7,7 @@ import { JuegoDesactivarPanel } from "../componentes/JuegoDesactivarPanel";
 import { JuegoInfiltrado } from "../componentes/JuegoInfiltrado";
 import { JuegoCraSocial } from "../componentes/JuegoCraSocial";
 import { JuegoArtilleria } from "../componentes/JuegoArtilleria";
+import { JuegoTabernaDigital, consultarEstadoTaberna } from "../componentes/JuegoTabernaDigital";
 
 interface Pistas {
   exactas: number;
@@ -87,6 +88,7 @@ export const PaginaZonaDescanso: React.FC = () => {
   const [juegosInvitados, establecerJuegosInvitados] = React.useState<string[]>(
     ["codigo", "palabra", "asesino", "flota"],
   );
+  const [tabernaHabilitada, establecerTabernaHabilitada] = React.useState(false);
   const [juegoActivo, establecerJuegoActivo] = React.useState<
     | "codigo"
     | "palabra"
@@ -96,6 +98,7 @@ export const PaginaZonaDescanso: React.FC = () => {
     | "infiltrado"
     | "social"
     | "artilleria"
+    | "taberna"
   >("codigo");
   const [matricula, establecerMatricula] = React.useState(
     () => localStorage.getItem(CLAVE_MATRICULA_JUEGO) ?? "RMI",
@@ -173,8 +176,16 @@ export const PaginaZonaDescanso: React.FC = () => {
   }, []);
 
   React.useEffect(() => {
+    const actualizar = () => consultarEstadoTaberna().then(establecerTabernaHabilitada).catch(() => establecerTabernaHabilitada(false));
+    actualizar();
+    window.addEventListener("focus", actualizar);
+    return () => window.removeEventListener("focus", actualizar);
+  }, []);
+
+  React.useEffect(() => {
     if (
       esAdministrador ||
+      (juegoActivo === "taberna" && tabernaHabilitada) ||
       juegosInvitados.includes(juegoActivo)
     ) {
       return;
@@ -189,7 +200,8 @@ export const PaginaZonaDescanso: React.FC = () => {
         | "panel"
         | "infiltrado"
         | "social"
-        | "artilleria",
+        | "artilleria"
+        | "taberna",
     );
   }, [esAdministrador, juegoActivo, juegosInvitados]);
 
@@ -420,7 +432,7 @@ export const PaginaZonaDescanso: React.FC = () => {
             <small>Nuevo · Dos jugadores</small>
           </div>
         </button>
-        {esAdministrador && (
+        {(esAdministrador || juegosInvitados.includes("artilleria")) && (
           <button
             type="button"
             className={juegoActivo === "artilleria" ? "activo" : ""}
@@ -446,6 +458,14 @@ export const PaginaZonaDescanso: React.FC = () => {
             </div>
           </button>
         )}
+        {(esAdministrador || tabernaHabilitada) && <button
+          type="button"
+          className={juegoActivo === "taberna" ? "activo" : ""}
+          onClick={() => establecerJuegoActivo("taberna")}
+        >
+          <span aria-hidden="true">☕</span>
+          <div><strong>La Taberna del Rey</strong><small>Chat medieval y avatares</small></div>
+        </button>}
         {(esAdministrador || juegosInvitados.includes("panel")) && (
           <button
             type="button"
@@ -474,10 +494,12 @@ export const PaginaZonaDescanso: React.FC = () => {
       </nav>
 
       <section
-        className={`zona-descanso-contenido ${juegoActivo === "asesino" ? "modo-murdoku" : ""} ${juegoActivo === "flota" ? "modo-flota" : ""} ${juegoActivo === "infiltrado" ? "modo-infiltrado" : ""} ${juegoActivo === "social" || juegoActivo === "artilleria" ? "modo-social" : ""}`}
+        className={`zona-descanso-contenido ${juegoActivo === "asesino" ? "modo-murdoku" : ""} ${juegoActivo === "flota" ? "modo-flota" : ""} ${juegoActivo === "infiltrado" ? "modo-infiltrado" : ""} ${juegoActivo === "social" || juegoActivo === "artilleria" || juegoActivo === "taberna" ? "modo-social" : ""}`}
       >
-        {juegoActivo === "artilleria" && esAdministrador ? (
-          <JuegoArtilleria />
+        {juegoActivo === "taberna" ? (
+          <JuegoTabernaDigital esAdministrador={esAdministrador} onHabilitadaChange={establecerTabernaHabilitada} />
+        ) : juegoActivo === "artilleria" && (esAdministrador || juegosInvitados.includes("artilleria")) ? (
+          <JuegoArtilleria nombreJugador={matricula} />
         ) : juegoActivo === "infiltrado" ? (
           <JuegoInfiltrado />
         ) : juegoActivo === "social" && (esAdministrador || juegosInvitados.includes("social")) ? (

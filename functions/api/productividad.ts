@@ -1,4 +1,5 @@
 import { ContextoPagina, responderJson } from "./_utilidades";
+import { autorizarMatricula } from "./_seguridad-pin";
 
 export interface RegistroProductividad {
   id: number;
@@ -16,6 +17,7 @@ export interface RegistroProductividad {
 interface TramoEmail {
   inicio: string;
   fin: string;
+  codigoAlarma?: string;
 }
 
 interface RegistroProductividadD1 extends Omit<RegistroProductividad, "tramos_email"> {
@@ -42,8 +44,11 @@ const normalizarTramosEmail = (valor: unknown): TramoEmail[] | null => {
   const tramos = valor.map((elemento) => {
     if (!elemento || typeof elemento !== "object") return null;
     const datos = elemento as Record<string, unknown>;
+    const codigoAlarma = typeof datos.codigoAlarma === "string"
+      ? datos.codigoAlarma.trim().toUpperCase().slice(0, 30)
+      : "";
     return horaValida(datos.inicio) && horaValida(datos.fin) && datos.inicio !== datos.fin
-      ? { inicio: datos.inicio, fin: datos.fin }
+      ? { inicio: datos.inicio, fin: datos.fin, ...(codigoAlarma ? { codigoAlarma } : {}) }
       : null;
   });
   return tramos.every((tramo): tramo is TramoEmail => tramo !== null) ? tramos : null;
@@ -90,6 +95,8 @@ export const onRequest = async (contexto: ContextoPagina) => {
     if (!matricula || !/^\d{4}-\d{2}$/.test(mes)) {
       return responderJson({ error: "La matrícula o el mes no son válidos." }, 400);
     }
+    const acceso = await autorizarMatricula(contexto, matricula);
+    if (!acceso.autorizado) return responderJson({ error: "Introduce el PIN de esta matrícula.", requierePin: true, matricula }, 401);
 
     const resultado = await baseDatos
       .prepare(
@@ -132,6 +139,8 @@ export const onRequest = async (contexto: ContextoPagina) => {
     ) {
       return responderJson({ error: "Revisa la fecha y las cantidades introducidas." }, 400);
     }
+    const acceso = await autorizarMatricula(contexto, matricula);
+    if (!acceso.autorizado) return responderJson({ error: "Introduce el PIN de esta matrícula.", requierePin: true, matricula }, 401);
 
     if (citas + llamadasEntrantes + gestionesAdministrativas > totalAlarmas) {
       return responderJson(
