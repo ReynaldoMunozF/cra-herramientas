@@ -731,6 +731,48 @@
 .inicio-tablon-vacio b { color: #173d58; font-size: .84rem; }
 .inicio-tablon-vacio p { margin: 4px 0 0; font-size: .74rem; line-height: 1.42; }
 
+.acceso-administracion-inicio {
+  display: inline-flex;
+  margin-top: 15px;
+  padding: 9px 13px;
+  gap: 8px;
+  align-items: center;
+  color: #fff;
+  font-size: .78rem;
+  font-weight: 900;
+  text-decoration: none;
+  background: #123a5a;
+  border-radius: 10px;
+  box-shadow: 0 7px 16px rgba(7,53,83,.16);
+}
+.acceso-administracion-inicio:hover { color: #fff; text-decoration: none; background: #075e89; }
+.acceso-administracion-inicio span { font-size: 1.05rem; }
+
+.pagina-administracion-privada {
+  width: min(100% - 32px, 1120px);
+  min-height: calc(100vh - 130px);
+  margin: 0 auto;
+  padding: 36px 0 60px;
+}
+.cabecera-administracion-privada {
+  margin: 0 0 20px;
+  padding: 24px;
+  color: #fff;
+  background: linear-gradient(135deg,#123a5a,#087ead);
+  border-bottom: 4px solid #ffd100;
+  border-radius: 18px;
+  box-shadow: 0 14px 32px rgba(7,53,83,.18);
+}
+.cabecera-administracion-privada > span { color: #ffdf4c; font-size: .68rem; font-weight: 950; letter-spacing: .1em; text-transform: uppercase; }
+.cabecera-administracion-privada h1 { margin: 5px 0; font-size: clamp(1.6rem,4vw,2.3rem); }
+.cabecera-administracion-privada p { max-width: 700px; margin: 0; color: #d9eff9; line-height: 1.5; }
+.cabecera-administracion-privada a { display: inline-block; margin-top: 14px; color: #123a5a; font-size: .75rem; font-weight: 900; text-decoration: none; background: #ffd100; border-radius: 8px; padding: 8px 11px; }
+.acceso-denegado { display: grid; max-width: 520px; margin-top: 60px; place-items: center; align-content: center; text-align: center; }
+.acceso-denegado > span { font-size: 2.5rem; }
+.acceso-denegado h1 { margin: 10px 0 5px; color: #123a5a; }
+.acceso-denegado p { margin: 0; color: #5f7482; }
+.acceso-denegado a { margin-top: 17px; color: #075e89; font-weight: 900; }
+
 .inicio-novedades { width: min(100%, 1080px); margin-top: 18px; border-radius: 18px; }
 
 @media (max-width: 760px) {
@@ -746,6 +788,7 @@
   .inicio-herramientas .inicio-contenido p { margin-bottom: 9px; font-size: .78rem; }
   .inicio-herramientas .inicio-contenido > a { min-height: 36px; padding: 7px 10px; font-size: .78rem; }
   .inicio-comunidad { margin-top: 12px; grid-template-columns: 1fr; gap: 11px; }
+  .pagina-administracion-privada { width: min(100% - 24px, 1120px); padding-top: 22px; }
   .inicio-recomendado,
   .inicio-tablon { padding: 14px; border-radius: 15px; }
 }

@@ -2,11 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import imagenCuadrante from "../recursos/inicio/gestion-cuadrante.png";
 import imagenComputoAnual from "../recursos/inicio/computo-anual.svg";
-import { PanelEstadisticasUso } from "../componentes/PanelEstadisticasUso";
-import { EditorCuadranteAdmin } from "../componentes/EditorCuadranteAdmin";
-import { PanelReinicioMarcadores } from "../componentes/PanelReinicioMarcadores";
-import { PanelJuegosInvitados } from "../componentes/PanelJuegosInvitados";
-import { PanelPinesOperadores } from "../componentes/PanelPinesOperadores";
 import { RinconJavi } from "../componentes/RinconJavi";
 
 interface HerramientaPortal {
@@ -187,6 +182,7 @@ export const PaginaInicio: React.FC = () => {
         <span>Herramientas CRA</span>
         <h1>¿Qué necesitas gestionar hoy?</h1>
         <p>Accede primero a lo más importante. Las consultas auxiliares siguen disponibles arriba, en la barra tradicional y la flotante.</p>
+        {esAdministrador && <Link className="acceso-administracion-inicio" to="/administracion/herramientas">⚙ Administración <span>→</span></Link>}
       </header>
 
       <section className="inicio-herramientas" aria-label="Herramientas disponibles">
@@ -210,12 +206,6 @@ export const PaginaInicio: React.FC = () => {
       {sesionCargada && <RinconJavi esAdministrador={esAdministrador} />}
       <InicioComunidad />
       {sesionCargada && <NovedadesInvitados />}
-      {esAdministrador && <PanelEstadisticasUso />}
-      {esAdministrador && <EditorCuadranteAdmin />}
-      {esAdministrador && <PanelJuegosInvitados />}
-      {esAdministrador && <PanelPinesOperadores />}
-      {esAdministrador && <PanelReinicioMarcadores />}
-      {esAdministrador && <RinconJavi esAdministrador soloEditor />}
       <p className="inicio-proximamente">Nuevas herramientas se incorporarán próximamente.</p>
     </main>
   );

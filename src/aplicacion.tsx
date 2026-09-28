@@ -15,6 +15,7 @@ import { ConsejosOperador } from "./componentes/ConsejosOperador";
 import { PaginaComputoAnual } from "./paginas/PaginaComputoAnual";
 import { PaginaZonaDescanso } from "./paginas/PaginaZonaDescanso";
 import { PaginaBarraHerramientasAdmin } from "./paginas/PaginaBarraHerramientasAdmin";
+import { PaginaHerramientasAdministrador } from "./paginas/PaginaHerramientasAdministrador";
 import { BotonBarraHerramientasAdmin } from "./componentes/BotonBarraHerramientasAdmin";
 
 // Las hojas se importan en orden: fundamentos, estructura y módulos concretos.
@@ -89,6 +90,7 @@ const ContenidoAplicacion: React.FC = () => {
         <Ruta path="/herramientas-rapidas" element={<PaginaHerramientasRapidas />} />
         <Ruta path="/zona-descanso" element={<PaginaZonaDescanso />} />
         <Ruta path="/administracion/barra-herramientas" element={<PaginaBarraHerramientasAdmin />} />
+        <Ruta path="/administracion/herramientas" element={<PaginaHerramientasAdministrador />} />
 
         {/* Portada privada y escalable con acceso a todas las herramientas. */}
         <Ruta path="/" element={<PaginaInicio />} />
