@@ -4,6 +4,7 @@ import imagenCuadrante from "../recursos/inicio/gestion-cuadrante.png";
 import imagenComputoAnual from "../recursos/inicio/computo-anual.svg";
 import { RinconJavi } from "../componentes/RinconJavi";
 import { ComunidadInicio } from "../componentes/ComunidadInicio";
+import { Biblioteca } from "../componentes/Biblioteca";
 
 interface HerramientaPortal {
   titulo: string;
@@ -157,33 +158,25 @@ export const PaginaInicio: React.FC = () => {
 
   return (
     <main className="pagina-inicio">
-      <header className="inicio-cabecera">
-        <span>Herramientas CRA</span>
-        <h1>¿Qué necesitas gestionar hoy?</h1>
-        <p>Accede primero a lo más importante. Las consultas auxiliares siguen disponibles arriba, en la barra tradicional y la flotante.</p>
-        {esAdministrador && <Link className="acceso-administracion-inicio" to="/administracion/herramientas">⚙ Administración <span>→</span></Link>}
-      </header>
-
-      <section className="inicio-herramientas" aria-label="Herramientas disponibles">
-        {herramientas.map((herramienta) => (
-          <article className={`inicio-tarjeta ${herramienta.clase}`} key={herramienta.ruta}>
-            <div className="inicio-imagen">
-              <img src={herramienta.imagen} alt="" aria-hidden="true" />
-              <span>Disponible</span>
-            </div>
-            <div className="inicio-contenido">
-              <h2>{herramienta.titulo}</h2>
-              <p>{herramienta.descripcion}</p>
-              <Link to={herramienta.ruta} target={herramienta.nuevaVentana ? "_blank" : undefined} rel={herramienta.nuevaVentana ? "noopener" : undefined}>
-                {herramienta.textoBoton}<span aria-hidden="true">→</span>
-              </Link>
-            </div>
-          </article>
-        ))}
+      <section className="inicio-principal">
+        <header className="inicio-cabecera">
+          <div><span>Herramientas CRA</span><h1>¿Qué necesitas gestionar hoy?</h1><p>Lo principal, claro y a mano. Las consultas auxiliares siguen disponibles arriba, desde la barra tradicional y la flotante.</p></div>
+          <div className="inicio-hero-sello" aria-hidden="true"><b>CRA</b><small>Gestión<br />diaria</small></div>
+          {esAdministrador && <Link className="acceso-administracion-inicio" to="/administracion/herramientas">⚙ Administración <span>→</span></Link>}
+        </header>
+        <section className="inicio-herramientas" aria-label="Herramientas disponibles">
+          {herramientas.map((herramienta) => (
+            <article className={`inicio-tarjeta ${herramienta.clase}`} key={herramienta.ruta}>
+              <div className="inicio-imagen"><img src={herramienta.imagen} alt="" aria-hidden="true" /><span>Disponible</span></div>
+              <div className="inicio-contenido"><small>{herramienta.clase === "cuadrante" ? "Organización de turnos" : "Control personal"}</small><h2>{herramienta.titulo}</h2><p>{herramienta.descripcion}</p><Link to={herramienta.ruta} target={herramienta.nuevaVentana ? "_blank" : undefined} rel={herramienta.nuevaVentana ? "noopener" : undefined}>{herramienta.textoBoton}<span aria-hidden="true">→</span></Link></div>
+            </article>
+          ))}
+        </section>
       </section>
 
       {sesionCargada && <RinconJavi esAdministrador={esAdministrador} />}
       <ComunidadInicio />
+      <Biblioteca />
       {sesionCargada && <NovedadesInvitados />}
       <p className="inicio-proximamente">Nuevas herramientas se incorporarán próximamente.</p>
     </main>

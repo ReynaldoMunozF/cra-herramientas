@@ -9,7 +9,9 @@ export interface BaseD1 {
   prepare: (consulta: string) => SentenciaD1;
   batch: (sentencias: SentenciaD1[]) => Promise<unknown[]>;
 }
-export interface EntornoManual { CONTENIDO_DB: BaseD1; SECRETO_SESION?: string; }
+export interface ObjetoR2 { body: ReadableStream; writeHttpMetadata: (headers: Headers) => void; }
+export interface DepositoR2 { put: (clave: string, valor: ArrayBuffer | ReadableStream | Blob, opciones?: { httpMetadata?: { contentType?: string } }) => Promise<unknown>; get: (clave: string) => Promise<ObjetoR2 | null>; delete: (clave: string) => Promise<void>; }
+export interface EntornoManual { CONTENIDO_DB: BaseD1; MEDIA_PRIVADA: DepositoR2; SECRETO_SESION?: string; }
 export interface ContextoPagina {
   request: Request;
   env: EntornoManual;

@@ -16,6 +16,7 @@ import { PaginaComputoAnual } from "./paginas/PaginaComputoAnual";
 import { PaginaZonaDescanso } from "./paginas/PaginaZonaDescanso";
 import { PaginaBarraHerramientasAdmin } from "./paginas/PaginaBarraHerramientasAdmin";
 import { PaginaHerramientasAdministrador } from "./paginas/PaginaHerramientasAdministrador";
+import { PaginaBiblioteca } from "./paginas/PaginaBiblioteca";
 import { BotonBarraHerramientasAdmin } from "./componentes/BotonBarraHerramientasAdmin";
 
 // Las hojas se importan en orden: fundamentos, estructura y módulos concretos.
@@ -23,6 +24,7 @@ import { BotonBarraHerramientasAdmin } from "./componentes/BotonBarraHerramienta
 import "./estilos/base.css";
 import "./estilos/inicio.css";
 import "./estilos/comunidad-inicio.css";
+import "./estilos/biblioteca.css";
 import "./estilos/estructura-general.css";
 import "./estilos/listado.css";
 import "./estilos/operativas.css";
@@ -92,6 +94,8 @@ const ContenidoAplicacion: React.FC = () => {
         <Ruta path="/zona-descanso" element={<PaginaZonaDescanso />} />
         <Ruta path="/administracion/barra-herramientas" element={<PaginaBarraHerramientasAdmin />} />
         <Ruta path="/administracion/herramientas" element={<PaginaHerramientasAdministrador />} />
+        <Ruta path="/biblioteca" element={<PaginaBiblioteca />} />
+        <Ruta path="/biblioteca/:id" element={<PaginaBiblioteca />} />
 
         {/* Portada privada y escalable con acceso a todas las herramientas. */}
         <Ruta path="/" element={<PaginaInicio />} />
