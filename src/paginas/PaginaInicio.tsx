@@ -107,10 +107,10 @@ const NovedadesInvitados: React.FC = () => (
     <article className="novedad-cuadrante novedad-cuadrante-principal">
       <div className="novedad-icono"><IconoNovedad tipo="cuadrante" /></div>
       <div>
-        <span className="novedad-actualizacion">Actualización del día</span>
-        <h3>Cuadrante de septiembre disponible</h3>
-        <p>Ya puedes consultar los días, turnos y horas del nuevo cuadrante mensual.</p>
-        <strong className="novedad-fecha-cuadrante">✓ Actualizado el 2 de septiembre de 2026</strong>
+        <span className="novedad-actualizacion">Actualización de hoy</span>
+        <h3>Cuadrante de octubre subido</h3>
+        <p>Ya está disponible el cuadrante de octubre con sus días, turnos y horas actualizados.</p>
+        <strong className="novedad-fecha-cuadrante">✓ Actualizado hoy, 23 de septiembre de 2026</strong>
       </div>
     </article>
 

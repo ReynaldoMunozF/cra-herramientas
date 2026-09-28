@@ -1,10 +1,11 @@
 import datosJulio from "./datos-julio-2026.json";
 import datosAgosto from "./datos-agosto-2026.json";
 import datosSeptiembre from "./datos-septiembre-2026.json";
+import datosOctubre from "./datos-octubre-2026.json";
 import { CuadranteMensual, OperadorCuadrante, OperadorJson } from "./tipos";
 
 /** Fecha indicada por la empresa para esta edición de los dos cuadrantes. */
-export const FECHA_ACTUALIZACION_CUADRANTES = "2 de septiembre de 2026";
+export const FECHA_ACTUALIZACION_CUADRANTES = "23 de septiembre de 2026";
 
 /** Días abreviados utilizados en la cabecera del calendario de escritorio. */
 export const DIAS_SEMANA = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
@@ -35,6 +36,12 @@ const normalizarOperadores = (operadores: OperadorJson[]): OperadorCuadrante[] =
 
 /** Meses oficiales disponibles, ordenados del más reciente al más antiguo. */
 export const CUADRANTES: CuadranteMensual[] = [
+  {
+    id: "octubre-2026", mes: "octubre", mesMayusculas: "OCTUBRE", numeroMes: 10, anio: 2026,
+    // Octubre de 2026 comienza en jueves: tres huecos desde una semana que empieza en lunes.
+    desplazamientoPrimerDia: 3,
+    operadores: normalizarOperadores(datosOctubre as OperadorJson[]),
+  },
   {
     id: "septiembre-2026", mes: "septiembre", mesMayusculas: "SEPTIEMBRE", numeroMes: 9, anio: 2026,
     // Septiembre de 2026 comienza en martes: un hueco desde una semana que empieza en lunes.
