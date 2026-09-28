@@ -1,10 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import imagenManual from "../recursos/inicio/manual-operativo.png";
 import imagenCuadrante from "../recursos/inicio/gestion-cuadrante.png";
 import imagenComputoAnual from "../recursos/inicio/computo-anual.svg";
-import imagenHerramientasRapidas from "../recursos/inicio/herramientas-rapidas.svg";
-import imagenZonaDescanso from "../recursos/inicio/zona-descanso.svg";
 import { PanelEstadisticasUso } from "../componentes/PanelEstadisticasUso";
 import { EditorCuadranteAdmin } from "../componentes/EditorCuadranteAdmin";
 import { PanelReinicioMarcadores } from "../componentes/PanelReinicioMarcadores";
@@ -22,44 +19,8 @@ interface HerramientaPortal {
   nuevaVentana?: boolean;
 }
 
-/**
- * El manual permanece desarrollado y accesible en el código, pero su tarjeta
- * se oculta temporalmente de la portada para administradores e invitados.
- */
-const MOSTRAR_MANUAL_EN_PORTADA = false;
-
-/** Accesos auxiliares compactos situados antes de las herramientas principales. */
-const accesosRapidos: HerramientaPortal[] = [
-  {
-    titulo: "Herramientas rápidas",
-    descripcion: "Consultas auxiliares para la gestión diaria.",
-    ruta: "/herramientas-rapidas",
-    imagen: imagenHerramientasRapidas,
-    textoBoton: "Abrir",
-    clase: "herramientas-rapidas",
-    nuevaVentana: true,
-  },
-  {
-    titulo: "Zona de descanso",
-    descripcion: "Juegos breves de memoria, lógica y competición.",
-    ruta: "/zona-descanso",
-    imagen: imagenZonaDescanso,
-    textoBoton: "Entrar",
-    clase: "zona-descanso-tarjeta",
-    nuevaVentana: true,
-  },
-];
-
-/** Catálogo de accesos disponibles en la portada privada. */
+/** Accesos principales visibles al entrar al portal. */
 const herramientas: HerramientaPortal[] = [
-  {
-    titulo: "Manual operativo",
-    descripcion: "Consulta señales, comentarios frecuentes y procedimientos guiados paso a paso.",
-    ruta: "/manual",
-    imagen: imagenManual,
-    textoBoton: "Entrar al manual",
-    clase: "manual",
-  },
   {
     titulo: "Gestión del cuadrante",
     descripcion: "Revisa turnos, compara operadores y prepara propuestas de cambio de forma sencilla.",
@@ -77,6 +38,28 @@ const herramientas: HerramientaPortal[] = [
     clase: "computo-anual",
   },
 ];
+
+/** Bloques de comunidad preparados para gestionar desde administración en una siguiente fase. */
+const InicioComunidad: React.FC = () => (
+  <section className="inicio-comunidad" aria-label="Espacio recomendado y tablón de anuncios">
+    <article className="inicio-recomendado">
+      <header><span aria-hidden="true">✦</span><strong>Espacio recomendado</strong><em>Patrocinado</em></header>
+      <div className="inicio-recomendado-ilustracion" aria-hidden="true">☕</div>
+      <div>
+        <h2>Tu emprendimiento, aquí</h2>
+        <p>Un espacio breve y cuidado para recomendar lo que quieras compartir con el equipo.</p>
+        <small>Próximamente gestionable desde administración.</small>
+      </div>
+    </article>
+    <article className="inicio-tablon">
+      <header><span aria-hidden="true">📌</span><h2>Tablón</h2><button type="button" disabled>Ver todo →</button></header>
+      <div className="inicio-tablon-vacio">
+        <b>Próximos mini eventos</b>
+        <p>Este espacio mostrará avisos breves, actividades y recordatorios del equipo.</p>
+      </div>
+    </article>
+  </section>
+);
 
 const IconoNovedad: React.FC<{ tipo: string }> = ({ tipo }) => {
   const rutas: Record<string, React.ReactNode> = {
@@ -201,27 +184,13 @@ export const PaginaInicio: React.FC = () => {
   return (
     <main className="pagina-inicio">
       <header className="inicio-cabecera">
-        <span>Portal privado CRA</span>
-        <h1>¿Qué necesitas gestionar?</h1>
-        <p>Selecciona una herramienta para comenzar. Este espacio crecerá con nuevas funcionalidades.</p>
+        <span>Herramientas CRA</span>
+        <h1>¿Qué necesitas gestionar hoy?</h1>
+        <p>Accede primero a lo más importante. Las consultas auxiliares siguen disponibles arriba, en la barra tradicional y la flotante.</p>
       </header>
 
-      {sesionCargada && <RinconJavi esAdministrador={esAdministrador} />}
-
-      <nav className="inicio-accesos-rapidos" aria-label="Accesos rápidos">
-        {accesosRapidos.map((acceso) => <Link className={acceso.clase} to={acceso.ruta} target="_blank" rel="noopener" key={acceso.ruta}>
-          <img src={acceso.imagen} alt="" aria-hidden="true" />
-          <span><small>Acceso rápido</small><strong>{acceso.titulo}</strong><em>{acceso.descripcion}</em></span>
-          <b aria-hidden="true">→</b>
-        </Link>)}
-      </nav>
-
       <section className="inicio-herramientas" aria-label="Herramientas disponibles">
-        {herramientas
-          .filter((herramienta) =>
-            MOSTRAR_MANUAL_EN_PORTADA || herramienta.ruta !== "/manual"
-          )
-          .map((herramienta) => (
+        {herramientas.map((herramienta) => (
           <article className={`inicio-tarjeta ${herramienta.clase}`} key={herramienta.ruta}>
             <div className="inicio-imagen">
               <img src={herramienta.imagen} alt="" aria-hidden="true" />
@@ -238,6 +207,8 @@ export const PaginaInicio: React.FC = () => {
         ))}
       </section>
 
+      {sesionCargada && <RinconJavi esAdministrador={esAdministrador} />}
+      <InicioComunidad />
       {sesionCargada && <NovedadesInvitados />}
       {esAdministrador && <PanelEstadisticasUso />}
       {esAdministrador && <EditorCuadranteAdmin />}
