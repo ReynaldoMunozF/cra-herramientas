@@ -6,6 +6,7 @@ import { PanelJuegosInvitados } from "../componentes/PanelJuegosInvitados";
 import { PanelPinesOperadores } from "../componentes/PanelPinesOperadores";
 import { PanelReinicioMarcadores } from "../componentes/PanelReinicioMarcadores";
 import { RinconJavi } from "../componentes/RinconJavi";
+import { PanelComunidadInicio } from "../componentes/PanelComunidadInicio";
 
 /** Área privada: el servidor decide el rol antes de revelar los paneles. */
 export const PaginaHerramientasAdministrador: React.FC = () => {
@@ -43,6 +44,7 @@ export const PaginaHerramientasAdministrador: React.FC = () => {
         <p>Gestiona el contenido y consulta el funcionamiento de la aplicación sin cargar la portada de los operadores.</p>
         <Link to="/">← Volver a la portada</Link>
       </header>
+      <PanelComunidadInicio />
       <PanelEstadisticasUso />
       <EditorCuadranteAdmin />
       <PanelPinesOperadores />

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import imagenCuadrante from "../recursos/inicio/gestion-cuadrante.png";
 import imagenComputoAnual from "../recursos/inicio/computo-anual.svg";
 import { RinconJavi } from "../componentes/RinconJavi";
+import { ComunidadInicio } from "../componentes/ComunidadInicio";
 
 interface HerramientaPortal {
   titulo: string;
@@ -33,28 +34,6 @@ const herramientas: HerramientaPortal[] = [
     clase: "computo-anual",
   },
 ];
-
-/** Bloques de comunidad preparados para gestionar desde administración en una siguiente fase. */
-const InicioComunidad: React.FC = () => (
-  <section className="inicio-comunidad" aria-label="Espacio recomendado y tablón de anuncios">
-    <article className="inicio-recomendado">
-      <header><span aria-hidden="true">✦</span><strong>Espacio recomendado</strong><em>Patrocinado</em></header>
-      <div className="inicio-recomendado-ilustracion" aria-hidden="true">☕</div>
-      <div>
-        <h2>Tu emprendimiento, aquí</h2>
-        <p>Un espacio breve y cuidado para recomendar lo que quieras compartir con el equipo.</p>
-        <small>Próximamente gestionable desde administración.</small>
-      </div>
-    </article>
-    <article className="inicio-tablon">
-      <header><span aria-hidden="true">📌</span><h2>Tablón</h2><button type="button" disabled>Ver todo →</button></header>
-      <div className="inicio-tablon-vacio">
-        <b>Próximos mini eventos</b>
-        <p>Este espacio mostrará avisos breves, actividades y recordatorios del equipo.</p>
-      </div>
-    </article>
-  </section>
-);
 
 const IconoNovedad: React.FC<{ tipo: string }> = ({ tipo }) => {
   const rutas: Record<string, React.ReactNode> = {
@@ -204,7 +183,7 @@ export const PaginaInicio: React.FC = () => {
       </section>
 
       {sesionCargada && <RinconJavi esAdministrador={esAdministrador} />}
-      <InicioComunidad />
+      <ComunidadInicio />
       {sesionCargada && <NovedadesInvitados />}
       <p className="inicio-proximamente">Nuevas herramientas se incorporarán próximamente.</p>
     </main>

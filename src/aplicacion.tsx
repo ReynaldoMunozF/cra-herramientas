@@ -22,6 +22,7 @@ import { BotonBarraHerramientasAdmin } from "./componentes/BotonBarraHerramienta
 // Mantener este orden evita que una regla general sobrescriba estilos específicos.
 import "./estilos/base.css";
 import "./estilos/inicio.css";
+import "./estilos/comunidad-inicio.css";
 import "./estilos/estructura-general.css";
 import "./estilos/listado.css";
 import "./estilos/operativas.css";
