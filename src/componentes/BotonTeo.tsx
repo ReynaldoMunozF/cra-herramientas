@@ -14,7 +14,7 @@ export const BotonTeo: React.FC<{ ubicacion?: "flotante" | "cabecera" }> = ({ ub
   const [esAdministrador, establecerEsAdministrador] = React.useState(false);
   const [destino, establecerDestino] = React.useState<HTMLElement | null>(null);
   const [alternativo, establecerAlternativo] = React.useState(false);
-  const [alto, establecerAlto] = React.useState(190);
+  const [alto, establecerAlto] = React.useState(250);
   const [ancho, establecerAncho] = React.useState(535);
   const ventana = React.useRef<Window | null>(null);
   const abriendo = React.useRef(false);
@@ -74,7 +74,7 @@ export const BotonTeo: React.FC<{ ubicacion?: "flotante" | "cabecera" }> = ({ ub
     if (!gestor) { establecerAlternativo(true); return; }
     abriendo.current = true;
     try {
-      const auxiliar = await gestor.requestWindow({ width: Math.min(620, window.screen.availWidth - 24), height: Math.min(760, window.screen.availHeight - 66), preferInitialWindowPlacement: true });
+      const auxiliar = await gestor.requestWindow({ width: Math.min(535, window.screen.availWidth - 24), height: Math.min(250, window.screen.availHeight - 66), preferInitialWindowPlacement: true });
       auxiliar.document.title = "Teo · Tu compañero CRA";
       auxiliar.document.documentElement.lang = "es";
       auxiliar.document.documentElement.style.cssText = "min-width:0;height:100%;overflow:hidden";

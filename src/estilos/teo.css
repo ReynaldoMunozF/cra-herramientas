@@ -42,7 +42,7 @@
 .teo-panel .teo-estado { margin:10px 0 0; color:#4b657a; font-size:11px; }
 .teo-panel .teo-aviso { margin:0 0 12px; padding:8px; color:#735015; background:#fff5d8; border-radius:8px; font-size:11px; }
 .teo-alternativo { position:fixed; z-index:90; right:16px; bottom:100px; width:min(535px,calc(100vw - 24px)); max-height:calc(100dvh - 120px); border:1px solid #8bb9ce; border-radius:14px; overflow:hidden; box-shadow:0 10px 40px #07355350; }
-.teo-panel :is(button,input):focus-visible, .teo-lanzador:focus-visible { outline:3px solid #cf8b00; outline-offset:2px; }
+.teo-panel :is(button,input,select,textarea):focus-visible, .teo-lanzador:focus-visible { outline:2px solid #0aa6ce; outline-offset:2px; }
 @media(max-width:380px) { .teo-cabecera { gap:5px; padding-inline:7px; } .teo-cabecera strong span { display:block; font-size:10px; } .teo-lanzador { right:10px; bottom:12px; } }
 
 .teo-coordenadas-previa { padding:7px 9px; color:#225376; background:#e6f3fa; border-radius:7px; font-size:11px; }
@@ -136,7 +136,7 @@
 .teo-manual-dudas > div { margin-top:12px; padding-top:8px; border-top:1px solid #eadbc2; }
 .teo-manual-pie { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:14px; color:#527287; }
 .teo-manual-pie small { font-size:10px; }
-.teo-panel .teo-manual :is(button,select,textarea):focus-visible { outline:3px solid #cf8b00; outline-offset:2px; }
+.teo-panel .teo-manual :is(button,select,textarea):focus-visible { outline:2px solid #0aa6ce; outline-offset:2px; }
 @media(max-width:420px) { .teo-vistas button { font-size:10px; padding-inline:2px; } .teo-vistas span { display:none; } }
 
 /* El manual tiene espacio de lectura propio y un único desplazamiento exterior. */
@@ -158,3 +158,7 @@
   .teo-manual-opciones { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .teo-manual-opciones button { height:100%; }
 }
+
+/* El foco sigue la forma del campo completo, también al navegar con teclado. */
+.teo-panel .teo-entrada:focus-within { border-color:#0aa6ce; box-shadow:0 0 0 3px rgba(10,166,206,.16); }
+.teo-panel .teo-entrada input:focus-visible { outline:none; box-shadow:none; }
