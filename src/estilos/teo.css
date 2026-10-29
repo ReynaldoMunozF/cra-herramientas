@@ -180,3 +180,11 @@
 .teo-manual-pagina { display:flex !important; align-items:center; gap:8px; margin-top:8px; }
 .teo-manual-pagina select { max-width:160px; padding:5px 8px; color:#173c53; background:#fff; border:1px solid #b6dce9; border-radius:8px; font:12px Arial,sans-serif; }
 .teo-resultados-manual a:focus-visible { outline:2px solid #0aa6ce; outline-offset:2px; }
+
+.teo-validacion-fse { margin-top:12px; padding-top:10px; border-top:1px solid #d9e8f0; }
+.teo-validacion-acciones { display:flex; gap:7px; flex-wrap:wrap; margin-top:8px; }
+.teo-validacion-fse button { padding:7px 10px; color:#075578; background:#eaf7fc; border:1px solid #b6dce9; border-radius:12px; font:12px Arial,sans-serif; cursor:pointer; }
+.teo-validacion-fse button:disabled { opacity:.5; cursor:default; }
+.teo-validacion-correccion { margin-top:10px; }
+.teo-validacion-correccion select { width:100%; padding:9px; color:#173c53; background:#fff; border:1px solid #b6dce9; border-radius:10px; font:13px Arial,sans-serif; }
+.teo-validacion-fse [role="status"] { color:#156044; }

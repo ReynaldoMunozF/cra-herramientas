@@ -4,6 +4,7 @@ import { BusquedaTeo, consultarTeo, ResultadoTeo, ResultadoCoordenadasTeo, Sesio
 import { interpretarCoordenadas } from "../servicios/coordenadasTeo";
 import { ConsultaProductividadRapida } from "./ConsultaProductividadRapida";
 import { ResultadosManualTeo, EstadoBusquedaManual } from "./ResultadosManualTeo";
+import { ValidacionFseTeo } from "./ValidacionFseTeo";
 import { ConsultaManualTeo } from "./ConsultaManualTeo";
 import imagenTeo from "../recursos/teo/teo.png";
 
@@ -213,7 +214,7 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
       <div aria-live="polite" aria-busy={cargandoFse}>
         {cargandoFse && <p className="teo-estado">Consultando FSE de {codigo}…</p>}
         {errorFse && <p className="teo-error" role="alert">{errorFse} <button type="button" onClick={() => consultarCodigo(codigo)}>Reintentar FSE</button></p>}
-        {resultado && <article ref={tarjetaFse} className="teo-tarjeta teo-fse"><h2>FSE orientativa · {codigo}</h2><p className="teo-provincia">{resultado.ubicacion.nombre} · {resultado.ubicacion.provincia}</p><strong>{resultado.orientacion.principal}</strong><p>{resultado.orientacion.criterio}</p><small>Confianza {resultado.orientacion.confianza}. Otros cuerpos: {resultado.orientacion.concurrentes.join(", ")}.</small>{!resultado.validacionDisponible && <p className="teo-error">No he podido recuperar las correcciones guardadas. Se muestra solo la orientación base. <button type="button" onClick={() => consultarCodigo(codigo)}>Actualizar FSE</button></p>}<small className="teo-aviso-fse">Confirma la demarcación según el procedimiento corporativo.</small></article>}
+        {resultado && <article ref={tarjetaFse} className="teo-tarjeta teo-fse"><h2>FSE orientativa · {codigo}</h2><p className="teo-provincia">{resultado.ubicacion.nombre} · {resultado.ubicacion.provincia}</p><strong>{resultado.orientacion.principal}</strong><p>{resultado.orientacion.criterio}</p><small>Confianza {resultado.orientacion.confianza}. Otros cuerpos: {resultado.orientacion.concurrentes.join(", ")}.</small>{!resultado.validacionDisponible && <p className="teo-error">No he podido recuperar las correcciones guardadas. Se muestra solo la orientación base. <button type="button" onClick={() => consultarCodigo(codigo)}>Actualizar FSE</button></p>}<ValidacionFseTeo key={`${codigo}|${resultado.ubicacion.nombre}`} codigoPostal={codigo} resultado={resultado} alCaducarSesion={alCaducarSesion} alGuardar={actualizado => { establecerResultado(actual => actual === resultado ? actualizado : actual); establecerUbicacionCoordenadas(actual => actual?.fse === resultado ? { ...actual, fse: actualizado } : actual); }} /><small className="teo-aviso-fse">Confirma la demarcación según el procedimiento corporativo.</small></article>}
       </div>
       </div>
       <div hidden={vista !== "productividad"}>
