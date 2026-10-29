@@ -10,7 +10,7 @@ interface PropiedadesTeo {
   siempreVisible: boolean;
   alCerrar: () => void;
   alCaducarSesion: () => void;
-  alCambiarTamano: (alto: number) => void;
+  alCambiarTamano: (alto: number, ancho?: number, altoMaximo?: number) => void;
 }
 
 export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, alCaducarSesion, alCambiarTamano }) => {
@@ -49,15 +49,23 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
   React.useEffect(() => () => cancelarFse(), []);
 
   React.useEffect(() => {
-    const vista = raiz.current?.ownerDocument.defaultView;
-    if (!vista || !cabecera.current) return;
-    const medir = () => alCambiarTamano((cabecera.current?.offsetHeight ?? 56) + (minimizado ? 0 : contenido.current?.scrollHeight ?? 0));
+    const ventanaPanel = raiz.current?.ownerDocument.defaultView;
+    if (!ventanaPanel || !cabecera.current) return;
+    const medir = () => alCambiarTamano(
+      minimizado ? (cabecera.current?.offsetHeight ?? 60) : vista === "manual" ? 760 : (cabecera.current?.offsetHeight ?? 60) + (contenido.current?.scrollHeight ?? 0) + 2,
+      vista === "manual" ? 620 : 535, vista === "manual" ? 760 : 560
+    );
     const observador = new ResizeObserver(medir);
     observador.observe(cabecera.current);
     if (contenido.current) observador.observe(contenido.current);
     medir();
-    return () => observador.disconnect();
-  }, [minimizado, alCambiarTamano]);
+    ventanaPanel.addEventListener("resize", medir);
+    return () => { observador.disconnect(); ventanaPanel.removeEventListener("resize", medir); };
+  }, [vista, minimizado, alCambiarTamano]);
+
+  React.useLayoutEffect(() => {
+    if (desplazamiento.current) desplazamiento.current.scrollTop = 0;
+  }, [vista, minimizado]);
 
   React.useEffect(() => {
     const documento = raiz.current?.ownerDocument;
@@ -149,7 +157,7 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
     try { const correcto = documento.execCommand("copy"); if (valor) establecerCoordenadasCopiadas(correcto); else establecerCopiado(correcto); } finally { area.remove(); input.current?.focus(); }
   };
 
-  return <section ref={raiz} className={`teo-panel ${minimizado ? "teo-minimizado" : ""}`} aria-label="Teo, tu compañero CRA">
+  return <section ref={raiz} className={`teo-panel teo-vista-${vista} ${minimizado ? "teo-minimizado" : ""}`} aria-label="Teo, tu compañero CRA">
     <header ref={cabecera} className="teo-cabecera">
       <img src={imagenTeo} alt="" width={46} height={46} />
       <div><strong>Teo <span>· Tu compañero CRA</span></strong><small>{siempreVisible ? "Siempre visible" : "Dentro de esta página"} · Solo administrador</small></div>

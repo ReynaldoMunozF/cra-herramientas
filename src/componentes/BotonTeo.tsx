@@ -15,6 +15,7 @@ export const BotonTeo: React.FC<{ ubicacion?: "flotante" | "cabecera" }> = ({ ub
   const [destino, establecerDestino] = React.useState<HTMLElement | null>(null);
   const [alternativo, establecerAlternativo] = React.useState(false);
   const [alto, establecerAlto] = React.useState(190);
+  const [ancho, establecerAncho] = React.useState(535);
   const ventana = React.useRef<Window | null>(null);
   const abriendo = React.useRef(false);
   const temporizadorTamano = React.useRef<number>();
@@ -48,17 +49,20 @@ export const BotonTeo: React.FC<{ ubicacion?: "flotante" | "cabecera" }> = ({ ub
     return () => { activo = false; controlador?.abort(); window.clearInterval(intervalo); window.removeEventListener("focus", comprobar); ventana.current?.close(); window.clearTimeout(temporizadorTamano.current); };
   }, [caducar]);
 
-  const cambiarTamano = React.useCallback((altoContenido: number) => {
+  const cambiarTamano = React.useCallback((altoContenido: number, anchoContenido = 535, altoMaximo = 560) => {
     window.clearTimeout(temporizadorTamano.current);
     temporizadorTamano.current = window.setTimeout(() => {
       const auxiliar = ventana.current;
       const pantalla = auxiliar?.screen ?? window.screen;
       const marco = auxiliar ? Math.max(0, auxiliar.outerHeight - auxiliar.innerHeight) : 0;
-      const limite = Math.min(560, pantalla.availHeight - marco - 28);
-      const altura = Math.max(64, Math.min(limite, Math.ceil(altoContenido)));
+      const marcoHorizontal = auxiliar ? Math.max(0, auxiliar.outerWidth - auxiliar.innerWidth) : 0;
+      const limite = auxiliar ? pantalla.availHeight - marco - 28 : window.innerHeight - 120;
+      const altura = Math.max(64, Math.min(altoMaximo, limite, Math.ceil(altoContenido)));
+      const anchura = Math.min(anchoContenido, auxiliar ? pantalla.availWidth - marcoHorizontal - 24 : window.innerWidth - 24);
       establecerAlto(altura);
-      if (auxiliar && !auxiliar.closed && Math.abs(auxiliar.innerHeight - altura) > 8) {
-        try { auxiliar.resizeTo(Math.min(535, pantalla.availWidth), altura + marco); } catch { /* Conserva desplazamiento interno si el navegador limita el tamaño. */ }
+      establecerAncho(anchura);
+      if (auxiliar && !auxiliar.closed && (Math.abs(auxiliar.innerHeight - altura) > 8 || Math.abs(auxiliar.innerWidth - anchura) > 8)) {
+        try { auxiliar.resizeTo(anchura + marcoHorizontal, altura + marco); } catch { /* Conserva desplazamiento interno si el navegador limita el tamaño. */ }
       }
     }, 120);
   }, []);
@@ -70,7 +74,7 @@ export const BotonTeo: React.FC<{ ubicacion?: "flotante" | "cabecera" }> = ({ ub
     if (!gestor) { establecerAlternativo(true); return; }
     abriendo.current = true;
     try {
-      const auxiliar = await gestor.requestWindow({ width: Math.min(535, window.screen.availWidth), height: 190, preferInitialWindowPlacement: true });
+      const auxiliar = await gestor.requestWindow({ width: Math.min(620, window.screen.availWidth - 24), height: Math.min(760, window.screen.availHeight - 66), preferInitialWindowPlacement: true });
       auxiliar.document.title = "Teo · Tu compañero CRA";
       auxiliar.document.documentElement.lang = "es";
       auxiliar.document.documentElement.style.cssText = "min-width:0;height:100%;overflow:hidden";
@@ -96,6 +100,6 @@ export const BotonTeo: React.FC<{ ubicacion?: "flotante" | "cabecera" }> = ({ ub
       </> : <><img src={imagenTeo} alt="" width={60} height={60} /><span>Teo<small>Solo tú · Admin</small></span></>}
     </button>
     {destino && createPortal(panel, destino)}
-    {alternativo && <div className="teo-alternativo" style={{ height: alto }} role="region" aria-label="Ventana de Teo">{panel}</div>}
+    {alternativo && <div className="teo-alternativo" style={{ height: alto, width: ancho }} role="region" aria-label="Ventana de Teo">{panel}</div>}
   </>;
 };
