@@ -1,4 +1,5 @@
 import { ContextoPagina, responderJson } from "../_utilidades";
+import { consultarInteresTeo } from "../../_datos/interesTeo";
 import { buscarLocalidades } from "../../_datos/busquedaPostal";
 import { onRequestGet as consultarPostal } from "../codigo-postal";
 import { onRequestGet as consultarValidacion } from "../validaciones-fse";
@@ -75,5 +76,5 @@ export const onRequestGet = async (contexto: ContextoPagina) => {
   }
   const texto = (parametros.get("texto") ?? "").trim();
   if (texto.length < 2 || texto.length > 120) return responderJson({ error: "Escribe entre 2 y 120 caracteres." }, 400);
-  return responderJson(buscarLocalidades(texto));
+  return responderJson({ ...buscarLocalidades(texto), ...await consultarInteresTeo(contexto, texto) });
 };

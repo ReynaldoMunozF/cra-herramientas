@@ -28,6 +28,7 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
   const [resultado, establecerResultado] = React.useState<ResultadoTeo | null>(null);
   const [cargandoFse, establecerCargandoFse] = React.useState(false);
   const [errorFse, establecerErrorFse] = React.useState("");
+  const [telefonoCopiado, establecerTelefonoCopiado] = React.useState<number | null>(null);
   const [copiado, establecerCopiado] = React.useState(false);
   const [reintento, establecerReintento] = React.useState(0);
   const raiz = React.useRef<HTMLElement>(null);
@@ -117,7 +118,7 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
   const cambiarTexto = (valor: string) => {
     if (desplazamiento.current) desplazamiento.current.scrollTop = 0;
     consultaActual.current = valor.replace(/\s+/g, " ").trim();
-    cancelarFse(); establecerTexto(valor); establecerCopiado(false); establecerCoordenadasCopiadas(false);
+    cancelarFse(); establecerTelefonoCopiado(null); establecerTexto(valor); establecerCopiado(false); establecerCoordenadasCopiadas(false);
     establecerUbicacionCoordenadas(null);
     establecerCodigo(""); establecerResultado(null); establecerErrorFse(""); establecerCargandoFse(false);
     establecerBusqueda(null); establecerError("");
@@ -148,13 +149,13 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
     // La selección manual de un código no debe iniciar otra petición automática.
   }, [consulta, busqueda, minimizado]);
 
-  const copiar = (valor?: string) => {
+  const copiar = (valor?: string, telefonoId?: number) => {
     const documento = raiz.current?.ownerDocument;
     if (!documento) return;
     const area = documento.createElement("textarea");
     area.value = valor ?? deletreo.join(" · "); area.style.cssText = "position:fixed;left:-9999px";
     documento.body.appendChild(area); area.select();
-    try { const correcto = documento.execCommand("copy"); if (valor) establecerCoordenadasCopiadas(correcto); else establecerCopiado(correcto); } finally { area.remove(); input.current?.focus(); }
+    try { const correcto = documento.execCommand("copy"); if (telefonoId !== undefined) establecerTelefonoCopiado(correcto ? telefonoId : null); else if (valor) establecerCoordenadasCopiadas(correcto); else establecerCopiado(correcto); } finally { area.remove(); input.current?.focus(); }
   };
 
   return <section ref={raiz} className={`teo-panel teo-vista-${vista} ${minimizado ? "teo-minimizado" : ""}`} aria-label="Teo, tu compañero CRA">
@@ -174,15 +175,18 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
       {manualIniciado && <div hidden={vista !== "manual"}><ConsultaManualTeo alCaducarSesion={alCaducarSesion} /></div>}
       <div className="teo-consulta" hidden={vista !== "consulta"}>
       <form onSubmit={(evento) => { evento.preventDefault(); establecerReintento((valor) => valor + 1); }}>
-        <label htmlFor={`${id}-consulta`}>{consulta ? "Nombre, localidad, CP o coordenadas" : "Hola, soy Teo. ¿Qué necesitas consultar?"}</label>
-        <div className="teo-entrada"><span aria-hidden="true">⌕</span><input ref={input} id={`${id}-consulta`} value={texto} onChange={(evento) => cambiarTexto(evento.target.value)} maxLength={120} autoComplete="off" placeholder="Nombre, CP o 40.4168, -3.7038" autoFocus />{texto && <button type="button" onClick={() => { cambiarTexto(""); input.current?.focus(); }} aria-label="Limpiar consulta">×</button>}</div>
-        {!consulta && <small>Escribe un nombre, localidad, CP o pega unas coordenadas.</small>}
+        <label htmlFor={`${id}-consulta`}>{consulta ? "Nombre, teléfono, enlace, CP o coordenadas" : "Hola, soy Teo. ¿Qué necesitas consultar?"}</label>
+        <div className="teo-entrada"><span aria-hidden="true">⌕</span><input ref={input} id={`${id}-consulta`} value={texto} onChange={(evento) => cambiarTexto(evento.target.value)} maxLength={120} autoComplete="off" placeholder="Nombre, CGO, Toolbox, CP o coordenadas" autoFocus />{texto && <button type="button" onClick={() => { cambiarTexto(""); input.current?.focus(); }} aria-label="Limpiar consulta">×</button>}</div>
+        {!consulta && <small>Consulta nombres, teléfonos, enlaces, CP o coordenadas.</small>}
       </form>
       {coordenadas.tipo === "validas" && <p className="teo-coordenadas-previa">Latitud: {coordenadas.latitud} · Longitud: {coordenadas.longitud}<small>Comprueba el orden y el punto antes de utilizar la dirección.</small></p>}
       {(coordenadas.tipo === "incompletas" || coordenadas.tipo === "invalidas") && <p className="teo-estado" role="status">{coordenadas.mensaje}</p>}
+      {Boolean(busqueda?.telefonos?.length) && <section className="teo-interes" aria-label="Teléfonos de interés"><h2>Teléfonos de interés</h2>{busqueda!.telefonos!.map(t => <article key={t.id} className="teo-tarjeta teo-telefono"><h3>{t.nombre}</h3>{t.descripcion && <p className="teo-nota">{t.descripcion}</p>}<div className="teo-interes-acciones"><a className="teo-numero-telefono" href={`tel:${t.telefono.replace(/[^0-9+]/g, "")}`}>{t.telefono}</a><button type="button" onClick={() => copiar(t.telefono, t.id)} aria-label={`Copiar teléfono de ${t.nombre}`}>{telefonoCopiado === t.id ? "Copiado ✓" : "Copiar"}</button></div></article>)}<small className="teo-nota">Fuente: Teléfonos de interés.{(busqueda?.totalTelefonos ?? 0) > 5 ? ` Se muestran 5 de ${busqueda!.totalTelefonos}; concreta la búsqueda.` : ""}</small></section>}
+      {Boolean(busqueda?.enlaces?.length) && <section className="teo-interes" aria-label="Enlaces de interés"><h2>Enlaces de interés</h2><div className="teo-interes-enlaces">{busqueda!.enlaces!.map(e => <a key={e.id} href={e.url} target="_blank" rel="noopener noreferrer">Abrir {e.nombre} <span aria-hidden="true">↗</span></a>)}</div><small className="teo-nota">Accesos guardados en Enlaces de interés.{(busqueda?.totalEnlaces ?? 0) > 5 ? ` Se muestran 5 de ${busqueda!.totalEnlaces}; concreta la búsqueda.` : ""}</small></section>}
+      {busqueda?.avisosInteres?.map(aviso => <p key={aviso} className="teo-error" role="status">{aviso} <button type="button" onClick={() => establecerReintento(n => n+1)}>Reintentar</button></p>)}
       {deletreo.length > 0 && <article className="teo-tarjeta teo-alfabeto"><div className="teo-titulo-tarjeta"><h2>Alfabeto militar</h2><button type="button" onClick={() => copiar()} aria-label="Copiar deletreo">{copiado ? "Copiado ✓" : "Copiar"}</button></div><p>{deletreo.join(" · ")}</p></article>}
       <div aria-live="polite" aria-busy={buscando}>
-        {buscando && <p className="teo-estado">{modoCoordenadas ? "Localizando el punto…" : "Buscando localidades…"}</p>}
+        {buscando && <p className="teo-estado">{modoCoordenadas ? "Localizando el punto…" : "Consultando tus herramientas…"}</p>}
         {error && <p className="teo-error" role="alert">{error} <button type="button" onClick={() => establecerReintento((valor) => valor + 1)}>Reintentar</button></p>}
         {ubicacionCoordenadas && <article className="teo-tarjeta teo-ubicacion">
           <h2>Ubicación aproximada</h2>
@@ -197,7 +201,7 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
           {ubicacionCoordenadas.avisoFse && <p className="teo-estado">{ubicacionCoordenadas.avisoFse}</p>}
           <small className="teo-nota">Fuente: la herramienta Localización (OpenStreetMap). Verifica la dirección y el CP antes de utilizarlos.</small>
         </article>}
-        {busqueda && busqueda.total === 0 && <p className="teo-estado">No encuentro una localidad o código postal con ese texto en el catálogo. El deletreo sigue disponible.</p>}
+        {busqueda && busqueda.total === 0 && !busqueda.telefonos?.length && !busqueda.enlaces?.length && <p className="teo-estado">No encuentro coincidencias en localidades, teléfonos ni enlaces. El deletreo sigue disponible.</p>}
         {busqueda && busqueda.total > 0 && <div className="teo-localidades"><h2>Localidades y códigos postales</h2>{busqueda.total > busqueda.localidades.length && <p className="teo-estado">{busqueda.localidades.length} de {busqueda.total} coincidencias. Añade la provincia para concretar.</p>}
           {busqueda.localidades.map((localidad) => <article className="teo-tarjeta" key={`${localidad.nombre}|${localidad.provincia}|${localidad.comunidad}`}><h3>{localidad.nombre}</h3><p className="teo-provincia">{localidad.provincia} · {localidad.comunidad}</p><div className="teo-codigos">{localidad.codigos.map((cp) => <button key={cp.codigoPostal} type="button" onClick={() => consultarCodigo(cp.codigoPostal)} aria-pressed={codigo === cp.codigoPostal} title={cp.complementario ? "Entrada del catálogo complementario" : "Consultar FSE de este código postal"}>{cp.codigoPostal}{cp.complementario && <span aria-label="Catálogo complementario">*</span>}</button>)}</div></article>)}
           <small className="teo-nota">Elige el CP de la dirección para consultar su FSE. * Catálogo complementario. La lista puede no incluir todos los CP de la localidad.</small>

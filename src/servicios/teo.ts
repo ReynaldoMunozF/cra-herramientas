@@ -1,4 +1,5 @@
 import type { LocalizacionPostal } from "./localizacionPostal";
+import type { InteresTeo } from "./interesTeo";
 import type { OrientacionFse } from "./orientacionFse";
 
 export interface LocalidadTeo {
@@ -7,7 +8,7 @@ export interface LocalidadTeo {
   comunidad: string;
   codigos: Array<{ codigoPostal: string; complementario: boolean }>;
 }
-export interface BusquedaTeo { localidades: LocalidadTeo[]; total: number; }
+export interface BusquedaTeo extends InteresTeo { localidades: LocalidadTeo[]; total: number; }
 export interface ResultadoTeo {
   ubicacion: LocalizacionPostal;
   orientacion: OrientacionFse;

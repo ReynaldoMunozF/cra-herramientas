@@ -162,3 +162,11 @@
 /* El foco sigue la forma del campo completo, también al navegar con teclado. */
 .teo-panel .teo-entrada:focus-within { border-color:#0aa6ce; box-shadow:0 0 0 3px rgba(10,166,206,.16); }
 .teo-panel .teo-entrada input:focus-visible { outline:none; box-shadow:none; }
+
+.teo-interes { margin:12px 0; }
+.teo-interes-acciones { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:8px; }
+.teo-numero-telefono { color:#075578; font-size:19px; font-weight:700; text-decoration:none; }
+.teo-interes-acciones button { padding:6px 10px; color:#075578; background:#eef8fc; border:1px solid #b7dbe9; border-radius:12px; font:12px Arial,sans-serif; cursor:pointer; }
+.teo-interes-enlaces { display:flex; flex-wrap:wrap; gap:7px; margin-top:8px; }
+.teo-interes-enlaces a { display:inline-flex; align-items:center; gap:12px; padding:10px 15px; color:#fff; background:linear-gradient(110deg,#087ea4,#075779); border-radius:16px; font-size:13px; font-weight:700; text-decoration:none; }
+.teo-interes-enlaces a:focus-visible, .teo-numero-telefono:focus-visible { outline:2px solid #0aa6ce; outline-offset:3px; }
