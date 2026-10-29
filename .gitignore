@@ -16,3 +16,6 @@ backups/
 .DS_Store
 Thumbs.db
 src/iconos-iphone-v3.zip
+
+# Manual interno: se prepara localmente y solo se sirve con sesión administrativa.
+private/teo-manual/

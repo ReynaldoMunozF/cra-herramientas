@@ -231,7 +231,15 @@ export const onRequest = async (contexto: ContextoCloudflare) => {
     });
   }
 
-  const rutaAdministrativa = url.pathname === "/administracion/manual"
+  // Normaliza escapes y separadores antes de proteger también los archivos estáticos.
+  let rutaAcceso = url.pathname;
+  for (let i = 0; i < 3; i++) {
+    try { const decodificada = decodeURIComponent(rutaAcceso); if (decodificada === rutaAcceso) break; rutaAcceso = decodificada; } catch { break; }
+  }
+  rutaAcceso = new URL(rutaAcceso.replace(/\\/g, "/").replace(/\/+/g, "/"), url.origin).pathname;
+  const rutaAdministrativa = rutaAcceso === "/administracion/manual"
+    || rutaAcceso === "/administracion/teo-manual"
+    || rutaAcceso.startsWith("/administracion/teo-manual/")
     || url.pathname.startsWith("/api/administracion/");
   if (sesionActiva.rol !== "administrador" && rutaAdministrativa) {
     return new Response(JSON.stringify({ error: "Acceso reservado al administrador." }), {

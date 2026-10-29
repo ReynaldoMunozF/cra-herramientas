@@ -3,6 +3,7 @@ import { obtenerDeletreo } from "../servicios/alfabetoFonetico";
 import { BusquedaTeo, consultarTeo, ResultadoTeo, ResultadoCoordenadasTeo, SesionTeoError } from "../servicios/teo";
 import { interpretarCoordenadas } from "../servicios/coordenadasTeo";
 import { ConsultaProductividadRapida } from "./ConsultaProductividadRapida";
+import { ConsultaManualTeo } from "./ConsultaManualTeo";
 import imagenTeo from "../recursos/teo/teo.png";
 
 interface PropiedadesTeo {
@@ -13,7 +14,8 @@ interface PropiedadesTeo {
 }
 
 export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, alCaducarSesion, alCambiarTamano }) => {
-  const [vista, establecerVista] = React.useState<"consulta" | "productividad">("consulta");
+  const [vista, establecerVista] = React.useState<"consulta" | "productividad" | "manual">("consulta");
+  const [manualIniciado, establecerManualIniciado] = React.useState(false);
   const [productividadIniciada, establecerProductividadIniciada] = React.useState(false);
   const [minimizado, establecerMinimizado] = React.useState(false);
   const [texto, establecerTexto] = React.useState("");
@@ -67,7 +69,7 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
   }, []);
 
   React.useEffect(() => {
-    if (minimizado) return;
+    if (minimizado || vista !== "consulta") return;
     const controlador = new AbortController();
     establecerBusqueda(null); establecerUbicacionCoordenadas(null); establecerError("");
     if (modoCoordenadas) { establecerResultado(null); establecerCodigo(""); }
@@ -98,7 +100,7 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
       }
     }, modoCoordenadas ? 1000 : 350);
     return () => { window.clearTimeout(temporizador); controlador.abort(); };
-  }, [consulta, minimizado, reintento, alCaducarSesion]);
+  }, [consulta, minimizado, vista, reintento, alCaducarSesion]);
 
   React.useEffect(() => {
     if (vista === "consulta" && resultado && !ubicacionCoordenadas) tarjetaFse.current?.scrollIntoView({ block: "nearest" });
@@ -159,7 +161,9 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
       <nav className="teo-vistas" aria-label="Herramientas de Teo">
         <button type="button" aria-pressed={vista === "consulta"} onClick={() => establecerVista("consulta")}><span aria-hidden="true">⌕</span> Consulta rápida</button>
         <button type="button" aria-pressed={vista === "productividad"} onClick={() => { establecerProductividadIniciada(true); establecerVista("productividad"); }}><span aria-hidden="true">▥</span> Productividad</button>
+        <button type="button" aria-pressed={vista === "manual"} onClick={() => { establecerManualIniciado(true); establecerVista("manual"); }}><span aria-hidden="true">▤</span> Manual · Prueba</button>
       </nav>
+      {manualIniciado && <div hidden={vista !== "manual"}><ConsultaManualTeo alCaducarSesion={alCaducarSesion} /></div>}
       <div className="teo-consulta" hidden={vista !== "consulta"}>
       <form onSubmit={(evento) => { evento.preventDefault(); establecerReintento((valor) => valor + 1); }}>
         <label htmlFor={`${id}-consulta`}>{consulta ? "Nombre, localidad, CP o coordenadas" : "Hola, soy Teo. ¿Qué necesitas consultar?"}</label>

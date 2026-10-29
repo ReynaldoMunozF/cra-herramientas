@@ -112,3 +112,29 @@
 .teo-panel .productividad-teo .productividad-carga-teo { padding:12px; color:#4d6b7e; }
 .teo-panel .productividad-teo .productividad-contenido.requiere-pin > .productividad-campos { filter:none; opacity:1; }
 @media(max-width:420px) { .teo-panel .productividad-teo .productividad-email-formulario { grid-template-columns:repeat(2,minmax(0,1fr)); } .teo-panel .productividad-teo .productividad-identificacion { grid-template-columns:1fr; } }
+
+.teo-manual { min-width:0; }
+.teo-manual-titulo { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.teo-manual-titulo > span { padding:3px 6px; border-radius:5px; color:#755000; background:#fff0c2; font-size:10px; }
+.teo-manual label { margin-top:10px; }
+.teo-manual :is(select,textarea) { box-sizing:border-box; max-width:100%; width:100%; padding:8px; color:#173c53; background:#fff; border:1px solid #aecbde; border-radius:7px; font:12px Arial,sans-serif; }
+.teo-manual-lista { display:grid; gap:6px; margin-top:10px; max-height:260px; overflow:auto; }
+.teo-manual-lista button, .teo-manual-opciones button { width:100%; padding:9px; text-align:left; color:#174460; background:#fff; border:1px solid #b8d8e8; border-radius:8px; font:12px Arial,sans-serif; cursor:pointer; }
+.teo-manual-lista button:hover, .teo-manual-opciones button:hover { background:#e8f7ff; }
+.teo-manual-lista strong, .teo-manual-lista small { display:block; }
+.teo-manual-lista small { margin-top:3px; color:#53758a; font-size:10px; }
+.teo-manual-opciones { display:grid; gap:6px; margin-top:10px; }
+.teo-manual-acciones { display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
+.teo-manual-acciones button, .teo-manual-volver, .teo-manual-pie button { padding:6px 8px; color:#075578; background:#eef7fc; border:1px solid #bedbe9; border-radius:6px; font:11px Arial,sans-serif; cursor:pointer; }
+.teo-manual-volver { margin:10px 0; }
+.teo-manual-respuesta.requiere-consulta { border-color:#dfb66b; background:#fff9ed; }
+.teo-manual-acciones button:disabled { opacity:.45; cursor:default; }
+.teo-manual-fuente img { width:100%; height:auto; margin:10px 0; }
+.teo-manual-fuente a { color:#096c98; }
+.teo-manual :is(details) { margin-top:12px; padding:9px; background:#fff; border:1px solid #d4e4ef; border-radius:8px; }
+.teo-manual summary { cursor:pointer; color:#27546e; font-weight:700; }
+.teo-manual-dudas > div { margin-top:12px; padding-top:8px; border-top:1px solid #eadbc2; }
+.teo-manual-pie { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:14px; color:#527287; }
+.teo-manual-pie small { font-size:10px; }
+.teo-panel .teo-manual :is(button,select,textarea):focus-visible { outline:3px solid #cf8b00; outline-offset:2px; }
+@media(max-width:420px) { .teo-vistas button { font-size:10px; padding-inline:2px; } .teo-vistas span { display:none; } }
