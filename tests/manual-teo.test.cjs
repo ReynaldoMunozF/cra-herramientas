@@ -61,3 +61,11 @@ test('El middleware bloquea rutas administrativas escapadas y separadores duplic
  let passed=false;const r=await middleware.onRequest({request:new Request('https://cra.test'+p,{headers:{Cookie:cookie('invitado')}}),env,next:async()=>{passed=true;return new Response('fixture')}});assert.equal(r.status,403,p);assert.equal(passed,false,p);
  }
 });
+test('El índice rápido encuentra doble vía por su identificador y mantiene la página del original',()=>{
+ const ficha={id:'doble-via',titulo:'Fallo de las dos vías',grupo:'Técnicas',alias:[],paginas:[39],respuesta:'Comprobar restauración, horario y armado.',nodos:{}};
+ const otra={id:'acuda',titulo:'Modalidades de acuda',grupo:'Acuda',alias:[],paginas:[67],respuesta:'Contactar CGO; revisar doble vía cuando corresponda.',nodos:{}};
+ for(const q of ['doble via','doble vía','Doble-vía','fallo doble vía','dos vías']){const r=servicio.buscarProcedimientosManual([otra,ficha],q,'',true);assert.equal(r[0].id,'doble-via',q);assert.equal(r[0].paginas[0],39)}
+ assert.equal(servicio.buscarProcedimientosManual([otra,ficha],'CGO','',true).length,0,'La consulta rápida indexa títulos e identificadores, sin llenar la pantalla con menciones del cuerpo');
+ assert.equal(servicio.buscarProcedimientosManual([otra,ficha],'CGO').length,1,'La consulta completa del manual conserva su búsqueda en el contenido');
+ assert.equal(servicio.buscarProcedimientosManual([otra,ficha],'inexistente','',true).length,0);
+});

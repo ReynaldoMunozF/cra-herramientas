@@ -24,14 +24,14 @@ export const cargarManualTeo = async (signal: AbortSignal): Promise<CatalogoManu
 };
 export const normalizarConsultaManual = (texto: string) => texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
 const comunes = new Set(["que", "es", "una", "un", "el", "la", "los", "las", "de", "del", "como", "debo", "proceder", "hacer", "tengo", "con", "y", "por", "para", "me"]);
-export const buscarProcedimientosManual = (datos: ProcedimientoManualTeo[], consulta: string, grupo = "") => {
+export const buscarProcedimientosManual = (datos: ProcedimientoManualTeo[], consulta: string, grupo = "", soloTitulos = false) => {
   const q = normalizarConsultaManual(consulta);
   const tokens = consulta.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(/[^a-z0-9]+/).filter(t => t && !comunes.has(t));
   return datos.filter(p => !grupo || p.grupo === grupo).map((p, orden) => {
     if (!q) return { p, peso: 1, orden };
     const titulo = normalizarConsultaManual(p.titulo);
-    const alias = p.alias.map(normalizarConsultaManual);
-    const texto = normalizarConsultaManual([p.respuesta, ...Object.values(p.nodos).map(n => n.texto)].join(" "));
+    const alias = [p.id, ...p.alias].map(normalizarConsultaManual);
+    const texto = soloTitulos ? "" : normalizarConsultaManual([p.respuesta, ...Object.values(p.nodos).map(n => n.texto)].join(" "));
     const esOe = q === "oe" || q === "operativaespecial";
     const peso = titulo === q || alias.includes(q) ? 100 : titulo.includes(q) ? 80
       : alias.some(a => a.includes(q)) ? 60 : texto.includes(q) ? 20
