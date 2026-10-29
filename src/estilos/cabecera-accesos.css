@@ -1,0 +1,95 @@
+/* Accesos y Teo comparten la cabecera; los controles de cada herramienta conservan su comportamiento. */
+.barra-superior-global {
+  display:block;
+  padding:12px 24px 0;
+  background:radial-gradient(ellipse at 87% 10%,#0c68923b,transparent 50%),linear-gradient(115deg,#081e36,#073453 75%,#052841);
+  border-bottom:5px solid #ffd100;
+  border-radius:0 0 28px 28px;
+  box-shadow:0 8px 24px #032a4638,inset 0 -1px #35c9ed55;
+}
+.cabecera-panel { display:grid; width:min(100%,1240px); margin:auto; grid-template-columns:minmax(0,1fr) auto; align-items:end; gap:18px; padding-top:18px; }
+.cabecera-accesos { min-width:0; padding-bottom:16px; }
+.barra-superior-global .reloj-global { justify-content:flex-start; margin-bottom:14px; padding:0; min-height:48px; gap:12px; }
+.barra-superior-global .reloj-icono { width:48px; height:48px; border-radius:13px; background:linear-gradient(145deg,#ffe94d,#ffd100 70%); box-shadow:inset 0 1px 2px #ffffffa0,0 5px 12px #0004; }
+.barra-superior-global .reloj-icono svg { width:28px; height:28px; }
+.barra-superior-global .reloj-texto { flex-direction:column; align-items:flex-start; gap:4px; }
+.barra-superior-global .reloj-hora { font-size:clamp(1.35rem,2.4vw,1.85rem); line-height:1; letter-spacing:.015em; }
+.barra-superior-global .reloj-fecha { max-width:none; padding:0; border:0; font-size:12px; color:#bfd7e8; white-space:normal; }
+.barra-superior-global .herramientas-cabecera { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); width:100%; margin:0; padding:0; gap:10px; border:0; border-radius:0; background:none; box-shadow:none; }
+.barra-superior-global .herramientas-cabecera > :is(.boton-herramientas-rapidas,.boton-barra-herramientas-admin) {
+  position:relative; display:flex; width:100%; min-width:0; min-height:78px; margin:0; padding:12px 10px; gap:10px; align-items:center;
+  color:#fff; text-align:left; background:linear-gradient(140deg,#173e5f,#0a2948); border:1px solid #527d9b; border-radius:14px;
+  box-shadow:inset 0 1px 1px #ffffff3d,0 5px 12px #0003; transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.barra-superior-global .herramientas-cabecera > :is(.boton-herramientas-rapidas,.boton-barra-herramientas-admin)::after { position:absolute; bottom:6px; left:65px; width:40px; height:3px; content:""; background:#d5ceaf; border-radius:4px; }
+.barra-superior-global .herramientas-cabecera > :is(.boton-herramientas-rapidas,.boton-barra-herramientas-admin):hover { transform:translateY(-2px); border-color:#74dffa; box-shadow:inset 0 1px 2px #ffffff55,0 6px 20px #03b8ed26; text-decoration:none; }
+.barra-superior-global .herramientas-cabecera :is(.boton-herramientas-rapidas,.boton-barra-herramientas-admin) > .acceso-cabecera-icono { display:grid; flex:0 0 44px; width:44px; height:44px; place-items:center; color:#062e4b; background:linear-gradient(145deg,#ffe84d,#ffd100); border:1px solid #fff17c; border-radius:12px; box-shadow:inset 0 1px 2px #fff8,0 4px 10px #0004; }
+.barra-superior-global .herramientas-cabecera :is(.boton-herramientas-rapidas,.boton-barra-herramientas-admin) > .acceso-cabecera-icono svg { width:26px; height:26px; padding:0; color:inherit; stroke:currentColor; background:none; border-radius:0; }
+.barra-superior-global .herramientas-cabecera :is(.acceso-cabecera-texto,button > div) { min-width:0; flex:1; line-height:1.25; }
+.barra-superior-global .herramientas-cabecera :is(small,.boton-barra-herramientas-admin.compacto small) { display:block; width:auto; margin:0 0 4px; padding:0; color:#abcce3; font-size:9px; font-weight:750; letter-spacing:.05em; white-space:normal; background:none; }
+.barra-superior-global .herramientas-cabecera :is(strong,.boton-barra-herramientas-admin.compacto strong) { display:block; margin:0; color:#fff; font-size:14px; font-weight:750; white-space:normal; }
+.barra-superior-global .herramientas-cabecera .acceso-cabecera-flecha { display:grid; flex:0 0 23px; width:23px; height:28px; margin:0; place-items:center; color:#dcf3ff; background:linear-gradient(140deg,#ffffff2b,#ffffff0b); border:1px solid #ffffff1c; border-radius:6px; box-shadow:inset 0 1px #ffffff22; }
+.barra-superior-global .herramientas-cabecera .acceso-cabecera-flecha svg { width:16px; height:16px; stroke:currentColor; }
+.barra-superior-global .herramientas-cabecera .boton-barra-herramientas-admin.compacto { border:1px solid #37d6fa; background:linear-gradient(135deg,#105878,#093252); box-shadow:inset 0 0 0 1px #7eeeff22,0 0 14px #08c6f82b; }
+.barra-superior-global .herramientas-cabecera .boton-barra-herramientas-admin.compacto small { color:#ffe454; }
+.barra-superior-global .herramientas-cabecera :is(.boton-barra-herramientas-admin,.boton-herramientas-nueva-pestana)::after { background:#18c6ee; }
+.barra-superior-global .herramientas-cabecera .boton-herramientas-nueva-pestana .acceso-cabecera-icono { background:linear-gradient(145deg,#a5efff,#35ceef); border-color:#b5f3ff; }
+.cabecera-sesion { position:absolute; top:8px; right:16px; display:flex; align-items:center; gap:7px; }
+.cabecera-sesion .boton-cerrar-sesion { display:inline-flex; align-items:center; padding:5px 9px; color:#d4e8f4; background:#ffffff0c; border:1px solid #ffffff35; border-radius:6px; font-size:10px; line-height:1; }
+.cabecera-sesion .boton-cerrar-sesion:hover { color:#fff; background:#ffffff20; text-decoration:none; }
+.teo-presentacion { position:relative; display:flex; align-items:flex-end; width:300px; min-height:170px; margin:0; padding:0; color:#fff; background:none; border:0; text-align:left; cursor:pointer; }
+.teo-presentacion > img { position:relative; z-index:1; flex-shrink:0; width:164px; height:164px; object-fit:contain; filter:drop-shadow(0 0 13px #06a7de44); }
+.teo-saludo { position:relative; z-index:2; align-self:flex-start; min-width:164px; margin-top:22px; margin-right:-31px; padding:11px 12px 9px; background:linear-gradient(145deg,#082941,#064465); border:1.5px solid #22caf2; border-radius:17px; box-shadow:inset 0 0 12px #16b9ec13,0 0 15px #08c6f82d; transform:rotate(-4deg); }
+.teo-saludo::after { position:absolute; right:15px; bottom:-7px; width:12px; height:12px; content:""; background:#064465; border-right:1.5px solid #22caf2; border-bottom:1.5px solid #22caf2; transform:skewY(30deg); }
+.teo-saludo strong { display:block; color:#fff; font-size:18px; font-weight:750; white-space:nowrap; }
+.teo-saludo em { color:#29d6ff; font-size:27px; font-style:normal; }
+.teo-saludo > small { display:block; margin-top:2px; color:#c2e0ef; font-size:12px; white-space:nowrap; }
+.teo-saludo small span { margin-left:4px; color:#ffe454; }
+.teo-saludo-accion { display:block; margin-top:6px; color:#8ee4fc; font-size:10px; }
+.teo-saludo-accion svg { width:11px; height:11px; vertical-align:-2px; }
+.teo-presentacion:hover .teo-saludo { border-color:#8aeaff; box-shadow:0 0 20px #08c6f855; }
+.teo-presentacion:focus-visible { outline:3px solid #ffd100; outline-offset:3px; border-radius:15px; }
+@media(max-width:1100px) {
+  .barra-superior-global { padding-inline:16px; }
+  .cabecera-panel { gap:12px; }
+  .teo-presentacion { width:250px; }
+  .teo-presentacion > img { width:140px; height:155px; }
+  .teo-saludo { min-width:143px; padding:9px 10px; margin-right:-33px; }
+  .teo-saludo strong { font-size:15px; }
+  .teo-saludo em { font-size:23px; }
+  .teo-saludo > small { font-size:11px; }
+  .barra-superior-global .herramientas-cabecera > :is(.boton-herramientas-rapidas,.boton-barra-herramientas-admin) { padding-inline:8px; gap:7px; }
+  .barra-superior-global .herramientas-cabecera :is(strong,.boton-barra-herramientas-admin.compacto strong) { font-size:12px; }
+  .barra-superior-global .herramientas-cabecera :is(.boton-herramientas-rapidas,.boton-barra-herramientas-admin) > .acceso-cabecera-icono { flex-basis:36px; width:36px; height:40px; border-radius:10px; }
+  .barra-superior-global .herramientas-cabecera .acceso-cabecera-flecha { display:none; }
+}
+@media(max-width:760px) {
+  .barra-superior-global { padding:12px 12px 0; border-radius:0 0 22px 22px; }
+  .cabecera-panel { grid-template-columns:minmax(0,1fr) 150px; align-items:center; gap:8px; padding-top:20px; }
+  .cabecera-accesos { display:contents; }
+  .barra-superior-global .reloj-global { grid-column:1; grid-row:1; margin:0; gap:8px; }
+  .barra-superior-global .reloj-icono { width:36px; height:40px; border-radius:10px; }
+  .barra-superior-global .reloj-icono svg { width:23px; height:23px; }
+  .barra-superior-global .reloj-hora { font-size:20px; }
+  .barra-superior-global .reloj-fecha { font-size:10px; }
+  .barra-superior-global .herramientas-cabecera { grid-column:1 / -1; grid-row:2; margin:3px 0 12px; gap:7px; }
+  .barra-superior-global .herramientas-cabecera > :is(.boton-herramientas-rapidas,.boton-barra-herramientas-admin) { min-height:74px; }
+  .teo-presentacion { grid-column:2; grid-row:1; width:150px; min-height:105px; }
+  .teo-presentacion > img { position:absolute; right:0; bottom:0; width:92px; height:92px; }
+  .teo-saludo { align-self:flex-start; min-width:0; max-width:105px; margin:3px 0 0; padding:6px 8px; border-radius:12px; }
+  .teo-saludo strong { font-size:11px; }
+  .teo-saludo em { font-size:18px; }
+  .teo-saludo > small { font-size:9px; white-space:normal; }
+  .teo-saludo-accion { margin-top:3px; font-size:9px; }
+  .cabecera-panel:not(:has(.teo-presentacion)) { grid-template-columns:1fr; }
+  .cabecera-panel:not(:has(.teo-presentacion)) .reloj-global { margin:8px 0 5px; }
+}
+@media(max-width:480px) {
+  .barra-superior-global .herramientas-cabecera > :is(.boton-herramientas-rapidas,.boton-barra-herramientas-admin) { flex-direction:column; align-items:flex-start; justify-content:flex-start; min-height:88px; padding:8px; gap:6px; border-radius:11px; }
+  .barra-superior-global .herramientas-cabecera :is(.boton-herramientas-rapidas,.boton-barra-herramientas-admin) > .acceso-cabecera-icono { flex-basis:30px; width:30px; height:30px; border-radius:8px; }
+  .barra-superior-global .herramientas-cabecera :is(.boton-herramientas-rapidas,.boton-barra-herramientas-admin) > .acceso-cabecera-icono svg { width:20px; height:20px; }
+  .barra-superior-global .herramientas-cabecera :is(small,.boton-barra-herramientas-admin.compacto small) { display:none; }
+  .barra-superior-global .herramientas-cabecera :is(strong,.boton-barra-herramientas-admin.compacto strong) { font-size:11px; line-height:1.25; }
+  .barra-superior-global .herramientas-cabecera > :is(.boton-herramientas-rapidas,.boton-barra-herramientas-admin)::after { bottom:5px; left:8px; width:25px; height:2px; }
+}
+@media(prefers-reduced-motion:reduce) { .barra-superior-global .herramientas-cabecera > :is(.boton-herramientas-rapidas,.boton-barra-herramientas-admin) { transition:none; } }

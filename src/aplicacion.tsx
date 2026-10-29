@@ -66,6 +66,7 @@ import "./cuadrante/cuadrante.css";
 import "./estilos/barra-herramientas-admin-v2.css";
 import "./estilos/calculadora-rapida.css";
 import "./estilos/enlaces-app.css";
+import "./estilos/cabecera-accesos.css";
 
 /**
  * Componente raíz de la aplicación.
@@ -86,22 +87,25 @@ const ContenidoAplicacion: React.FC = () => {
     <>
       {/* Cloudflare elimina la cookie segura y vuelve a mostrar la pantalla de acceso. */}
       {!esVentanaAuxiliar && <header className="barra-superior-global">
-        <span className="barra-superior-espacio" aria-hidden="true" />
-        <div className="barra-superior-centro">
-          <RelojGlobal />
-          <div className="herramientas-cabecera">
-            <BotonHerramientasRapidas />
-            <BotonBarraHerramientasAdmin compacto />
-            <BotonHerramientasNuevaPestana />
+        <div className="cabecera-panel">
+          <div className="cabecera-accesos">
+            <RelojGlobal />
+            <nav className="herramientas-cabecera" aria-label="Accesos a las herramientas CRA">
+              <BotonHerramientasRapidas />
+              <BotonBarraHerramientasAdmin compacto />
+              <BotonHerramientasNuevaPestana />
+            </nav>
           </div>
+          <BotonTeo ubicacion="cabecera" />
         </div>
-        <CambioClaveOperador />
-        <a className="boton-cerrar-sesion" href="/cerrar-sesion" aria-label="Cerrar sesión">Salir</a>
+        <div className="cabecera-sesion">
+          <CambioClaveOperador />
+          <a className="boton-cerrar-sesion" href="/cerrar-sesion" aria-label="Cerrar sesión">Salir</a>
+        </div>
       </header>}
       {!esVentanaAuxiliar && <section className="consejo-operador-destacado"><ConsejosOperador /></section>}
       {!esVentanaAuxiliar && MOSTRAR_AVISOS_METEOROLOGICOS && <AvisosMeteorologicosGlobales />}
       {!esVentanaAuxiliar && <FeedbackGlobal />}
-      {!esVentanaAuxiliar && <BotonTeo />}
       <Rutas>
         <Ruta path="/herramientas-rapidas" element={<PaginaHerramientasRapidas />} />
         <Ruta path="/zona-descanso" element={<PaginaZonaDescanso />} />

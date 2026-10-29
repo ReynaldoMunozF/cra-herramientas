@@ -1,6 +1,7 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import { PanelTeo } from "./PanelTeo";
+import { IconoAccesoCabecera } from "./IconoAccesoCabecera";
 import imagenTeo from "../recursos/teo/teo.png";
 
 interface GestorPiP {
@@ -9,7 +10,7 @@ interface GestorPiP {
 }
 
 /** El piloto se monta únicamente tras verificar el rol en la sesión del servidor. */
-export const BotonTeo: React.FC = () => {
+export const BotonTeo: React.FC<{ ubicacion?: "flotante" | "cabecera" }> = ({ ubicacion = "flotante" }) => {
   const [esAdministrador, establecerEsAdministrador] = React.useState(false);
   const [destino, establecerDestino] = React.useState<HTMLElement | null>(null);
   const [alternativo, establecerAlternativo] = React.useState(false);
@@ -88,7 +89,12 @@ export const BotonTeo: React.FC = () => {
   if (!esAdministrador) return null;
   const panel = <PanelTeo siempreVisible={Boolean(destino)} alCerrar={cerrar} alCaducarSesion={caducar} alCambiarTamano={cambiarTamano} />;
   return <>
-    <button ref={referenciaBoton} className="teo-lanzador" type="button" onClick={abrir} aria-label="Abrir Teo, tu compañero CRA" aria-expanded={Boolean(destino || alternativo)} title="Teo · Asistente de prueba para administrador"><img src={imagenTeo} alt="" width={60} height={60} /><span>Teo<small>Solo tú · Admin</small></span></button>
+    <button ref={referenciaBoton} className={ubicacion === "cabecera" ? "teo-presentacion" : "teo-lanzador"} type="button" onClick={abrir} aria-label="Abrir Teo, tu compañero CRA" aria-expanded={Boolean(destino || alternativo)} title="Abrir Teo · Solo administrador">
+      {ubicacion === "cabecera" ? <>
+        <span className="teo-saludo"><strong>Hola, soy <em>Teo</em></strong><small>Tu asistente CRA <span aria-hidden="true">✦</span></small><span className="teo-saludo-accion">Pulsa para abrir <IconoAccesoCabecera tipo="flecha" /></span></span>
+        <img src={imagenTeo} alt="" width={164} height={164} />
+      </> : <><img src={imagenTeo} alt="" width={60} height={60} /><span>Teo<small>Solo tú · Admin</small></span></>}
+    </button>
     {destino && createPortal(panel, destino)}
     {alternativo && <div className="teo-alternativo" style={{ height: alto }} role="region" aria-label="Ventana de Teo">{panel}</div>}
   </>;

@@ -1,4 +1,5 @@
 import React from "react";
+import { IconoAccesoCabecera } from "./IconoAccesoCabecera";
 import { createPortal } from "react-dom";
 import { BarraHerramientasAdmin } from "./BarraHerramientasAdmin";
 import { animarVentanaAuxiliar } from "../utilidades/animarVentanaAuxiliar";
@@ -103,9 +104,9 @@ export const BotonBarraHerramientasAdmin: React.FC<{ compacto?: boolean }> = ({ 
   return (
     <>
       <button className={`boton-barra-herramientas-admin ${compacto ? "compacto" : ""}`} type="button" onClick={abrir}>
-        <span className="acceso-cabecera-icono" aria-hidden="true">⚡</span>
+        <span className="acceso-cabecera-icono" aria-hidden="true"><IconoAccesoCabecera tipo="flotante" /></span>
         <div><small>{compacto ? "Nueva · ocupa menos" : "NUEVA"}</small><strong>{compacto ? "Barra flotante" : "Abrir barra auxiliar flotante"}</strong></div>
-        <b aria-hidden="true">↗</b>
+        <b className="acceso-cabecera-flecha" aria-hidden="true"><IconoAccesoCabecera tipo="flecha" /></b>
       </button>
       {destino && createPortal(<BarraHerramientasAdmin flotante esAdministrador={esAdministrador} />, destino)}
     </>
