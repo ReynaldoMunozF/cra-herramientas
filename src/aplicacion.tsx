@@ -20,11 +20,13 @@ import { PaginaHerramientasAdministrador } from "./paginas/PaginaHerramientasAdm
 import { PaginaBiblioteca } from "./paginas/PaginaBiblioteca";
 import { BotonBarraHerramientasAdmin } from "./componentes/BotonBarraHerramientasAdmin";
 import { CambioClaveOperador } from "./componentes/CambioClaveOperador";
+import { BotonTeo } from "./componentes/BotonTeo";
 
 // Las hojas se importan en orden: fundamentos, estructura y módulos concretos.
 // Mantener este orden evita que una regla general sobrescriba estilos específicos.
 import "./estilos/base.css";
 import "./estilos/inicio.css";
+import "./estilos/teo.css";
 import "./estilos/comunidad-inicio.css";
 import "./estilos/biblioteca.css";
 import "./estilos/estructura-general.css";
@@ -99,6 +101,7 @@ const ContenidoAplicacion: React.FC = () => {
       {!esVentanaAuxiliar && <section className="consejo-operador-destacado"><ConsejosOperador /></section>}
       {!esVentanaAuxiliar && MOSTRAR_AVISOS_METEOROLOGICOS && <AvisosMeteorologicosGlobales />}
       {!esVentanaAuxiliar && <FeedbackGlobal />}
+      {!esVentanaAuxiliar && <BotonTeo />}
       <Rutas>
         <Ruta path="/herramientas-rapidas" element={<PaginaHerramientasRapidas />} />
         <Ruta path="/zona-descanso" element={<PaginaZonaDescanso />} />

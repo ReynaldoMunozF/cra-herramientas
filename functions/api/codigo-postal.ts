@@ -12,7 +12,7 @@ interface LocalizacionPostal {
 
 type EntradaCatalogoPostal = [string, string, string, number, number, "a" | "c", string];
 
-const catalogoPostal = catalogoPostalJson as Record<string, EntradaCatalogoPostal>;
+const catalogoPostal = catalogoPostalJson as unknown as Record<string, EntradaCatalogoPostal>;
 
 const provinciasPorPrefijo: Record<string, string> = {
   "01":"Álava","02":"Albacete","03":"Alicante","04":"Almería","05":"Ávila","06":"Badajoz",
