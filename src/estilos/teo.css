@@ -13,7 +13,7 @@
 .teo-cabecera > button { flex-shrink:0; width:28px; height:28px; padding:0; color:#fff; background:#ffffff12; border:1px solid #ffffff50; border-radius:7px; font:22px/1 Arial,sans-serif; cursor:pointer; }
 .teo-desplazamiento { flex:1; min-height:0; overflow:auto; overscroll-behavior:contain; }
 .teo-contenido { padding:12px; }
-.teo-panel form { position:sticky; top:-12px; z-index:1; padding:10px 0; margin-top:-10px; background:#f5f9fc; }
+.teo-panel .teo-consulta > form { position:sticky; top:28px; z-index:1; padding:10px 0; margin-top:-10px; background:#f5f9fc; }
 .teo-panel label { display:block; margin-bottom:7px; color:#153d58; font-size:12px; font-weight:700; }
 .teo-entrada { display:flex; align-items:center; gap:7px; padding:0 9px; color:#0872a1; background:#fff; border:1px solid #8db9cf; border-radius:10px; }
 .teo-entrada > span { font-size:24px; }
@@ -49,3 +49,66 @@
 .teo-coordenadas-previa small { display:block; margin-top:4px; color:#496476; font-size:10px; }
 .teo-mapas { display:flex; flex-wrap:wrap; gap:6px; margin-top:9px; }
 .teo-mapas a, .teo-mapas button { display:inline-block; padding:6px 8px; color:#075578; background:#eef7fc; border:1px solid #bedbe9; border-radius:6px; font:11px Arial,sans-serif; text-decoration:none; cursor:pointer; }
+
+.teo-panel [hidden] { display:none !important; }
+.teo-vistas { position:sticky; top:-12px; z-index:3; display:flex; gap:4px; padding:0 0 8px; margin-bottom:10px; background:#f5f9fc; }
+.teo-vistas button { flex:1; padding:9px 5px; color:#345c76; background:#edf5fa; border:0; border-bottom:3px solid transparent; border-radius:8px 8px 0 0; font:700 12px Arial,sans-serif; cursor:pointer; }
+.teo-vistas button[aria-pressed="true"] { color:#07567e; background:#fff; border-bottom-color:#0bb5df; }
+.teo-vistas span { margin-right:4px; color:#068bb9; font-size:16px; }
+
+/* La misma calculadora y el mismo guardado; solo cambia su presentación dentro de Teo. */
+.teo-panel .productividad-teo { color:#173c53; }
+.teo-panel .productividad-teo .productividad-rapida-panel { position:static; max-height:none; overflow:visible; color:#173c53; background:#fff; border:1px solid #d4e4ef; border-radius:11px; box-shadow:none; }
+.teo-panel .productividad-teo .productividad-rapida-panel > header { grid-template-columns:1fr auto; padding:10px 12px; color:#123c57; background:#f5fbff; border-bottom:1px solid #d4e4ef; }
+.teo-panel .productividad-teo header h2 { color:#123c57; font-size:15px; letter-spacing:0; text-transform:none; }
+.teo-panel .productividad-teo header small { color:#537286; font-size:9px; }
+.teo-panel .productividad-teo .productividad-resultado-cabecera strong { color:#073553; font-size:22px; }
+.teo-panel .productividad-teo .productividad-resultado-cabecera span { color:#4f7189; font-size:10px; }
+.teo-panel .productividad-teo .productividad-contenido { padding:10px; gap:8px; }
+.teo-panel .productividad-teo .productividad-campos { min-width:0; margin:0; padding:0; border:0; }
+.teo-panel .productividad-teo .productividad-campos:not([hidden]) { display:grid; gap:9px; }
+.teo-panel .productividad-teo .productividad-contenido label { min-width:0; margin:0; color:#214760; font-size:11px; }
+.teo-panel .productividad-teo .productividad-contenido :is(input,select) { min-width:0; min-height:32px; padding:6px 8px; color:#10364f; background:#fff; border:1px solid #b2cfdf; font:12px Arial,sans-serif; }
+.teo-panel .productividad-teo :is(.productividad-identificacion,.productividad-datos-base) { grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:9px; }
+.teo-panel .productividad-teo .productividad-estado { color:#4c6271; background:#eef5f9; font-size:10px; }
+.teo-panel .productividad-teo .productividad-contador { grid-template-columns:30px minmax(0,1fr); }
+.teo-panel .productividad-teo .productividad-contador button { color:#164967; background:#f0f8fd; border-color:#c7dfed; }
+.teo-panel .productividad-teo .productividad-contador span { font-size:11px; }
+.teo-panel .productividad-teo .productividad-contador :is(small,b) { color:#0879a1; }
+.teo-panel .productividad-teo .productividad-contador strong { color:#10364f; font-size:14px; }
+.teo-panel .productividad-teo .productividad-email { min-width:0; background:#f5fbff; border-color:#d1e5f0; }
+.teo-panel .productividad-teo .productividad-email-titulo strong { color:#16415b; font-size:11px; }
+.teo-panel .productividad-teo .productividad-email-titulo span { color:#5b7587; font-size:10px; }
+.teo-panel .productividad-teo .productividad-email-titulo b { color:#765000; background:#fff1c7; font-size:10px; }
+.teo-panel .productividad-teo .productividad-email-formulario { grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr) auto; gap:5px; margin:0; padding:0; }
+.teo-panel .productividad-teo .productividad-email-formulario input { padding:5px; font-size:11px; }
+.teo-panel .productividad-teo .productividad-email-formulario button { padding:4px 8px; color:#075578; background:#ddf4fd; border:1px solid #8bd3eb; font-size:10px; }
+.teo-panel .productividad-teo .productividad-email-lista > div { background:#eaf5fc; }
+.teo-panel .productividad-teo .productividad-email-lista :is(span,small) { color:#345f7b; font-size:10px; }
+.teo-panel .productividad-teo .productividad-email-gestion-cabecera { flex-wrap:wrap; }
+.teo-panel .productividad-teo .productividad-email-gestion-cabecera > span { flex:1 1 135px; }
+.teo-panel .productividad-teo .productividad-email-gestion-cabecera > span > b { color:#075578; }
+.teo-panel .productividad-teo .productividad-email-lista button { color:#145270; border-color:#b9d8e7; background:#fff; }
+.teo-panel .productividad-teo .productividad-email-lista .productividad-email-copiar { font-size:10px; }
+.teo-panel .productividad-teo .productividad-email > p { color:#2e6375; font-size:10px; text-align:left; }
+.teo-panel .productividad-teo .productividad-email > p strong { color:#0d554c; }
+.teo-panel .productividad-teo .productividad-email-mensaje { color:#765000 !important; font-size:10px !important; background:#fff6dc; }
+.teo-panel .productividad-teo .productividad-progreso > div:first-child :is(strong,span) { font-size:10px; color:#345c72; }
+.teo-panel .productividad-teo .productividad-progreso-pista { background:#e5f2fa; border-color:#c2dbe9; }
+.teo-panel .productividad-teo .productividad-progreso-pista > span { background:linear-gradient(90deg,#00c3ed,#0088c5); }
+.teo-panel .productividad-teo .productividad-progreso-marcas { color:#4f728a; font-size:9px; }
+.teo-panel .productividad-teo .productividad-resumen > div { min-width:0; background:#edf7fd; border:1px solid #d1e5f0; border-radius:8px; }
+.teo-panel .productividad-teo .productividad-resumen span { color:#4c6f87; font-size:10px; }
+.teo-panel .productividad-teo .productividad-resumen strong { color:#103b58; font-size:14px; }
+.teo-panel .productividad-teo .productividad-resumen small { color:#4f7189; font-size:9px; }
+.teo-panel .productividad-teo .productividad-guardar { position:sticky; bottom:0; z-index:2; min-height:36px; color:#fff; font-size:12px; background:linear-gradient(110deg,#08bfe9,#008bc8); border:1px solid #0287b2; box-shadow:0 -5px 10px #ffffffdd; }
+.teo-panel .productividad-teo .productividad-mensaje { color:#16405a; background:#e9f8ff; font-size:11px; }
+.teo-panel .productividad-teo .productividad-contenido.requiere-pin { min-height:0; }
+.teo-panel .productividad-teo .productividad-pin { position:static; width:100%; min-width:0; margin:0; padding:18px 12px; transform:none; color:#153d58; background:#f1f9fd; border:1px solid #cce4ef; box-shadow:none; }
+.teo-panel .productividad-teo .productividad-pin h3 { color:#153d58; font-size:16px; }
+.teo-panel .productividad-teo .productividad-pin small { color:#236480; font-size:10px; }
+.teo-panel .productividad-teo .productividad-pin p { color:#4d6b7e; font-size:11px; }
+.teo-panel .productividad-teo .productividad-pin button,.teo-panel .productividad-teo .productividad-carga-teo button { padding:9px 12px; color:#fff; font:700 12px Arial,sans-serif; background:#087ca6; border:0; border-radius:7px; cursor:pointer; }
+.teo-panel .productividad-teo .productividad-carga-teo { padding:12px; color:#4d6b7e; }
+.teo-panel .productividad-teo .productividad-contenido.requiere-pin > .productividad-campos { filter:none; opacity:1; }
+@media(max-width:420px) { .teo-panel .productividad-teo .productividad-email-formulario { grid-template-columns:repeat(2,minmax(0,1fr)); } .teo-panel .productividad-teo .productividad-identificacion { grid-template-columns:1fr; } }

@@ -2,6 +2,7 @@ import React from "react";
 import { obtenerDeletreo } from "../servicios/alfabetoFonetico";
 import { BusquedaTeo, consultarTeo, ResultadoTeo, ResultadoCoordenadasTeo, SesionTeoError } from "../servicios/teo";
 import { interpretarCoordenadas } from "../servicios/coordenadasTeo";
+import { ConsultaProductividadRapida } from "./ConsultaProductividadRapida";
 import imagenTeo from "../recursos/teo/teo.png";
 
 interface PropiedadesTeo {
@@ -12,6 +13,8 @@ interface PropiedadesTeo {
 }
 
 export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, alCaducarSesion, alCambiarTamano }) => {
+  const [vista, establecerVista] = React.useState<"consulta" | "productividad">("consulta");
+  const [productividadIniciada, establecerProductividadIniciada] = React.useState(false);
   const [minimizado, establecerMinimizado] = React.useState(false);
   const [texto, establecerTexto] = React.useState("");
   const [busqueda, establecerBusqueda] = React.useState<BusquedaTeo | null>(null);
@@ -98,8 +101,8 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
   }, [consulta, minimizado, reintento, alCaducarSesion]);
 
   React.useEffect(() => {
-    if (resultado && !ubicacionCoordenadas) tarjetaFse.current?.scrollIntoView({ block: "nearest" });
-  }, [resultado, ubicacionCoordenadas]);
+    if (vista === "consulta" && resultado && !ubicacionCoordenadas) tarjetaFse.current?.scrollIntoView({ block: "nearest" });
+  }, [resultado, ubicacionCoordenadas, vista]);
 
   const cambiarTexto = (valor: string) => {
     if (desplazamiento.current) desplazamiento.current.scrollTop = 0;
@@ -151,8 +154,13 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
       <button type="button" onClick={() => establecerMinimizado(!minimizado)} aria-label={minimizado ? "Desplegar Teo" : "Minimizar Teo"} title={minimizado ? "Desplegar" : "Minimizar"}>{minimizado ? "▢" : "−"}</button>
       <button type="button" onClick={alCerrar} aria-label="Cerrar Teo" title="Cerrar">×</button>
     </header>
-    {!minimizado && <div ref={desplazamiento} className="teo-desplazamiento"><div ref={contenido} className="teo-contenido">
+    <div hidden={minimizado} ref={desplazamiento} className="teo-desplazamiento"><div ref={contenido} className="teo-contenido">
       {!siempreVisible && <p className="teo-aviso">Este navegador no permite fijar la ventana sobre otras aplicaciones. Usa Chrome o Edge con Picture-in-Picture para mantener a Teo siempre visible.</p>}
+      <nav className="teo-vistas" aria-label="Herramientas de Teo">
+        <button type="button" aria-pressed={vista === "consulta"} onClick={() => establecerVista("consulta")}><span aria-hidden="true">⌕</span> Consulta rápida</button>
+        <button type="button" aria-pressed={vista === "productividad"} onClick={() => { establecerProductividadIniciada(true); establecerVista("productividad"); }}><span aria-hidden="true">▥</span> Productividad</button>
+      </nav>
+      <div className="teo-consulta" hidden={vista !== "consulta"}>
       <form onSubmit={(evento) => { evento.preventDefault(); establecerReintento((valor) => valor + 1); }}>
         <label htmlFor={`${id}-consulta`}>{consulta ? "Nombre, localidad, CP o coordenadas" : "Hola, soy Teo. ¿Qué necesitas consultar?"}</label>
         <div className="teo-entrada"><span aria-hidden="true">⌕</span><input ref={input} id={`${id}-consulta`} value={texto} onChange={(evento) => cambiarTexto(evento.target.value)} maxLength={120} autoComplete="off" placeholder="Nombre, CP o 40.4168, -3.7038" autoFocus />{texto && <button type="button" onClick={() => { cambiarTexto(""); input.current?.focus(); }} aria-label="Limpiar consulta">×</button>}</div>
@@ -188,6 +196,10 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
         {errorFse && <p className="teo-error" role="alert">{errorFse} <button type="button" onClick={() => consultarCodigo(codigo)}>Reintentar FSE</button></p>}
         {resultado && <article ref={tarjetaFse} className="teo-tarjeta teo-fse"><h2>FSE orientativa · {codigo}</h2><p className="teo-provincia">{resultado.ubicacion.nombre} · {resultado.ubicacion.provincia}</p><strong>{resultado.orientacion.principal}</strong><p>{resultado.orientacion.criterio}</p><small>Confianza {resultado.orientacion.confianza}. Otros cuerpos: {resultado.orientacion.concurrentes.join(", ")}.</small>{!resultado.validacionDisponible && <p className="teo-error">No he podido recuperar las correcciones guardadas. Se muestra solo la orientación base. <button type="button" onClick={() => consultarCodigo(codigo)}>Actualizar FSE</button></p>}<small className="teo-aviso-fse">Confirma la demarcación según el procedimiento corporativo.</small></article>}
       </div>
-    </div></div>}
+      </div>
+      <div hidden={vista !== "productividad"}>
+        {productividadIniciada && <ConsultaProductividadRapida variante="teo" />}
+      </div>
+    </div></div>
   </section>;
 };

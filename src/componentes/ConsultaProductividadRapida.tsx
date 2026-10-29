@@ -172,8 +172,11 @@ const respuestaJsonSegura = async <T,>(respuesta: Response): Promise<T> => {
 };
 
 /** Calculadora diaria editable y sincronizada mediante la base de datos de Cloudflare. */
-export const ConsultaProductividadRapida: React.FC = () => {
-  const [abierto, establecerAbierto] = React.useState(false);
+export const ConsultaProductividadRapida: React.FC<{ variante?: "flotante" | "teo" }> = ({ variante = "flotante" }) => {
+  const esTeo = variante === "teo";
+  const referenciaPanel = React.useRef<HTMLElement>(null);
+  const [abierto, establecerAbierto] = React.useState(esTeo);
+  const [mesCargado, establecerMesCargado] = React.useState("");
   const [matricula, establecerMatricula] = React.useState(
     () => localStorage.getItem(CLAVE_MATRICULA_PRODUCTIVIDAD) ?? "RMI"
   );
@@ -217,9 +220,10 @@ export const ConsultaProductividadRapida: React.FC = () => {
         { credentials: "same-origin", cache: "no-store", headers: cabecerasPin() }
       );
       const datos = await respuestaJsonSegura<{ registros: RegistroProductividad[]; error?: string; requierePin?: boolean }>(respuesta);
+      if (numeroSolicitud !== solicitudMesActual.current) return;
       if (respuesta.status === 401 && datos.requierePin) { establecerPinNecesario(true); establecerMensaje(""); return; }
       if (!respuesta.ok) throw new Error(datos.error || "No se pudieron cargar los registros.");
-      if (numeroSolicitud !== solicitudMesActual.current) return;
+      establecerMesCargado(`${matricula}|${mesSeleccionado}`);
       establecerRegistros(datos.registros);
       establecerPinNecesario(false);
     } catch (error) {
@@ -232,12 +236,13 @@ export const ConsultaProductividadRapida: React.FC = () => {
   }, [matricula, mesSeleccionado, cabecerasPin]);
 
   React.useEffect(() => {
+    if (esTeo) return;
     const cerrarAlAbrirOtra = (evento: Event) => {
       if ((evento as CustomEvent<string>).detail !== "productividad") establecerAbierto(false);
     };
     window.addEventListener("herramienta-flotante-abierta", cerrarAlAbrirOtra);
     return () => window.removeEventListener("herramienta-flotante-abierta", cerrarAlAbrirOtra);
-  }, []);
+  }, [esTeo]);
 
   React.useEffect(() => {
     if (abierto && operadorConfirmado) cargarMes();
@@ -322,25 +327,27 @@ export const ConsultaProductividadRapida: React.FC = () => {
     `Hola,\n\nGestión larga de alarma.\nCódigo de alarma: ${tramo.codigoAlarma || "No indicado"}.\nHora de inicio: ${tramo.inicio}.\nHora de finalización: ${tramo.fin}.\n\nUn saludo.\nGracias.`;
 
   const copiarTextoCompatible = async (texto: string) => {
+    const documentoActivo = referenciaPanel.current?.ownerDocument ?? document;
+    const vistaActiva = documentoActivo.defaultView ?? window;
     try {
-      if (navigator.clipboard?.writeText && window.isSecureContext) {
-        await navigator.clipboard.writeText(texto);
+      if (vistaActiva.navigator.clipboard?.writeText && vistaActiva.isSecureContext) {
+        await vistaActiva.navigator.clipboard.writeText(texto);
         return true;
       }
     } catch {
       // La ventana flotante puede bloquear la API moderna; se usa el respaldo.
     }
-    const areaTemporal = document.createElement("textarea");
+    const areaTemporal = documentoActivo.createElement("textarea");
     areaTemporal.value = texto;
     areaTemporal.setAttribute("readonly", "");
     areaTemporal.style.position = "fixed";
     areaTemporal.style.left = "-9999px";
     areaTemporal.style.top = "0";
-    document.body.appendChild(areaTemporal);
+    documentoActivo.body.appendChild(areaTemporal);
     areaTemporal.focus();
     areaTemporal.select();
     areaTemporal.setSelectionRange(0, texto.length);
-    const copiado = document.execCommand("copy");
+    const copiado = documentoActivo.execCommand("copy");
     areaTemporal.remove();
     return copiado;
   };
@@ -456,37 +463,7 @@ export const ConsultaProductividadRapida: React.FC = () => {
   const estadoProductividad = obtenerEstadoProductividad(productividadHoy);
   const avanceProductividad = Math.min(100, (productividadHoy / 36) * 100);
 
-  return (
-    <aside className={`productividad-rapida ${abierto ? "abierta" : ""}`}>
-      <button
-        className="productividad-rapida-activador"
-        data-nombre="Productividad"
-        type="button"
-        onClick={alternar}
-        title="Productividad"
-        aria-label={abierto ? "Cerrar productividad" : "Abrir productividad"}
-        aria-expanded={abierto}
-      >
-        <span className="herramienta-menu-icono" aria-hidden="true">
-          <img src={iconoProductividad} alt="" />
-        </span>
-        <strong>Productividad</strong>
-      </button>
-
-      {abierto && (
-        <section className="productividad-rapida-panel">
-          <header>
-            <div><small>Cálculo diario</small><h2>Productividad</h2></div>
-            <div className="productividad-resultado-cabecera">
-              <strong>{formatearNumero(productividadHoy)}</strong>
-              <span>gestiones/h</span>
-            </div>
-            <button type="button" onClick={alternar} aria-label="Cerrar">×</button>
-          </header>
-
-          <div className={`productividad-contenido ${pinNecesario || !operadorConfirmado ? "requiere-pin" : ""}`}>
-            {!operadorConfirmado && <form className="productividad-pin productividad-seleccion-operador" onSubmit={e=>{e.preventDefault();establecerOperadorConfirmado(true);establecerMensaje("");}}><div aria-hidden="true">👤</div><small>IDENTIFICACIÓN</small><h3>{rol === "operador" ? "Tu productividad personal" : "¿Qué operador eres?"}</h3><p>{rol === "operador" ? "Tu cuenta ya identifica la matrícula con la que vas a trabajar." : "Selecciona primero tu matrícula. El PIN solamente se solicitará después si está protegida."}</p><label>Matrícula<select value={matricula} disabled={rol === "operador"} onChange={e=>{establecerMatricula(e.target.value);establecerRegistros([]);establecerPinNecesario(false);}}>{operadoresVisibles.map(operador=><option key={operador.matricula} value={operador.matricula}>{operador.matricula} · {operador.nombre}</option>)}</select></label><button type="submit">Continuar con {matricula}</button></form>}
-            {pinNecesario && <form className="productividad-pin" onSubmit={validarPin}><div aria-hidden="true">🔐</div><small>ACCESO PERSONAL</small><h3>Introduce el PIN de {matricula}</h3><p>Solo podrás consultar y modificar la productividad asociada a esta matrícula.</p><input value={pin} onChange={e=>establecerPin(e.target.value.replace(/\D/g,"").slice(0,8))} type="password" inputMode="numeric" autoComplete="one-time-code" placeholder="PIN de 4 a 8 números" autoFocus/><button type="submit" disabled={validandoPin||pin.length<4}>{validandoPin?"Comprobando…":"Desbloquear mis datos"}</button>{mensaje&&<p role="alert">{mensaje}</p>}</form>}
+  const camposProductividad = (<>
             <div className="productividad-identificacion">
               <label>
                 Matrícula
@@ -666,6 +643,48 @@ export const ConsultaProductividadRapida: React.FC = () => {
             >
               {guardando ? "Guardando…" : registroSeleccionado ? "Actualizar este día" : "Guardar este día"}
             </button>
+  </>);
+
+  return (
+    <aside ref={referenciaPanel} className={`productividad-rapida ${abierto ? "abierta" : ""} ${esTeo ? "productividad-teo" : ""}`} aria-label={esTeo ? "Productividad en Teo" : undefined}>
+      {!esTeo && <button
+        className="productividad-rapida-activador"
+        data-nombre="Productividad"
+        type="button"
+        onClick={alternar}
+        title="Productividad"
+        aria-label={abierto ? "Cerrar productividad" : "Abrir productividad"}
+        aria-expanded={abierto}
+      >
+        <span className="herramienta-menu-icono" aria-hidden="true">
+          <img src={iconoProductividad} alt="" />
+        </span>
+        <strong>Productividad</strong>
+      </button>}
+
+      {abierto && (
+        <section className="productividad-rapida-panel">
+          <header>
+            <div><small>Cálculo diario</small><h2>Productividad</h2></div>
+            {(!esTeo || (operadorConfirmado && !pinNecesario && mesCargado === `${matricula}|${mesSeleccionado}`)) && <div className="productividad-resultado-cabecera">
+              <strong>{formatearNumero(productividadHoy)}</strong>
+              <span>gestiones/h{esTeo ? " · Hoy" : ""}</span>
+            </div>}
+            {!esTeo && <button type="button" onClick={alternar} aria-label="Cerrar">×</button>}
+          </header>
+
+          <div className={`productividad-contenido ${pinNecesario || !operadorConfirmado ? "requiere-pin" : ""}`}>
+            {!operadorConfirmado && <form className="productividad-pin productividad-seleccion-operador" onSubmit={e=>{e.preventDefault();establecerOperadorConfirmado(true);establecerMensaje("");}}><div aria-hidden="true">👤</div><small>IDENTIFICACIÓN</small><h3>{rol === "operador" ? "Tu productividad personal" : "¿Qué operador eres?"}</h3><p>{rol === "operador" ? "Tu cuenta ya identifica la matrícula con la que vas a trabajar." : "Selecciona primero tu matrícula. El PIN solamente se solicitará después si está protegida."}</p><label>Matrícula<select value={matricula} disabled={rol === "operador"} onChange={e=>{establecerMatricula(e.target.value);establecerRegistros([]);establecerPinNecesario(false);}}>{operadoresVisibles.map(operador=><option key={operador.matricula} value={operador.matricula}>{operador.matricula} · {operador.nombre}</option>)}</select></label><button type="submit">Continuar con {matricula}</button></form>}
+            {pinNecesario && <form className="productividad-pin" onSubmit={validarPin}><div aria-hidden="true">🔐</div><small>ACCESO PERSONAL</small><h3>Introduce el PIN de {matricula}</h3><p>Solo podrás consultar y modificar la productividad asociada a esta matrícula.</p><input value={pin} onChange={e=>establecerPin(e.target.value.replace(/\D/g,"").slice(0,8))} type="password" inputMode="numeric" autoComplete="one-time-code" placeholder="PIN de 4 a 8 números" autoFocus/><button type="submit" disabled={validandoPin||pin.length<4}>{validandoPin?"Comprobando…":"Desbloquear mis datos"}</button>{mensaje&&<p role="alert">{mensaje}</p>}</form>}
+            {esTeo && operadorConfirmado && !pinNecesario && mesCargado !== `${matricula}|${mesSeleccionado}` && <div className="productividad-carga-teo" role="status">
+              <p>{cargando ? "Cargando tus registros…" : mensaje || "Preparando productividad…"}</p>
+              {!cargando && <button type="button" onClick={cargarMes}>Reintentar carga</button>}
+            </div>}
+            {esTeo ? (
+            <fieldset className="productividad-campos" style={esTeo ? undefined : { display: "contents" }} hidden={esTeo && (!operadorConfirmado || pinNecesario || mesCargado !== `${matricula}|${mesSeleccionado}`)} disabled={esTeo && (guardando || cargando)}>
+              {camposProductividad}
+            </fieldset>
+            ) : camposProductividad}
           </div>
         </section>
       )}
