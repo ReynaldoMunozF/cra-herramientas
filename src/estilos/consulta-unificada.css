@@ -1,0 +1,40 @@
+.consulta-unificada {
+  width: min(100%, 1080px);
+  box-sizing: border-box;
+  margin: 0 auto 24px;
+  padding: clamp(16px, 3vw, 26px);
+  color: #143a56;
+  background: #fff;
+  border: 1px solid #b9dce9;
+  border-top: 4px solid #ffd100;
+  border-radius: 20px;
+  box-shadow: 0 12px 28px #032d4824;
+  text-align: left;
+}
+.consulta-unificada header > span { color: #076485; font-size: .75rem; font-weight: 800; }
+.consulta-unificada h2 { margin: 5px 0 8px; color: #073553; font-size: clamp(1.2rem, 3vw, 1.65rem); }
+.consulta-unificada h3 { margin: 0 0 8px; color: #073553; font-size: 1rem; }
+.consulta-unificada h4 { margin: 0; color: #073553; }
+.consulta-unificada p { margin: 8px 0; line-height: 1.5; overflow-wrap: anywhere; }
+.consulta-unificada small { display: block; margin-top: 6px; color: #425c6b; line-height: 1.5; }
+.consulta-unificada label { display: block; margin: 18px 0 7px; font-weight: 750; }
+.consulta-unificada-entrada { display: flex; flex-wrap: wrap; gap: 8px; }
+.consulta-unificada input { flex: 1 1 220px; min-width: 0; width: 100%; padding: 12px; color: #143a56; background: #fff; border: 1px solid #789aaf; border-radius: 9px; font: inherit; }
+.consulta-unificada button { padding: 10px 14px; color: #fff; background: #07668c; border: 1px solid #07668c; border-radius: 9px; font: inherit; font-weight: 700; cursor: pointer; }
+.consulta-unificada button:hover { background: #064564; }
+.consulta-unificada button:disabled { opacity: .65; cursor: default; }
+.consulta-unificada :is(input, button):focus-visible { outline: 3px solid #bd6500; outline-offset: 3px; }
+.consulta-unificada-deletreo, .consulta-unificada-fse { margin-top: 18px; padding: 16px; background: #edf7fb; border-radius: 12px; }
+.consulta-unificada-deletreo p { font-size: 1.08rem; font-weight: 700; }
+.consulta-unificada-deletreo button { margin-top: 7px; }
+.consulta-unificada-localidades { margin-top: 20px; }
+.consulta-unificada-localidades article { margin-top: 10px; padding: 13px; border: 1px solid #cbdfe9; border-radius: 10px; }
+.consulta-unificada-codigos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.consulta-unificada-codigos button { color: #075077; background: #fff; border-color: #7ba1b7; }
+.consulta-unificada-codigos button[aria-pressed="true"], .consulta-unificada-codigos button:hover { color: #fff; background: #075077; }
+.consulta-unificada-codigos button small { color: inherit; font-size: .65rem; margin-top: 2px; }
+.consulta-unificada-fse > strong { display: block; color: #064e70; font-size: 1.25rem; }
+.consulta-unificada .consulta-unificada-error { color: #9f301d; }
+.ventana-herramientas .consulta-unificada { padding: 12px; border-radius: 12px; }
+.ventana-herramientas .consulta-unificada-entrada { flex-direction: column; }
+.ventana-herramientas .consulta-unificada input { flex-basis: auto; }

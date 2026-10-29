@@ -25,6 +25,7 @@ import { CambioClaveOperador } from "./componentes/CambioClaveOperador";
 // Mantener este orden evita que una regla general sobrescriba estilos específicos.
 import "./estilos/base.css";
 import "./estilos/inicio.css";
+import "./estilos/consulta-unificada.css";
 import "./estilos/comunidad-inicio.css";
 import "./estilos/biblioteca.css";
 import "./estilos/estructura-general.css";

@@ -9,10 +9,11 @@ export interface LocalizacionPostal {
 }
 
 /** Resuelve el código en el servidor para evitar proveedores postales en el navegador. */
-export const localizarCodigoPostal = async (codigoPostal: string): Promise<LocalizacionPostal> => {
+export const localizarCodigoPostal = async (codigoPostal: string, signal?: AbortSignal): Promise<LocalizacionPostal> => {
   if (!/^\d{5}$/.test(codigoPostal)) throw new Error("Código postal español no válido.");
   const respuesta = await fetch(`/api/codigo-postal?codigoPostal=${encodeURIComponent(codigoPostal)}`, {
     credentials: "same-origin",
+    signal,
     headers: { Accept: "application/json" },
   });
   const texto = await respuesta.text();
