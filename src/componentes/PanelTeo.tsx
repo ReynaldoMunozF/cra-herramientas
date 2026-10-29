@@ -41,7 +41,7 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
   const consulta = texto.replace(/\s+/g, " ").trim();
   const coordenadas = interpretarCoordenadas(consulta);
   const modoCoordenadas = coordenadas.tipo !== "texto";
-  const deletreo = modoCoordenadas ? [] : obtenerDeletreo(consulta);
+  const deletreo = modoCoordenadas || !/[a-záéíóúüñ]/i.test(consulta) ? [] : obtenerDeletreo(consulta);
 
   const cancelarFse = () => { versionFse.current += 1; peticionFse.current?.abort(); };
   React.useEffect(() => () => cancelarFse(), []);
