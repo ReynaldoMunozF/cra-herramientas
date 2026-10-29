@@ -1,5 +1,4 @@
 import React from "react";
-import { ConsultaUnificada } from "../componentes/ConsultaUnificada";
 import { Link } from "react-router-dom";
 import imagenCuadrante from "../recursos/inicio/gestion-cuadrante.png";
 import imagenComputoAnual from "../recursos/inicio/computo-anual.svg";
@@ -167,7 +166,6 @@ export const PaginaInicio: React.FC = () => {
           <div className="inicio-hero-sello" aria-hidden="true"><b>CRA</b><small>Gestión<br />diaria</small></div>
           {esAdministrador && <Link className="acceso-administracion-inicio" to="/administracion/herramientas">⚙ Administración <span>→</span></Link>}
         </header>
-        <ConsultaUnificada />
         <section className="inicio-herramientas" aria-label="Herramientas disponibles">
           {herramientas.map((herramienta) => (
             <article className={`inicio-tarjeta ${herramienta.clase}`} key={herramienta.ruta}>

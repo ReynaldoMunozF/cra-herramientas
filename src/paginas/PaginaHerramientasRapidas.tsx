@@ -1,5 +1,4 @@
 import React from "react";
-import { ConsultaUnificada } from "../componentes/ConsultaUnificada";
 import { createPortal } from "react-dom";
 import { ConsultaClimaRapida } from "../componentes/ConsultaClimaRapida";
 import { ConsultaFseRapida } from "../componentes/ConsultaFseRapida";
@@ -213,7 +212,6 @@ export const PaginaHerramientasRapidas: React.FC<PropiedadesPaginaHerramientasRa
         <strong>Selecciona una consulta</strong>
         <p>Esta ventana puede permanecer abierta mientras trabajas en otra aplicación.</p>
       </section>
-      <ConsultaUnificada />
       {/* <nav className="herramientas-popup-accesos" aria-label="Herramientas disponibles">
         <ConsultaFseRapida />
         <ConsultaClimaRapida />
