@@ -44,3 +44,8 @@
 .teo-alternativo { position:fixed; z-index:90; right:16px; bottom:100px; width:min(535px,calc(100vw - 24px)); max-height:calc(100dvh - 120px); border:1px solid #8bb9ce; border-radius:14px; overflow:hidden; box-shadow:0 10px 40px #07355350; }
 .teo-panel :is(button,input):focus-visible, .teo-lanzador:focus-visible { outline:3px solid #cf8b00; outline-offset:2px; }
 @media(max-width:380px) { .teo-cabecera { gap:5px; padding-inline:7px; } .teo-cabecera strong span { display:block; font-size:10px; } .teo-lanzador { right:10px; bottom:12px; } }
+
+.teo-coordenadas-previa { padding:7px 9px; color:#225376; background:#e6f3fa; border-radius:7px; font-size:11px; }
+.teo-coordenadas-previa small { display:block; margin-top:4px; color:#496476; font-size:10px; }
+.teo-mapas { display:flex; flex-wrap:wrap; gap:6px; margin-top:9px; }
+.teo-mapas a, .teo-mapas button { display:inline-block; padding:6px 8px; color:#075578; background:#eef7fc; border:1px solid #bedbe9; border-radius:6px; font:11px Arial,sans-serif; text-decoration:none; cursor:pointer; }

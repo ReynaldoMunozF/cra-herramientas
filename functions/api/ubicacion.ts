@@ -13,6 +13,7 @@ interface RespuestaNominatim {
     state?: string;
     postcode?: string;
     country?: string;
+    country_code?: string;
   };
 }
 
@@ -66,6 +67,7 @@ export const onRequestGet = async (contexto: ContextoPagina) => {
         comunidad: direccion.state ?? "",
         codigoPostal: direccion.postcode ?? "",
         pais: direccion.country ?? "",
+        codigoPais: direccion.country_code ?? "",
         latitud: Number(datos.lat),
         longitud: Number(datos.lon),
       });
@@ -116,6 +118,7 @@ export const onRequestGet = async (contexto: ContextoPagina) => {
       comunidad: direccion.state ?? "",
       codigoPostal: direccion.postcode ?? "",
       pais: direccion.country ?? "",
+      codigoPais: direccion.country_code ?? "",
       latitud,
       longitud,
     });

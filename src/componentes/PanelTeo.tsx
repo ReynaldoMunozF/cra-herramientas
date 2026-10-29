@@ -1,6 +1,7 @@
 import React from "react";
 import { obtenerDeletreo } from "../servicios/alfabetoFonetico";
-import { BusquedaTeo, consultarTeo, ResultadoTeo, SesionTeoError } from "../servicios/teo";
+import { BusquedaTeo, consultarTeo, ResultadoTeo, ResultadoCoordenadasTeo, SesionTeoError } from "../servicios/teo";
+import { interpretarCoordenadas } from "../servicios/coordenadasTeo";
 import imagenTeo from "../recursos/teo/teo.png";
 
 interface PropiedadesTeo {
@@ -14,6 +15,8 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
   const [minimizado, establecerMinimizado] = React.useState(false);
   const [texto, establecerTexto] = React.useState("");
   const [busqueda, establecerBusqueda] = React.useState<BusquedaTeo | null>(null);
+  const [ubicacionCoordenadas, establecerUbicacionCoordenadas] = React.useState<ResultadoCoordenadasTeo | null>(null);
+  const [coordenadasCopiadas, establecerCoordenadasCopiadas] = React.useState(false);
   const [buscando, establecerBuscando] = React.useState(false);
   const [error, establecerError] = React.useState("");
   const [codigo, establecerCodigo] = React.useState("");
@@ -33,7 +36,9 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
   const versionFse = React.useRef(0);
   const id = React.useId();
   const consulta = texto.replace(/\s+/g, " ").trim();
-  const deletreo = obtenerDeletreo(consulta);
+  const coordenadas = interpretarCoordenadas(consulta);
+  const modoCoordenadas = coordenadas.tipo !== "texto";
+  const deletreo = modoCoordenadas ? [] : obtenerDeletreo(consulta);
 
   const cancelarFse = () => { versionFse.current += 1; peticionFse.current?.abort(); };
   React.useEffect(() => () => cancelarFse(), []);
@@ -61,14 +66,26 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
   React.useEffect(() => {
     if (minimizado) return;
     const controlador = new AbortController();
-    establecerBusqueda(null); establecerError("");
+    establecerBusqueda(null); establecerUbicacionCoordenadas(null); establecerError("");
+    if (modoCoordenadas) { establecerResultado(null); establecerCodigo(""); }
+    if (coordenadas.tipo === "incompletas" || coordenadas.tipo === "invalidas") { establecerBuscando(false); return; }
     if (consulta.length < 2) { establecerBuscando(false); return; }
     establecerBuscando(true);
-    // El deletreo es local; solo el catálogo espera a que el operador deje de teclear.
+    // El deletreo es local; las coordenadas esperan un segundo para evitar peticiones al seguir tecleando.
     const temporizador = window.setTimeout(async () => {
       try {
-        const datos = await consultarTeo<BusquedaTeo>(new URLSearchParams({ texto: consulta }), controlador.signal);
-        if (!controlador.signal.aborted && consultaActual.current === consulta) establecerBusqueda(datos);
+        if (coordenadas.tipo === "validas") {
+          const parametros = new URLSearchParams({ latitud: String(coordenadas.latitud), longitud: String(coordenadas.longitud) });
+          const datos = await consultarTeo<ResultadoCoordenadasTeo>(parametros, controlador.signal);
+          if (!controlador.signal.aborted && consultaActual.current === consulta) {
+            establecerUbicacionCoordenadas(datos);
+            establecerCodigo(datos.ubicacion.codigoPostal);
+            establecerResultado(datos.fse);
+          }
+        } else {
+          const datos = await consultarTeo<BusquedaTeo>(new URLSearchParams({ texto: consulta }), controlador.signal);
+          if (!controlador.signal.aborted && consultaActual.current === consulta) establecerBusqueda(datos);
+        }
       } catch (motivo) {
         if (controlador.signal.aborted || consultaActual.current !== consulta) return;
         if (motivo instanceof SesionTeoError) { alCaducarSesion(); return; }
@@ -76,18 +93,19 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
       } finally {
         if (!controlador.signal.aborted && consultaActual.current === consulta) establecerBuscando(false);
       }
-    }, 350);
+    }, modoCoordenadas ? 1000 : 350);
     return () => { window.clearTimeout(temporizador); controlador.abort(); };
   }, [consulta, minimizado, reintento, alCaducarSesion]);
 
   React.useEffect(() => {
-    if (resultado) tarjetaFse.current?.scrollIntoView({ block: "nearest" });
-  }, [resultado]);
+    if (resultado && !ubicacionCoordenadas) tarjetaFse.current?.scrollIntoView({ block: "nearest" });
+  }, [resultado, ubicacionCoordenadas]);
 
   const cambiarTexto = (valor: string) => {
     if (desplazamiento.current) desplazamiento.current.scrollTop = 0;
     consultaActual.current = valor.replace(/\s+/g, " ").trim();
-    cancelarFse(); establecerTexto(valor); establecerCopiado(false);
+    cancelarFse(); establecerTexto(valor); establecerCopiado(false); establecerCoordenadasCopiadas(false);
+    establecerUbicacionCoordenadas(null);
     establecerCodigo(""); establecerResultado(null); establecerErrorFse(""); establecerCargandoFse(false);
     establecerBusqueda(null); establecerError("");
   };
@@ -117,13 +135,13 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
     // La selección manual de un código no debe iniciar otra petición automática.
   }, [consulta, busqueda, minimizado]);
 
-  const copiar = () => {
+  const copiar = (valor?: string) => {
     const documento = raiz.current?.ownerDocument;
     if (!documento) return;
     const area = documento.createElement("textarea");
-    area.value = deletreo.join(" · "); area.style.cssText = "position:fixed;left:-9999px";
+    area.value = valor ?? deletreo.join(" · "); area.style.cssText = "position:fixed;left:-9999px";
     documento.body.appendChild(area); area.select();
-    try { establecerCopiado(documento.execCommand("copy")); } finally { area.remove(); input.current?.focus(); }
+    try { const correcto = documento.execCommand("copy"); if (valor) establecerCoordenadasCopiadas(correcto); else establecerCopiado(correcto); } finally { area.remove(); input.current?.focus(); }
   };
 
   return <section ref={raiz} className={`teo-panel ${minimizado ? "teo-minimizado" : ""}`} aria-label="Teo, tu compañero CRA">
@@ -136,14 +154,29 @@ export const PanelTeo: React.FC<PropiedadesTeo> = ({ siempreVisible, alCerrar, a
     {!minimizado && <div ref={desplazamiento} className="teo-desplazamiento"><div ref={contenido} className="teo-contenido">
       {!siempreVisible && <p className="teo-aviso">Este navegador no permite fijar la ventana sobre otras aplicaciones. Usa Chrome o Edge con Picture-in-Picture para mantener a Teo siempre visible.</p>}
       <form onSubmit={(evento) => { evento.preventDefault(); establecerReintento((valor) => valor + 1); }}>
-        <label htmlFor={`${id}-consulta`}>{consulta ? "Nombre, localidad o código postal" : "Hola, soy Teo. ¿Qué necesitas consultar?"}</label>
-        <div className="teo-entrada"><span aria-hidden="true">⌕</span><input ref={input} id={`${id}-consulta`} value={texto} onChange={(evento) => cambiarTexto(evento.target.value)} maxLength={120} autoComplete="off" placeholder="Ej.: García, Parla o 28981" autoFocus />{texto && <button type="button" onClick={() => { cambiarTexto(""); input.current?.focus(); }} aria-label="Limpiar consulta">×</button>}</div>
-        {!consulta && <small>Escribe y te mostraré los datos de tus herramientas.</small>}
+        <label htmlFor={`${id}-consulta`}>{consulta ? "Nombre, localidad, CP o coordenadas" : "Hola, soy Teo. ¿Qué necesitas consultar?"}</label>
+        <div className="teo-entrada"><span aria-hidden="true">⌕</span><input ref={input} id={`${id}-consulta`} value={texto} onChange={(evento) => cambiarTexto(evento.target.value)} maxLength={120} autoComplete="off" placeholder="Nombre, CP o 40.4168, -3.7038" autoFocus />{texto && <button type="button" onClick={() => { cambiarTexto(""); input.current?.focus(); }} aria-label="Limpiar consulta">×</button>}</div>
+        {!consulta && <small>Escribe un nombre, localidad, CP o pega unas coordenadas.</small>}
       </form>
-      {deletreo.length > 0 && <article className="teo-tarjeta teo-alfabeto"><div className="teo-titulo-tarjeta"><h2>Alfabeto militar</h2><button type="button" onClick={copiar} aria-label="Copiar deletreo">{copiado ? "Copiado ✓" : "Copiar"}</button></div><p>{deletreo.join(" · ")}</p></article>}
+      {coordenadas.tipo === "validas" && <p className="teo-coordenadas-previa">Latitud: {coordenadas.latitud} · Longitud: {coordenadas.longitud}<small>Comprueba el orden y el punto antes de utilizar la dirección.</small></p>}
+      {(coordenadas.tipo === "incompletas" || coordenadas.tipo === "invalidas") && <p className="teo-estado" role="status">{coordenadas.mensaje}</p>}
+      {deletreo.length > 0 && <article className="teo-tarjeta teo-alfabeto"><div className="teo-titulo-tarjeta"><h2>Alfabeto militar</h2><button type="button" onClick={() => copiar()} aria-label="Copiar deletreo">{copiado ? "Copiado ✓" : "Copiar"}</button></div><p>{deletreo.join(" · ")}</p></article>}
       <div aria-live="polite" aria-busy={buscando}>
-        {buscando && <p className="teo-estado">Buscando localidades…</p>}
+        {buscando && <p className="teo-estado">{modoCoordenadas ? "Localizando el punto…" : "Buscando localidades…"}</p>}
         {error && <p className="teo-error" role="alert">{error} <button type="button" onClick={() => establecerReintento((valor) => valor + 1)}>Reintentar</button></p>}
+        {ubicacionCoordenadas && <article className="teo-tarjeta teo-ubicacion">
+          <h2>Ubicación aproximada</h2>
+          <p><strong>{ubicacionCoordenadas.ubicacion.direccionCompleta}</strong></p>
+          <p className="teo-provincia">{[ubicacionCoordenadas.ubicacion.localidad, ubicacionCoordenadas.ubicacion.provincia, ubicacionCoordenadas.ubicacion.comunidad, ubicacionCoordenadas.ubicacion.pais].filter(Boolean).join(" · ")}</p>
+          <p>Código postal: <strong>{ubicacionCoordenadas.ubicacion.codigoPostal || "No disponible"}</strong></p>
+          <div className="teo-mapas">
+            <a href={`https://www.openstreetmap.org/?mlat=${ubicacionCoordenadas.ubicacion.latitud}&mlon=${ubicacionCoordenadas.ubicacion.longitud}#map=18/${ubicacionCoordenadas.ubicacion.latitud}/${ubicacionCoordenadas.ubicacion.longitud}`} target="_blank" rel="noopener noreferrer">Abrir mapa</a>
+            <a href={`https://www.google.com/maps/search/?api=1&query=${ubicacionCoordenadas.ubicacion.latitud},${ubicacionCoordenadas.ubicacion.longitud}`} target="_blank" rel="noopener noreferrer">Google Maps</a>
+            <button type="button" onClick={() => copiar(`${ubicacionCoordenadas.ubicacion.latitud}, ${ubicacionCoordenadas.ubicacion.longitud}`)}>{coordenadasCopiadas ? "Copiado ✓" : "Copiar coordenadas"}</button>
+          </div>
+          {ubicacionCoordenadas.avisoFse && <p className="teo-estado">{ubicacionCoordenadas.avisoFse}</p>}
+          <small className="teo-nota">Fuente: la herramienta Localización (OpenStreetMap). Verifica la dirección y el CP antes de utilizarlos.</small>
+        </article>}
         {busqueda && busqueda.total === 0 && <p className="teo-estado">No encuentro una localidad o código postal con ese texto en el catálogo. El deletreo sigue disponible.</p>}
         {busqueda && busqueda.total > 0 && <div className="teo-localidades"><h2>Localidades y códigos postales</h2>{busqueda.total > busqueda.localidades.length && <p className="teo-estado">{busqueda.localidades.length} de {busqueda.total} coincidencias. Añade la provincia para concretar.</p>}
           {busqueda.localidades.map((localidad) => <article className="teo-tarjeta" key={`${localidad.nombre}|${localidad.provincia}|${localidad.comunidad}`}><h3>{localidad.nombre}</h3><p className="teo-provincia">{localidad.provincia} · {localidad.comunidad}</p><div className="teo-codigos">{localidad.codigos.map((cp) => <button key={cp.codigoPostal} type="button" onClick={() => consultarCodigo(cp.codigoPostal)} aria-pressed={codigo === cp.codigoPostal} title={cp.complementario ? "Entrada del catálogo complementario" : "Consultar FSE de este código postal"}>{cp.codigoPostal}{cp.complementario && <span aria-label="Catálogo complementario">*</span>}</button>)}</div></article>)}

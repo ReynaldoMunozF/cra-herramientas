@@ -13,6 +13,22 @@ export interface ResultadoTeo {
   orientacion: OrientacionFse;
   validacionDisponible: boolean;
 }
+export interface UbicacionCoordenadasTeo {
+  latitud: number;
+  longitud: number;
+  direccionCompleta: string;
+  localidad: string;
+  provincia: string;
+  comunidad: string;
+  codigoPostal: string;
+  pais: string;
+  codigoPais?: string;
+}
+export interface ResultadoCoordenadasTeo {
+  ubicacion: UbicacionCoordenadasTeo;
+  fse: ResultadoTeo | null;
+  avisoFse?: string;
+}
 export class SesionTeoError extends Error {}
 
 export const consultarTeo = async <T,>(parametros: URLSearchParams, signal: AbortSignal): Promise<T> => {
@@ -23,6 +39,9 @@ export const consultarTeo = async <T,>(parametros: URLSearchParams, signal: Abor
   if ([401, 403].includes(respuesta.status) || (respuesta.headers.get("Content-Type") ?? "").includes("text/html")) {
     throw new SesionTeoError("Teo solo está disponible con una sesión de administrador activa.");
   }
-  if (!respuesta.ok) throw new Error("No he podido consultar los datos. Inténtalo de nuevo.");
+  if (!respuesta.ok) {
+    const datos = await respuesta.json().catch(() => null) as { error?: string } | null;
+    throw new Error(datos?.error || "No he podido consultar los datos. Inténtalo de nuevo.");
+  }
   return await respuesta.json() as T;
 };

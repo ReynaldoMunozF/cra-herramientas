@@ -130,3 +130,78 @@ test('el middleware protege Teo con cookies firmadas y bloquea acceso directo si
   await middleware.onRequest({ request: new Request('https://cra.test/api/administracion/teo?texto=Parla'), env, next: async () => { llego = true; return new Response(); } });
   assert.equal(llego, false);
 });
+
+test('interpreta los tres formatos de coordenadas y conserva las consultas postales', () => {
+  const { interpretarCoordenadas } = cargar('src/servicios/coordenadasTeo.ts');
+  for (const texto of ['40.4168, -3.7038', '40.4168 -3.7038', '40,4168; -3,7038', '40.4168, −3.7038']) {
+    const r = interpretarCoordenadas(texto);
+    assert.equal(r.tipo, 'validas'); assert.equal(r.latitud, 40.4168); assert.equal(r.longitud, -3.7038);
+  }
+  assert.equal(interpretarCoordenadas('0, 0').tipo, 'validas');
+  assert.equal(interpretarCoordenadas('28981').tipo, 'texto');
+  assert.equal(interpretarCoordenadas('Parla').tipo, 'texto');
+});
+test('no adivina coordenadas ambiguas, incompletas o fuera de rango', () => {
+  const { interpretarCoordenadas } = cargar('src/servicios/coordenadasTeo.ts');
+  for (const texto of ['91, -3', '40, -181', '40,4168, -3,7038']) assert.equal(interpretarCoordenadas(texto).tipo, 'invalidas');
+  for (const texto of ['40.4168,', '40.4168', '40.4168 -']) assert.equal(interpretarCoordenadas(texto).tipo, 'incompletas');
+});
+
+const puntoPrueba = (address) => ({ lat: '40.2379', lon: '-3.7741', display_name: 'Dirección de prueba, Parla, Madrid, España', address });
+const contextoPunto = (query, env = {}) => ({ request: new Request('https://cra.test/api/administracion/teo?' + query), data: { rol: 'administrador' }, env });
+
+test('coordenadas reutilizan Localización y el CP para recuperar las correcciones FSE', async () => {
+  let consultasUbicacion = 0, consultasDb = 0;
+  const endpoint = cargar('functions/api/administracion/teo.ts', { fetch: async url => {
+    assert.equal(url.hostname, 'nominatim.openstreetmap.org'); assert.equal(url.pathname, '/reverse');
+    assert.equal(url.searchParams.get('lat'), '40.2379'); assert.equal(url.searchParams.get('lon'), '-3.7741');
+    consultasUbicacion++;
+    return Response.json(puntoPrueba({ town: 'Parla', county: 'Madrid', state: 'Comunidad de Madrid', postcode: '28981', country: 'España', country_code: 'es' }));
+  } });
+  const env = { CONTENIDO_DB: { prepare: sql => ({ bind: cp => ({ first: async () => {
+    consultasDb++; assert.equal(cp, '28981');
+    if (sql.includes('codigos_postales_cache')) return null;
+    return { resultadoMostrado: 'Policía Nacional', esCorrecto: 1, resultadoCorregido: null };
+  } }) }) } };
+  const r = await endpoint.onRequestGet(contextoPunto('latitud=40.2379&longitud=-3.7741', env));
+  assert.equal(r.status, 200);
+  const d = await r.json();
+  assert.equal(d.ubicacion.localidad, 'Parla'); assert.equal(d.ubicacion.codigoPais, 'es');
+  assert.equal(d.fse.orientacion.principal, 'Policía Nacional'); assert.equal(d.fse.orientacion.confianza, 'alta');
+  assert.equal(consultasUbicacion, 1); assert.equal(consultasDb, 2);
+});
+test('sin CP o fuera de España se muestra la ubicación sin inferir una FSE', async () => {
+  for (const address of [
+    { town: 'Parla', country: 'España', country_code: 'es' },
+    { city: 'Paris', postcode: '75001', country: 'France', country_code: 'fr' },
+    { town: 'Sin país confirmado', postcode: '28981' },
+  ]) {
+    const endpoint = cargar('functions/api/administracion/teo.ts', { fetch: async () => Response.json(puntoPrueba(address)) });
+    const r = await endpoint.onRequestGet(contextoPunto('latitud=40.2379&longitud=-3.7741'));
+    const d = await r.json();
+    assert.equal(r.status, 200); assert.equal(d.fse, null); assert.ok(d.avisoFse);
+  }
+});
+test('un fallo en D1 no elimina la dirección recuperada', async () => {
+  const endpoint = cargar('functions/api/administracion/teo.ts', { fetch: async () => Response.json(puntoPrueba({ town: 'Parla', postcode: '28981', country: 'España', country_code: 'es' })) });
+  const env = { CONTENIDO_DB: { prepare: () => { throw Error('DB unavailable'); } } };
+  const r = await endpoint.onRequestGet(contextoPunto('latitud=40.2379&longitud=-3.7741', env));
+  const d = await r.json();
+  assert.equal(r.status, 200); assert.equal(d.ubicacion.localidad, 'Parla'); assert.equal(d.fse, null); assert.match(d.avisoFse, /no está disponible/);
+});
+test('valida coordenadas y permisos antes de consultar el proveedor', async () => {
+  let llamadas = 0;
+  const endpoint = cargar('functions/api/administracion/teo.ts', { fetch: async () => { llamadas++; throw Error('No debe consultarse'); } });
+  for (const query of ['latitud=91&longitud=2', 'latitud=40', 'latitud=&longitud=2', 'latitud=x&longitud=2']) {
+    const r = await endpoint.onRequestGet(contextoPunto(query)); assert.equal(r.status, 400);
+  }
+  for (const rol of ['invitado', 'operador']) {
+    const r = await endpoint.onRequestGet({ ...contextoPunto('latitud=40&longitud=-3'), data: { rol } }); assert.equal(r.status, 403);
+  }
+  assert.equal(llamadas, 0);
+});
+test('conserva el error de Localización para poder reintentar', async () => {
+  const endpoint = cargar('functions/api/administracion/teo.ts', { fetch: async () => new Response('Unavailable', { status: 503 }) });
+  const r = await endpoint.onRequestGet(contextoPunto('latitud=40&longitud=-3'));
+  assert.equal(r.status, 502); assert.match((await r.json()).error, /No ha sido posible/);
+});
