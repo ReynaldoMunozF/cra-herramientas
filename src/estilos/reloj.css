@@ -42,7 +42,7 @@
 }
 .barra-superior-centro { position: relative; display: flex; align-items: center; justify-self: center; flex-direction: column; }
 .herramientas-cabecera {
-  display: flex; margin-top: 4px; padding: 4px; justify-content: center; gap: 5px;
+  display: flex; margin-top: 4px; padding: 4px; justify-content: center; flex-wrap:wrap; gap: 5px;
   background: rgba(3,25,42,.38); border: 1px solid rgba(255,255,255,.13); border-radius: 15px;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 7px 16px rgba(0,18,31,.12);
 }

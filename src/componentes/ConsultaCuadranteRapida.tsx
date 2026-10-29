@@ -62,7 +62,7 @@ export const ConsultaCuadranteRapida: React.FC = () => {
           {!matriculaSeleccionada && sugerencias.length > 0 && <div className="cuadrante-rapido-resultados">{sugerencias.map((valor) => <button key={valor.codigo} onClick={() => { establecerMatricula(valor.matricula); establecerMatriculaSeleccionada(valor.matricula); }}><strong>{valor.matricula}</strong><span>{valor.nombre}</span></button>)}</div>}
         </div>
         {operador && <div className="cuadrante-rapido-calendario">
-          <div><strong>{operador.nombre}</strong><span>{operador.matricula} · {operador.horas} horas</span></div>
+          <div><strong>{operador.nombre}</strong><span>{operador.matricula} · {operador.horas ? `${operador.horas} horas` : "total no indicado"}</span></div>
           <CalendarioMensual dias={operador.dias} nombreAccesible={`Cuadrante rápido de ${operador.matricula}`} diaSolicitado={null} diaDevolucion={null} desplazamientoPrimerDia={cuadrante.desplazamientoPrimerDia} diaActual={diaActual} prefijoClave="rapido" />
         </div>}
       </section>}

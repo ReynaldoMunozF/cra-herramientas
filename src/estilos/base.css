@@ -129,11 +129,17 @@ input:focus-visible {
   color: white;
 }
 
+.pie-desarrollador .pie-separador { color: rgba(255,255,255,.32); }
+.pie-desarrollador .pie-sitio-personal { display:inline-flex; align-items:center; gap:4px; color:#d7f2ff; font-size:.69rem; font-weight:800; letter-spacing:.015em; }
+.pie-desarrollador .pie-sitio-personal span { color:var(--prosegur-yellow); font-size:.82rem; transition:transform .16s ease; }
+.pie-desarrollador .pie-sitio-personal:hover span { transform:translate(2px,-2px); }
+
 @media (max-width: 520px) {
   .pie-desarrollador {
     padding: 15px 18px;
     flex-direction: column;
   }
+  .pie-desarrollador .pie-separador { display:none; }
 }
 
 .barra-superior-global > .boton-cerrar-sesion:hover {

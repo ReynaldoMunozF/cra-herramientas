@@ -8,6 +8,8 @@ import { PanelReinicioMarcadores } from "../componentes/PanelReinicioMarcadores"
 import { RinconJavi } from "../componentes/RinconJavi";
 import { PanelComunidadInicio } from "../componentes/PanelComunidadInicio";
 import { PanelBibliotecaAdmin } from "../componentes/Biblioteca";
+import { PanelUsuariosOperadores } from "../componentes/PanelUsuariosOperadores";
+import { PanelEnlacesPortada } from "../componentes/PanelEnlacesPortada";
 
 /** Área privada: el servidor decide el rol antes de revelar los paneles. */
 export const PaginaHerramientasAdministrador: React.FC = () => {
@@ -46,7 +48,9 @@ export const PaginaHerramientasAdministrador: React.FC = () => {
         <Link to="/">← Volver a la portada</Link>
       </header>
       <PanelComunidadInicio />
+      <PanelEnlacesPortada />
       <PanelBibliotecaAdmin />
+      <PanelUsuariosOperadores />
       <PanelEstadisticasUso />
       <EditorCuadranteAdmin />
       <PanelPinesOperadores />

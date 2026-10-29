@@ -12,6 +12,9 @@
 .boton-herramientas-rapidas .acceso-cabecera-flecha { margin-left:auto; color:rgba(255,255,255,.72); font-size:.75rem; }
 .boton-herramientas-rapidas:hover { background:rgba(255,255,255,.18); border-color:rgba(255,255,255,.5); transform:translateY(-1px); }
 .boton-herramientas-rapidas:focus-visible { outline:3px solid rgba(255,212,0,.5); outline-offset:2px; }
+.boton-herramientas-nueva-pestana { text-decoration:none; background:linear-gradient(135deg,#1c587c,#123c62); border-color:rgba(153,226,255,.52); }
+.boton-herramientas-nueva-pestana .acceso-cabecera-icono { color:#073553; background:#84e1ff; }
+.boton-herramientas-nueva-pestana:hover { background:linear-gradient(135deg,#28709a,#164b75); }
 @media (max-width:560px) {
   .boton-herramientas-rapidas { min-width:0; flex:1 1 50%; }
   .boton-herramientas-rapidas .acceso-cabecera-texto small { display:none; }

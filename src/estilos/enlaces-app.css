@@ -1,0 +1,31 @@
+/* Accesos inspirados en los iconos de aplicaciones de iPhone. */
+.enlaces-portada > div { grid-template-columns: repeat(auto-fit, 108px); justify-content: center; gap: 12px; }
+.enlaces-portada a { width: 108px; height: 108px; min-height: 0; box-sizing: border-box; padding: 10px 7px; flex-direction: column; gap: 7px; font-size: .72rem; line-height: 1.1; border: 1px solid #ffffff88; border-radius: 24px; box-shadow: inset 0 1px #ffffff80, 0 8px 16px #102d4838, 0 2px 3px #102d4822; }
+.enlaces-portada a:hover { box-shadow: inset 0 1px #ffffff99, 0 13px 21px #102d4846; transform: translateY(-4px) scale(1.025); }
+.enlaces-portada a:active { transform: translateY(0) scale(.96); }
+.enlaces-portada a span { flex: 0 0 38px; width: 38px; height: 38px; font-size: 1.25rem; border: 1px solid #ffffff50; border-radius: 13px; box-shadow: inset 0 1px #ffffff78, 0 3px 7px #0002; }
+
+/* La previsualización de administración reproduce el resultado final. */
+.panel-enlaces-vista > div { min-height: 145px; }
+.panel-enlaces-vista span { display: flex; width: 104px; height: 104px; min-height: 0; box-sizing: border-box; padding: 9px 7px; align-items: center; justify-content: center; gap: 6px; flex-direction: column; font-size: .72rem; line-height: 1.1; text-align: center; border: 1px solid #ffffff88; border-radius: 23px; box-shadow: inset 0 1px #ffffff80, 0 8px 18px #0005; }
+.panel-enlaces-vista i { width: 36px; height: 36px; font-size: 1.2rem; border: 1px solid #ffffff50; border-radius: 12px; box-shadow: inset 0 1px #ffffff78; }
+
+/* La misma estética de aplicaciones dentro de la herramienta rápida. */
+.enlaces-interes-rapidos-lista { grid-template-columns: repeat(auto-fit, 104px); justify-content: center; gap: 12px; }
+.enlaces-interes-rapidos-lista a { display: flex; width: 104px; height: 104px; min-height: 0; box-sizing: border-box; padding: 8px; align-items: center; justify-content: center; flex-direction: column; gap: 5px; text-align: center; border: 1px solid #ffffff8a; border-radius: 23px; box-shadow: inset 0 1px #ffffff75, 0 7px 14px #0c385344; }
+.enlaces-interes-rapidos-lista a:hover { box-shadow: inset 0 1px #ffffff85, 0 11px 18px #0c385355; transform: translateY(-3px) scale(1.025); }
+.enlaces-interes-rapidos-lista a > span { display: grid; width: 35px; height: 35px; place-items: center; color: #fff; font-size: 1.15rem; background: #ffffff30; border: 1px solid #ffffff55; border-radius: 12px; box-shadow: inset 0 1px #ffffff7a; }
+.enlaces-interes-rapidos-lista a strong { font-size: .73rem; line-height: 1.1; overflow-wrap: anywhere; }
+.enlaces-interes-rapidos-lista a small { display: none; }
+
+@media (max-width: 720px) {
+  .enlaces-portada > div { grid-template-columns: repeat(auto-fit, 96px); gap: 9px; }
+  .enlaces-portada a { width: 96px; height: 96px; min-height: 0; padding: 8px 6px; font-size: .66rem; border-radius: 22px; }
+  .enlaces-portada a span { flex-basis: 34px; width: 34px; height: 34px; font-size: 1.1rem; border-radius: 11px; }
+}
+
+@media (max-width: 420px) {
+  .enlaces-interes-rapidos-lista { grid-template-columns: repeat(auto-fit, 90px); gap: 9px; }
+  .enlaces-interes-rapidos-lista a { width: 90px; height: 90px; min-height: 0; border-radius: 20px; }
+  .enlaces-interes-rapidos-lista a > span { width: 31px; height: 31px; font-size: 1rem; }
+}

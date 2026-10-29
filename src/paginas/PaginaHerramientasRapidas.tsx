@@ -9,6 +9,8 @@ import { ConsultaAlfabetoFonetico } from "../componentes/ConsultaAlfabetoFonetic
 import { ConsultaProductividadRapida } from "../componentes/ConsultaProductividadRapida";
 import { ConsultaCodigosOperativos } from "../componentes/ConsultaCodigosOperativos";
 import { ConsultaTelefonosInteres } from "../componentes/ConsultaTelefonosInteres";
+import { ConsultaEnlacesInteres } from "../componentes/ConsultaEnlacesInteres";
+import { ConsultaCalculadoraRapida } from "../componentes/ConsultaCalculadoraRapida";
 
 interface GestorPictureInPicture {
   window: Window | null;
@@ -150,6 +152,8 @@ export const PaginaHerramientasRapidas: React.FC<PropiedadesPaginaHerramientasRa
           productividad: { ancho: 460, alto: 620 },
           codigos: { ancho: 520, alto: 620 },
           telefonos: { ancho: 520, alto: 620 },
+          enlaces: { ancho: 520, alto: 460 },
+          calculadora: { ancho: 480, alto: 600 },
         };
       const tamanio = tamanios[herramienta] ?? tamanios.ninguna;
       const anchoFinal = Math.min(tamanio.ancho, window.screen.availWidth);
@@ -227,6 +231,8 @@ export const PaginaHerramientasRapidas: React.FC<PropiedadesPaginaHerramientasRa
         <ConsultaAlfabetoFonetico />
         <ConsultaProductividadRapida />
         <ConsultaTelefonosInteres esAdministrador={esAdministrador} />
+        <ConsultaEnlacesInteres />
+        <ConsultaCalculadoraRapida />
         {esAdministrador && <ConsultaCodigosOperativos />}
       </nav>
       <aside className="herramientas-popup-aviso">

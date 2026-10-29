@@ -13,7 +13,7 @@ const leerEvento = (datos: Record<string, unknown>) => {
     titulo: texto(datos.titulo, 100), tipo: texto(datos.tipo, 35) || "Aviso",
     descripcion: texto(datos.descripcion, 600), fecha: texto(datos.fecha, 10),
     hora_inicio: texto(datos.hora_inicio, 5), hora_fin: texto(datos.hora_fin, 5),
-    color: texto(datos.color, 7) || "#087ead", enlace: texto(datos.enlace, 300), visible: visible(datos.visible),
+    color: texto(datos.color, 7) || "#087ead", enlace: texto(datos.enlace, 300), imagen_clave: texto(datos.imagen_clave, 160), visible: visible(datos.visible),
   };
   return evento.titulo && colorValido(evento.color) && urlValida(evento.enlace)
     && fechaValida(evento.fecha) && horaValida(evento.hora_inicio) && horaValida(evento.hora_fin) ? evento : null;
@@ -62,9 +62,9 @@ export const onRequest = async (contexto: ContextoPagina) => {
     const evento = leerEvento(datos);
     if (!evento) return responderJson({ error: "Revisa los datos del evento." }, 400);
     await base.prepare(
-      `INSERT INTO tablon_eventos (titulo,tipo,descripcion,fecha,hora_inicio,hora_fin,color,enlace,visible,orden,actualizado_en)
-       VALUES (?,?,?,?,?,?,?,?,?,COALESCE((SELECT MAX(orden)+1 FROM tablon_eventos),0),unixepoch())`
-    ).bind(evento.titulo, evento.tipo, evento.descripcion, evento.fecha, evento.hora_inicio, evento.hora_fin, evento.color, evento.enlace, evento.visible ? 1 : 0).run();
+      `INSERT INTO tablon_eventos (titulo,tipo,descripcion,fecha,hora_inicio,hora_fin,color,enlace,imagen_clave,visible,orden,actualizado_en)
+       VALUES (?,?,?,?,?,?,?,?,?,?,COALESCE((SELECT MAX(orden)+1 FROM tablon_eventos),0),unixepoch())`
+    ).bind(evento.titulo, evento.tipo, evento.descripcion, evento.fecha, evento.hora_inicio, evento.hora_fin, evento.color, evento.enlace, evento.imagen_clave, evento.visible ? 1 : 0).run();
     return responderJson({ guardado: true }, 201);
   }
   if (metodo === "PATCH") {
@@ -72,8 +72,8 @@ export const onRequest = async (contexto: ContextoPagina) => {
     const evento = leerEvento(datos);
     if (!evento) return responderJson({ error: "Revisa los datos del evento." }, 400);
     await base.prepare(
-      `UPDATE tablon_eventos SET titulo=?,tipo=?,descripcion=?,fecha=?,hora_inicio=?,hora_fin=?,color=?,enlace=?,visible=?,actualizado_en=unixepoch() WHERE id=?`
-    ).bind(evento.titulo, evento.tipo, evento.descripcion, evento.fecha, evento.hora_inicio, evento.hora_fin, evento.color, evento.enlace, evento.visible ? 1 : 0, Number(datos.id)).run();
+      `UPDATE tablon_eventos SET titulo=?,tipo=?,descripcion=?,fecha=?,hora_inicio=?,hora_fin=?,color=?,enlace=?,imagen_clave=?,visible=?,actualizado_en=unixepoch() WHERE id=?`
+    ).bind(evento.titulo, evento.tipo, evento.descripcion, evento.fecha, evento.hora_inicio, evento.hora_fin, evento.color, evento.enlace, evento.imagen_clave, evento.visible ? 1 : 0, Number(datos.id)).run();
     return responderJson({ guardado: true });
   }
   if (metodo === "DELETE") {

@@ -1,0 +1,50 @@
+.calculadora-rapida { position: static; }
+
+.calculadora-rapida-panel {
+  position: absolute;
+  z-index: 80;
+  top: 84px;
+  left: 10px;
+  right: 10px;
+  overflow: hidden;
+  color: #173454;
+  background: #f7fbff;
+  border: 2px solid #70bae7;
+  border-radius: 18px;
+  box-shadow: 0 18px 36px rgba(4, 27, 44, .28);
+}
+
+.calculadora-rapida-panel > header { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 18px; color: #fff; background: #244a73; border-bottom: 5px solid #ffbb21; }
+.calculadora-rapida-panel h2 { margin: 2px 0 0; font-size: 1.35rem; }
+.calculadora-rapida-panel header small { color: #ffe278; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.calculadora-rapida-panel > header > button { width: 40px; height: 40px; color: #fff; font-size: 1.7rem; line-height: 1; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.5); border-radius: 12px; cursor: pointer; }
+
+.calculadora-rapida-contenido { display: grid; gap: 10px; max-height: calc(100vh - 190px); padding: 14px; overflow-y: auto; }
+.calculadora-entrada { display: grid; gap: 5px; color: #173454; font-weight: 800; }
+.calculadora-entrada input { width: 100%; min-width: 0; box-sizing: border-box; padding: 11px 12px; color: #102f4d; font: inherit; background: #fff; border: 2px solid #8dbce3; border-radius: 11px; outline: none; }
+.calculadora-entrada input:focus { border-color: #148fc4; box-shadow: 0 0 0 3px rgba(20,143,196,.18); }
+.calculadora-resultado { display: block; min-height: 32px; padding: 9px 12px; overflow-x: auto; color: #fff; font-size: 1.25rem; font-weight: 900; text-align: right; white-space: nowrap; background: #173b60; border-radius: 10px; }
+.calculadora-teclado { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
+.calculadora-teclado button { min-height: 38px; color: #173454; font-size: 1rem; font-weight: 900; background: #e5f2fd; border: 1px solid #b7d7ee; border-radius: 9px; cursor: pointer; }
+.calculadora-teclado button:hover { background: #cdeaff; }
+.calculadora-teclado button.es-limpiar { color: #7b251e; background: #ffe2df; border-color: #efa49e; }
+.calculadora-teclado button.es-igual { color: #173454; background: #ffca25; border-color: #d99800; }
+.calculadora-historial { padding: 10px; background: #e8f4fd; border: 1px solid #c0def2; border-radius: 12px; }
+.calculadora-historial-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #173454; }
+.calculadora-historial-cabecera button { padding: 4px 8px; color: #8b2b25; font: inherit; font-size: .79rem; font-weight: 800; background: #fff; border: 1px solid #db9e99; border-radius: 7px; cursor: pointer; }
+.calculadora-historial p { margin: 8px 0 0; color: #55728d; font-size: .85rem; }
+.calculadora-historial ol { display: grid; gap: 5px; max-height: 134px; padding: 0; margin: 8px 0 0; overflow-y: auto; list-style: none; }
+.calculadora-historial li button { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 8px; color: #173454; text-align: left; background: #fff; border: 1px solid #c6deef; border-radius: 8px; cursor: pointer; }
+.calculadora-historial li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.calculadora-historial li strong { white-space: nowrap; color: #0d638e; }
+
+/* Integración con la barra compacta y su modo nocturno. */
+.barra-herramientas-admin-flotante .calculadora-rapida-panel { background: #ddebfb !important; border: 7px solid #5ea7f2 !important; border-radius: 24px !important; }
+.barra-herramientas-admin-flotante .calculadora-rapida-panel > header { min-height: 72px; padding: 12px 22px; background: #304e78; border-bottom: 6px solid #ffad18; }
+.barra-herramientas-admin-flotante.modo-noche .calculadora-rapida-panel { color: #e9f4ff !important; background: #132c46 !important; border-color: #347fc4 !important; }
+.barra-herramientas-admin-flotante.modo-noche .calculadora-rapida-contenido, .barra-herramientas-admin-flotante.modo-noche .calculadora-historial { background: #132c46; }
+.barra-herramientas-admin-flotante.modo-noche .calculadora-entrada, .barra-herramientas-admin-flotante.modo-noche .calculadora-historial-cabecera { color: #f6fbff; }
+.barra-herramientas-admin-flotante.modo-noche .calculadora-entrada input, .barra-herramientas-admin-flotante.modo-noche .calculadora-historial li button { color: #f4f9ff; background: #214667; border-color: #4e85b2; }
+.barra-herramientas-admin-flotante.modo-noche .calculadora-teclado button { color: #f5fbff; background: #28557a; border-color: #4f8abc; }
+.barra-herramientas-admin-flotante.modo-noche .calculadora-historial p { color: #bad5eb; }
+
+@media (max-width: 460px) { .calculadora-rapida-panel { left: 4px; right: 4px; top: 74px; }.calculadora-rapida-contenido { padding: 10px; } }

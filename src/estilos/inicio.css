@@ -68,6 +68,7 @@
 .inicio-accesos-rapidos b { display:grid; width:28px; height:28px; place-items:center; color:white; background:var(--movistar-blue); border-radius:50%; }
 .inicio-accesos-rapidos .zona-descanso-tarjeta { border-bottom-color:#53d69c; }
 .inicio-accesos-rapidos .zona-descanso-tarjeta b { color:#073553; background:#53d69c; }
+.inicio-accesos-rapidos .zona-descanso-tarjeta > i { display:grid; width:70px; height:70px; place-items:center; color:#fff; font-size:1.65rem; font-style:normal; background:linear-gradient(145deg,#064461,#0a9d91); border-radius:12px; box-shadow:inset 0 1px #ffffff44,0 7px 15px #063b5b22; }
 .inicio-accesos-rapidos .codigos-operativos { border-bottom-color:#e6503e; }
 .inicio-accesos-rapidos .codigos-operativos > i { display:grid; width:70px; height:70px; place-items:center; color:white; font-size:1.25rem; font-style:normal; font-weight:950; background:linear-gradient(145deg,#b4212b,#ec5b43); border-radius:12px; }
 .inicio-accesos-rapidos .codigos-operativos b { background:#e6503e; }
@@ -803,9 +804,9 @@
 }
 
 /* Mensaje editable y publicado por el administrador en ambas portadas. */
-.rincon-javi { display:grid; width:min(100%,1080px); margin:24px auto; padding:24px; grid-template-columns:112px minmax(0,1fr); align-items:center; gap:20px; color:#f4fbff; background:linear-gradient(135deg,#073553,#0b6683); border:1px solid rgba(83,214,156,.55); border-left:6px solid #ffd100; border-radius:18px; box-shadow:0 16px 34px rgba(2,45,68,.2); box-sizing:border-box; }
+.rincon-javi { display:grid; width:min(100%,1080px); margin:24px auto; padding:24px; grid-template-columns:150px minmax(0,1fr); align-items:center; gap:20px; color:#f4fbff; background:#00091d; border:1px solid rgba(83,214,156,.55); border-left:6px solid #ffd100; border-radius:18px; box-shadow:0 16px 34px rgba(2,45,68,.2); box-sizing:border-box; }
 .lector-pantalla { position:absolute!important; width:1px!important; height:1px!important; padding:0!important; margin:-1px!important; overflow:hidden!important; clip:rect(0,0,0,0)!important; white-space:nowrap!important; border:0!important; }
-.avatar-javi { position:relative; width:112px; height:112px; margin:0; padding:0; overflow:hidden; background:#062d50; border:3px solid #53d69c; border-radius:24px; box-shadow:0 8px 20px rgba(0,0,0,.28),0 0 0 5px rgba(255,209,0,.12); animation:avatar-javi-respirar 3s ease-in-out infinite; }
+.avatar-javi { position:relative; width:150px; height:150px; margin:0; padding:0; overflow:hidden; background:#00091d; border:0; border-radius:0; box-shadow:none; animation:avatar-javi-respirar 3s ease-in-out infinite; }
 .avatar-javi-imagen { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:opacity .08s; }
 .avatar-javi-reposo { opacity:1; z-index:1; }
 .avatar-javi-hablando { opacity:0; z-index:2; animation:avatar-javi-hablar 2.2s steps(1,end) infinite; }
@@ -868,8 +869,8 @@
 .editor-rincon-javi footer button:disabled { cursor:not-allowed; opacity:.5; }
 
 @media (max-width: 620px) {
-  .rincon-javi { grid-template-columns:72px minmax(0,1fr); padding:18px 15px; gap:13px; }
-  .avatar-javi { width:72px; height:72px; border-radius:17px; }
+  .rincon-javi { grid-template-columns:96px minmax(0,1fr); padding:18px 15px; gap:13px; }
+  .avatar-javi { width:96px; height:96px; }
   .rincon-javi h2 { font-size:1.25rem; }
   .rincon-javi-votacion > div { display:grid; grid-template-columns:1fr; }
   .rincon-javi-votacion button { justify-content:flex-start; }
@@ -895,3 +896,11 @@
 .inicio-principal{background:radial-gradient(circle at 8% 8%,#c8edff 0,transparent 34%),radial-gradient(circle at 92% 0,#fff1b7 0,transparent 23%),#edf9ff;border-bottom:0}
 .inicio-cabecera{color:#123a5a;background:transparent;border:0;border-radius:0;box-shadow:none;overflow:visible}.inicio-cabecera:before{display:none}.inicio-cabecera>div:first-child>span{color:#087ead}.inicio-cabecera h1{color:#123a5a;letter-spacing:-.06em}.inicio-cabecera p{color:#647b8b}.inicio-hero-sello{background:linear-gradient(145deg,#123a5a,#087ead);border-color:#fff;box-shadow:0 13px 25px #0b5a782b;transform:rotate(4deg)}.inicio-hero-sello b{color:#ffd100}.inicio-hero-sello small{color:#e4f6ff}.acceso-administracion-inicio{color:#fff!important;background:#123a5a;box-shadow:0 8px 17px #123a5a2b}.acceso-administracion-inicio:hover{color:#fff!important;background:#087ead!important}
 .inicio-principal .inicio-tarjeta{border:1px solid #d8e7ee;box-shadow:0 13px 27px #153e5714}.inicio-principal .inicio-tarjeta:hover{box-shadow:0 19px 32px #153e5724}.inicio-principal .inicio-imagen{background:#eaf8ff}.inicio-principal .inicio-imagen:after{height:45%;background:linear-gradient(180deg,transparent,#0d40576e)}.inicio-principal .inicio-imagen span{color:#1a593a;background:#ecfff1}.inicio-principal .inicio-contenido>small{color:#178db7}.inicio-principal .inicio-contenido h2{color:#123a5a}.inicio-principal .inicio-contenido>a{background:linear-gradient(100deg,#087ead,#119ed7);box-shadow:none}.inicio-principal .inicio-tarjeta.computo-anual .inicio-contenido>a{background:linear-gradient(100deg,#087ead,#119ed7)}
+
+/* El acceso a juegos vive debajo de las dos tarjetas principales: no hereda
+   el solapamiento decorativo de los accesos rápidos del diseño antiguo. */
+.inicio-principal > .inicio-accesos-rapidos{width:min(100%,1080px);margin:18px auto 0;grid-template-columns:1fr;gap:0}
+.inicio-principal > .inicio-accesos-rapidos > .zona-descanso-tarjeta{min-height:96px;grid-template-columns:76px minmax(0,1fr) 34px;padding:12px 16px;gap:14px;border:1px solid #b5e7d2;border-bottom:4px solid #53d69c;border-radius:17px;box-shadow:0 13px 27px #153e5714}
+.inicio-principal > .inicio-accesos-rapidos .zona-descanso-tarjeta>i{width:70px;height:70px}
+.inicio-principal > .inicio-accesos-rapidos .zona-descanso-tarjeta em{display:block;max-width:740px}
+@media(max-width:680px){.inicio-principal > .inicio-accesos-rapidos{margin-top:12px}.inicio-principal > .inicio-accesos-rapidos>.zona-descanso-tarjeta{min-height:106px;grid-template-columns:70px minmax(0,1fr) 30px;padding:12px;gap:11px}.inicio-principal>.inicio-accesos-rapidos .zona-descanso-tarjeta>i{width:64px;height:64px}.inicio-principal>.inicio-accesos-rapidos .zona-descanso-tarjeta em{display:block;font-size:.63rem}.inicio-principal>.inicio-accesos-rapidos .zona-descanso-tarjeta strong{font-size:.9rem}}

@@ -21,6 +21,7 @@ export const compararConstante = (a: string, b: string) => { let diferencia = a.
 export const crearTokenOperador = async (db: BaseD1, matricula: string) => { const token = hex(bytesAleatorios(32)), tokenHash = await hashSha256(token), caduca = Math.floor(Date.now() / 1000) + 4 * 60 * 60; await db.prepare("DELETE FROM sesiones_pin_operador WHERE caduca_en < unixepoch()").run(); await db.prepare("INSERT INTO sesiones_pin_operador(token_hash, matricula, caduca_en) VALUES (?, ?, ?)").bind(tokenHash, matricula, caduca).run(); return { token, caduca }; };
 export const autorizarMatricula = async (contexto: ContextoPagina, matricula: string) => {
   if (contexto.data?.rol === "administrador") return { autorizado: true, protegido: true };
+  if (contexto.data?.rol === "operador" && contexto.data.matricula === matricula) return { autorizado: true, protegido: true };
   const pin = await contexto.env.CONTENIDO_DB.prepare("SELECT matricula FROM pines_operadores WHERE matricula = ?").bind(matricula).first<{ matricula: string }>();
   if (!pin) return { autorizado: true, protegido: false };
   const token = contexto.request.headers.get("X-Operador-Token") ?? ""; if (!/^[a-f0-9]{64}$/.test(token)) return { autorizado: false, protegido: true };

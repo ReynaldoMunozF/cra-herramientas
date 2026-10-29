@@ -1,5 +1,6 @@
 import { ContextoPagina, responderJson } from "./_utilidades";
 import { autorizarMatricula } from "./_seguridad-pin";
+import { autorizarCuentaMatricula } from "./_cuentas-operadores";
 
 export interface RegistroProductividad {
   id: number;
@@ -95,6 +96,8 @@ export const onRequest = async (contexto: ContextoPagina) => {
     if (!matricula || !/^\d{4}-\d{2}$/.test(mes)) {
       return responderJson({ error: "La matrícula o el mes no son válidos." }, 400);
     }
+    const cuenta = await autorizarCuentaMatricula(contexto, matricula);
+    if (!cuenta.autorizado) return responderJson({ error: cuenta.motivo }, 403);
     const acceso = await autorizarMatricula(contexto, matricula);
     if (!acceso.autorizado) return responderJson({ error: "Introduce el PIN de esta matrícula.", requierePin: true, matricula }, 401);
 
@@ -139,6 +142,8 @@ export const onRequest = async (contexto: ContextoPagina) => {
     ) {
       return responderJson({ error: "Revisa la fecha y las cantidades introducidas." }, 400);
     }
+    const cuenta = await autorizarCuentaMatricula(contexto, matricula);
+    if (!cuenta.autorizado) return responderJson({ error: cuenta.motivo }, 403);
     const acceso = await autorizarMatricula(contexto, matricula);
     if (!acceso.autorizado) return responderJson({ error: "Introduce el PIN de esta matrícula.", requierePin: true, matricula }, 401);
 

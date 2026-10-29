@@ -10,6 +10,7 @@ interface EventoPublicado {
   hora_fin: string;
   color: string;
   enlace: string;
+  imagen_clave: string;
 }
 
 interface PublicidadInicio {
@@ -27,7 +28,7 @@ interface PublicidadInicio {
 export const onRequestGet = async (contexto: ContextoPagina) => {
   const [eventosResultado, publicidad] = await Promise.all([
     contexto.env.CONTENIDO_DB.prepare(
-      `SELECT id, titulo, tipo, descripcion, fecha, hora_inicio, hora_fin, color, enlace
+      `SELECT id, titulo, tipo, descripcion, fecha, hora_inicio, hora_fin, color, enlace, imagen_clave
        FROM tablon_eventos WHERE visible = 1
        ORDER BY CASE WHEN fecha = '' THEN 1 ELSE 0 END, fecha ASC, orden ASC, id DESC LIMIT 6`
     ).all<EventoPublicado>(),

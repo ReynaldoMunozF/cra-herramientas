@@ -1,9 +1,9 @@
 import React from "react";
 
-type Evento = { id: number; titulo: string; tipo: string; descripcion: string; fecha: string; hora_inicio: string; hora_fin: string; color: string; enlace: string; visible: number };
+type Evento = { id: number; titulo: string; tipo: string; descripcion: string; fecha: string; hora_inicio: string; hora_fin: string; color: string; enlace: string; imagen_clave: string; visible: number };
 type Publicidad = { etiqueta: string; titulo: string; descripcion: string; texto_boton: string; enlace: string; imagen_url: string; color_fondo: string; color_acento: string; visible: number };
 
-const eventoVacio = (): Omit<Evento, "id"> => ({ titulo: "", tipo: "Mini evento", descripcion: "", fecha: "", hora_inicio: "", hora_fin: "", color: "#087ead", enlace: "", visible: 1 });
+const eventoVacio = (): Omit<Evento, "id"> => ({ titulo: "", tipo: "Mini evento", descripcion: "", fecha: "", hora_inicio: "", hora_fin: "", color: "#087ead", enlace: "", imagen_clave: "", visible: 1 });
 const publicidadVacia = (): Publicidad => ({ etiqueta: "Recomendado", titulo: "", descripcion: "", texto_boton: "Ver más", enlace: "", imagen_url: "", color_fondo: "#fff8df", color_acento: "#f0ad00", visible: 0 });
 
 export const PanelComunidadInicio: React.FC = () => {
@@ -41,6 +41,7 @@ export const PanelComunidadInicio: React.FC = () => {
     } catch (error) { establecerMensaje(error instanceof Error && error.message ? error.message : "No se pudo guardar el evento."); }
     finally { establecerGuardando(false); }
   };
+  const subirAfiche = async (archivo: File | undefined) => { if (!archivo) return; establecerGuardando(true); establecerMensaje("Subiendo afiche…"); try { const f=new FormData();f.append("imagen",archivo);const r=await fetch("/api/administracion/afiche-evento",{method:"POST",body:f});const d=await r.json() as {imagen_clave?:string;error?:string};if(!r.ok||!d.imagen_clave)throw new Error(d.error);cambiarEvento("imagen_clave",d.imagen_clave);establecerMensaje("Afiche cargado. Guarda el evento para publicarlo."); } catch(e){establecerMensaje(e instanceof Error?e.message:"No se pudo subir el afiche.");} finally {establecerGuardando(false);} };
   const editarEvento = (item: Evento) => { establecerEvento({ ...item }); establecerPestana("eventos"); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const eliminarEvento = async (id: number) => {
     if (!window.confirm("¿Eliminar este mini evento? Esta acción no se puede deshacer.")) return;
@@ -69,8 +70,9 @@ export const PanelComunidadInicio: React.FC = () => {
         <label>Título<input value={evento.titulo} maxLength={100} onChange={(e) => cambiarEvento("titulo", e.target.value)} placeholder="Ej. Reto relámpago de hoy" required /></label>
         <div className="formulario-comunidad-dos"><label>Tipo<select value={evento.tipo} onChange={(e) => cambiarEvento("tipo", e.target.value)}><option>Mini evento</option><option>Aviso</option><option>Recordatorio</option><option>Formación</option><option>Torneo</option><option>Celebración</option></select></label><label>Color identificativo<input type="color" value={evento.color} onChange={(e) => cambiarEvento("color", e.target.value)} /></label></div>
         <label>Descripción<textarea value={evento.descripcion} maxLength={600} onChange={(e) => cambiarEvento("descripcion", e.target.value)} placeholder="Qué se va a hacer, para quién y cualquier indicación útil." /></label>
-        <div className="formulario-comunidad-tres"><label>Fecha<input type="date" value={evento.fecha} onChange={(e) => cambiarEvento("fecha", e.target.value)} /></label><label>Inicio<input type="time" value={evento.hora_inicio} onChange={(e) => cambiarEvento("hora_inicio", e.target.value)} /></label><label>Fin<input type="time" value={evento.hora_fin} onChange={(e) => cambiarEvento("hora_fin", e.target.value)} /></label></div>
+        <div className="formulario-comunidad-tres"><label>Fecha<input type="date" disabled={!evento.fecha && !evento.id} value={evento.fecha} onChange={(e) => cambiarEvento("fecha", e.target.value)} /><small><input type="checkbox" checked={!evento.fecha} onChange={(e) => cambiarEvento("fecha", e.target.checked ? "" : new Date().toISOString().slice(0,10))} /> Próximamente</small></label><label>Inicio (opcional)<input type="time" value={evento.hora_inicio} onChange={(e) => cambiarEvento("hora_inicio", e.target.value)} /></label><label>Fin (opcional)<input type="time" value={evento.hora_fin} onChange={(e) => cambiarEvento("hora_fin", e.target.value)} /></label></div>
         <label>Enlace opcional<input type="url" value={evento.enlace} maxLength={300} onChange={(e) => cambiarEvento("enlace", e.target.value)} placeholder="https://..." /></label>
+        <label>Afiche opcional · 1200 × 675 px recomendado (PNG, JPG o WebP · máx. 3 MB)<input type="file" accept="image/png,image/jpeg,image/webp" disabled={guardando} onChange={(e)=>subirAfiche(e.target.files?.[0])} />{evento.imagen_clave&&<small>✓ Afiche preparado</small>}</label>
         <label className="interruptor-comunidad"><input type="checkbox" checked={Boolean(evento.visible)} onChange={(e) => cambiarEvento("visible", e.target.checked ? 1 : 0)} /><i /><span><b>Visible en la portada</b><small>Puedes prepararlo sin que nadie lo vea todavía.</small></span></label>
         <button className="boton-comunidad-guardar" disabled={guardando || !evento.titulo.trim()} type="submit">{guardando ? "Guardando…" : evento.id ? "Guardar cambios" : "Publicar evento"}</button>
       </form>

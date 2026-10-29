@@ -7,7 +7,9 @@ import { ConsultaCuadranteRapida } from "./ConsultaCuadranteRapida";
 import { ConsultaFseRapida } from "./ConsultaFseRapida";
 import { ConsultaProductividadRapida } from "./ConsultaProductividadRapida";
 import { ConsultaTelefonosInteres } from "./ConsultaTelefonosInteres";
+import { ConsultaEnlacesInteres } from "./ConsultaEnlacesInteres";
 import { ConsultaUbicacionRapida } from "./ConsultaUbicacionRapida";
+import { ConsultaCalculadoraRapida } from "./ConsultaCalculadoraRapida";
 
 /**
  * Versión experimental, integrada en la portada y reservada al administrador.
@@ -40,6 +42,8 @@ export const BarraHerramientasAdmin: React.FC<{ flotante?: boolean; esAdministra
       <ConsultaAlfabetoFonetico />
       <ConsultaProductividadRapida />
       <ConsultaTelefonosInteres esAdministrador={esAdministrador} />
+      <ConsultaEnlacesInteres />
+      <ConsultaCalculadoraRapida />
       <ConsultaCodigosOperativos esAdministrador={esAdministrador} />
       <button className="barra-flotante-tema" type="button" onClick={() => establecerModoNoche((valor) => !valor)} aria-label={modoNoche ? "Activar modo día" : "Activar modo noche"} title={modoNoche ? "Modo día" : "Modo noche"}>
         <span aria-hidden="true">{modoNoche ? "☀" : "☾"}</span>

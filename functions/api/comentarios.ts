@@ -2,6 +2,7 @@ import {
   ContextoPagina,
   responderJson,
 } from "./_utilidades";
+import { autorizarCuentaMatricula } from "./_cuentas-operadores";
 
 interface ComentarioGuardado {
   id: number;
@@ -27,6 +28,8 @@ export const onRequest = async (contexto: ContextoPagina) => {
     if (!matricula) {
       return responderJson({ error: "La matrícula no es válida." }, 400);
     }
+    const acceso = await autorizarCuentaMatricula(contexto, matricula);
+    if (!acceso.autorizado) return responderJson({ error: acceso.motivo }, 403);
     const resultado = await baseDatos
       .prepare(
         `SELECT id, matricula, texto, creado_en, orden
@@ -53,6 +56,8 @@ export const onRequest = async (contexto: ContextoPagina) => {
     if (!matricula) {
       return responderJson({ error: "La matrícula no es válida." }, 400);
     }
+    const acceso = await autorizarCuentaMatricula(contexto, matricula);
+    if (!acceso.autorizado) return responderJson({ error: acceso.motivo }, 403);
     if (!texto || texto.length > 1200) {
       return responderJson(
         { error: "El comentario debe contener entre 1 y 1200 caracteres." },
@@ -100,6 +105,8 @@ export const onRequest = async (contexto: ContextoPagina) => {
     if (!matricula || !idsValidos) {
       return responderJson({ error: "El nuevo orden no es válido." }, 400);
     }
+    const acceso = await autorizarCuentaMatricula(contexto, matricula);
+    if (!acceso.autorizado) return responderJson({ error: acceso.motivo }, 403);
 
     const existentes = await baseDatos
       .prepare("SELECT id FROM comentarios_frecuentes WHERE matricula = ?")
@@ -133,6 +140,8 @@ export const onRequest = async (contexto: ContextoPagina) => {
     if (!Number.isInteger(id) || id <= 0 || !matricula) {
       return responderJson({ error: "El identificador no es válido." }, 400);
     }
+    const acceso = await autorizarCuentaMatricula(contexto, matricula);
+    if (!acceso.autorizado) return responderJson({ error: acceso.motivo }, 403);
 
     await baseDatos
       .prepare("DELETE FROM comentarios_frecuentes WHERE id = ? AND matricula = ?")

@@ -10,7 +10,12 @@ type Mensaje = { id: string; nombre: string; texto: string; enviadoEn: number };
 type MovimientoAvatar = { direccion: "izquierda" | "derecha" | "arriba" | "abajo"; caminando: boolean };
 
 const baseTaberna = () => {
-  let base = __CRA_SOCIAL_WS_URL__ || (location.hostname === "localhost" ? "ws://localhost:8787" : `${location.protocol === "https:" ? "wss:" : "ws:"}//${location.host}/cra-social`);
+  // La Taberna comparte el Worker de tiempo real de CRA Social y Artillería.
+  // En Pages no existe una ruta /cra-social propia, por lo que el respaldo
+  // debe apuntar siempre al Worker publicado, no al dominio de la portada.
+  let base = __CRA_SOCIAL_WS_URL__ || (location.hostname === "localhost" || location.hostname === "127.0.0.1"
+    ? "ws://localhost:8787"
+    : "wss://cra-social-server.reynaldo-munozf21.workers.dev");
   return base.replace(/\/$/, "");
 };
 

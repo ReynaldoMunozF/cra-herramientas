@@ -116,34 +116,36 @@
 }
 
 .alfabeto-resultado {
-  margin-top: 6px;
-  padding: 7px;
+  margin-top: 8px;
+  padding: 10px;
   background: rgba(255,255,255,.08);
-  border-left: 3px solid var(--prosegur-yellow);
-  border-radius: 7px;
+  border-left: 4px solid var(--prosegur-yellow);
+  border-radius: 8px;
 }
 
 .alfabeto-resultado > div {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 6px;
 }
 
 .alfabeto-resultado span {
-  padding: 2px 5px;
+  padding: 5px 9px;
   color: #062f49;
-  font-size: .58rem;
-  font-weight: 850;
+  font-size: .84rem;
+  font-weight: 950;
+  line-height: 1.15;
   background: #eaf8ff;
   border-radius: 999px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.16);
 }
 
 .alfabeto-resultado button {
   width: 100%;
-  margin-top: 6px;
-  padding: 5px;
+  margin-top: 9px;
+  padding: 7px;
   color: #073553;
-  font-size: .6rem;
+  font-size: .72rem;
   font-weight: 900;
   cursor: pointer;
   background: var(--prosegur-yellow);

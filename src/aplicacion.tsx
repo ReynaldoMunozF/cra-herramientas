@@ -9,6 +9,7 @@ import { RelojGlobal } from "./componentes/RelojGlobal";
 import { PaginaAdministracionManual } from "./paginas/PaginaAdministracionManual";
 import { AvisosMeteorologicosGlobales } from "./componentes/AvisosMeteorologicosGlobales";
 import { BotonHerramientasRapidas } from "./componentes/BotonHerramientasRapidas";
+import { BotonHerramientasNuevaPestana } from "./componentes/BotonHerramientasNuevaPestana";
 import { PaginaHerramientasRapidas } from "./paginas/PaginaHerramientasRapidas";
 import { FeedbackGlobal } from "./componentes/FeedbackGlobal";
 import { ConsejosOperador } from "./componentes/ConsejosOperador";
@@ -18,6 +19,7 @@ import { PaginaBarraHerramientasAdmin } from "./paginas/PaginaBarraHerramientasA
 import { PaginaHerramientasAdministrador } from "./paginas/PaginaHerramientasAdministrador";
 import { PaginaBiblioteca } from "./paginas/PaginaBiblioteca";
 import { BotonBarraHerramientasAdmin } from "./componentes/BotonBarraHerramientasAdmin";
+import { CambioClaveOperador } from "./componentes/CambioClaveOperador";
 
 // Las hojas se importan en orden: fundamentos, estructura y módulos concretos.
 // Mantener este orden evita que una regla general sobrescriba estilos específicos.
@@ -41,6 +43,10 @@ import "./estilos/ubicacion.css";
 import "./estilos/alfabeto-fonetico.css";
 import "./estilos/productividad.css";
 import "./estilos/pines-operadores.css";
+import "./estilos/usuarios-operadores.css";
+import "./estilos/cuenta-operador.css";
+import "./estilos/enlaces-portada.css";
+import "./estilos/enlaces-interes-rapidos.css";
 import "./estilos/productividad-pin.css";
 import "./estilos/editor-cuadrante-admin.css";
 import "./estilos/feedback.css";
@@ -56,6 +62,8 @@ import "./estilos/taberna-minijuegos-v2.css";
 import "./estilos/codigos-operativos.css";
 import "./cuadrante/cuadrante.css";
 import "./estilos/barra-herramientas-admin-v2.css";
+import "./estilos/calculadora-rapida.css";
+import "./estilos/enlaces-app.css";
 
 /**
  * Componente raíz de la aplicación.
@@ -82,8 +90,10 @@ const ContenidoAplicacion: React.FC = () => {
           <div className="herramientas-cabecera">
             <BotonHerramientasRapidas />
             <BotonBarraHerramientasAdmin compacto />
+            <BotonHerramientasNuevaPestana />
           </div>
         </div>
+        <CambioClaveOperador />
         <a className="boton-cerrar-sesion" href="/cerrar-sesion" aria-label="Cerrar sesión">Salir</a>
       </header>}
       {!esVentanaAuxiliar && <section className="consejo-operador-destacado"><ConsejosOperador /></section>}
@@ -123,6 +133,10 @@ const ContenidoAplicacion: React.FC = () => {
       {!esVentanaAuxiliar && <footer className="pie-desarrollador">
         <p>© 2026 Reynaldo Muñoz · Todos los derechos reservados</p>
         <a href="mailto:reynaldo.munozf21@gmail.com">reynaldo.munozf21@gmail.com</a>
+        <span className="pie-separador" aria-hidden="true">·</span>
+        <a className="pie-sitio-personal" href="https://reynaldo-munoz.pages.dev" target="_blank" rel="noopener noreferrer">
+          Sitio personal <span aria-hidden="true">↗</span>
+        </a>
       </footer>}
     </>
   );

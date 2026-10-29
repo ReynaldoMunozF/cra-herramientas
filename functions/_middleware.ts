@@ -9,13 +9,16 @@ interface VariablesEntorno {
   CONTRASENA_DEMO: string;
   SECRETO_SESION: string;
   CONTRASENA_INVITADO?: string;
+  CONTENIDO_DB: {
+    prepare: (consulta: string) => { bind: (...valores: unknown[]) => { first: <T>() => Promise<T | null>; run: () => Promise<unknown> } };
+  };
 }
 
 interface ContextoCloudflare {
   request: Request;
   env: VariablesEntorno;
   next: () => Promise<Response>;
-  data?: { rol?: RolUsuario };
+  data?: { rol?: RolUsuario; matricula?: string; usuario?: string };
 }
 
 const NOMBRE_COOKIE = "sesion_cra";
@@ -60,13 +63,15 @@ const obtenerCookie = (peticion: Request, nombre: string) => {
 };
 
 /** Crea un comprobante firmado con usuario y fecha de caducidad. */
-type RolUsuario = "administrador" | "invitado";
+type RolUsuario = "administrador" | "invitado" | "operador";
 
-const crearSesion = async (usuario: string, rol: RolUsuario, secreto: string) => {
+const crearSesion = async (usuario: string, rol: RolUsuario, secreto: string, matricula?: string, version?: number) => {
   const contenido = JSON.stringify({
     usuario,
     rol,
     caduca: Math.floor(Date.now() / 1000) + DURACION_SESION_SEGUNDOS,
+    matricula,
+    version,
   });
   const carga = codificarBase64Url(codificador.encode(contenido));
   return `${carga}.${await firmar(carga, secreto)}`;
@@ -83,14 +88,17 @@ const obtenerSesion = async (peticion: Request, entorno: VariablesEntorno) => {
 
   try {
     const texto = atob(carga.replace(/-/g, "+").replace(/_/g, "/"));
-    const datos = JSON.parse(texto) as { usuario: string; rol?: RolUsuario; caduca: number };
+    const datos = JSON.parse(texto) as { usuario: string; rol?: RolUsuario; caduca: number; matricula?: string; version?: number };
     const rol = datos.rol ?? "administrador";
     const usuarioValido = rol === "administrador"
       ? datos.usuario === entorno.USUARIO_DEMO
-      : datos.usuario === "invitado-cra";
-    return usuarioValido && datos.caduca > Math.floor(Date.now() / 1000)
-      ? { usuario: datos.usuario, rol }
-      : null;
+      : rol === "invitado" ? datos.usuario === "invitado-cra" : Boolean(datos.matricula && datos.usuario === datos.matricula);
+    if (!usuarioValido || datos.caduca <= Math.floor(Date.now() / 1000)) return null;
+    if (rol !== "operador") return { usuario: datos.usuario, rol };
+    const cuenta = await entorno.CONTENIDO_DB.prepare(
+      "SELECT matricula FROM cuentas_operadores WHERE matricula = ? AND activa = 1 AND version_sesion = ?"
+    ).bind(datos.matricula, datos.version ?? 0).first<{ matricula: string }>();
+    return cuenta ? { usuario: datos.usuario, rol, matricula: cuenta.matricula } : null;
   } catch {
     return null;
   }
@@ -123,7 +131,7 @@ const crearPaginaAcceso = (mensaje = "") => `<!doctype html>
     <header class="cabecera"><span class="marca">Herramienta interna CRA</span><h1>Acceso restringido</h1><p>Identifícate para consultar el manual operativo y los cuadrantes.</p></header>
     <form class="contenido" action="/acceso" method="post">
       ${mensaje ? `<p class="aviso">${mensaje}</p>` : ""}
-      <label for="usuario">Usuario</label><input id="usuario" name="usuario" autocomplete="username" required maxlength="80">
+      <label for="usuario">Usuario o matrícula</label><input id="usuario" name="usuario" autocomplete="username" required maxlength="80">
       <label for="contrasena">Contraseña</label><input id="contrasena" name="contrasena" type="password" autocomplete="current-password" required maxlength="160">
       <button type="submit">Iniciar sesión</button>
       <p class="pie">Acceso exclusivo para personal autorizado. La sesión caduca automáticamente.</p>
@@ -164,16 +172,43 @@ export const onRequest = async (contexto: ContextoCloudflare) => {
       && compararSeguro(usuario.toLowerCase(), "invitado-cra")
       && compararSeguro(contrasena, entorno.CONTRASENA_INVITADO || "");
 
+    let cuentaOperador: { matricula: string; salt_clave: string; clave_hash: string; iteraciones: number; version_sesion: number } | null = null;
     if (!esAdministrador && !esInvitado) {
+      const matricula = usuario.trim().toUpperCase();
+      if (/^[A-Z0-9]{2,8}$/.test(matricula)) {
+        cuentaOperador = await entorno.CONTENIDO_DB.prepare(
+          "SELECT matricula, salt_clave, clave_hash, iteraciones, version_sesion FROM cuentas_operadores WHERE matricula = ? AND activa = 1"
+        ).bind(matricula).first<{ matricula: string; salt_clave: string; clave_hash: string; iteraciones: number; version_sesion: number }>();
+        if (cuentaOperador) {
+          let hash = "";
+          if (cuentaOperador.iteraciones === 0) {
+            const claveServidor = await crypto.subtle.importKey("raw", codificador.encode(entorno.SECRETO_SESION), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+            const firma = await crypto.subtle.sign("HMAC", claveServidor, codificador.encode(`${cuentaOperador.salt_clave}:${contrasena}`));
+            hash = [...new Uint8Array(firma)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+          } else {
+            const clave = await crypto.subtle.importKey("raw", codificador.encode(contrasena), "PBKDF2", false, ["deriveBits"]);
+            const salt = new Uint8Array(cuentaOperador.salt_clave.match(/.{2}/g)!.map((valor) => parseInt(valor, 16)));
+            const derivado = await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt, iterations: cuentaOperador.iteraciones }, clave, 256);
+            hash = [...new Uint8Array(derivado)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+          }
+          if (!compararSeguro(hash, cuentaOperador.clave_hash)) cuentaOperador = null;
+        }
+      }
+    }
+
+    if (!esAdministrador && !esInvitado && !cuentaOperador) {
       return respuestaAcceso("Usuario o contraseña incorrectos.", 401);
     }
 
-    const rol: RolUsuario = esAdministrador ? "administrador" : "invitado";
+    const rol: RolUsuario = esAdministrador ? "administrador" : esInvitado ? "invitado" : "operador";
     const sesion = await crearSesion(
-      esAdministrador ? entorno.USUARIO_DEMO : "invitado-cra",
+      esAdministrador ? entorno.USUARIO_DEMO : esInvitado ? "invitado-cra" : cuentaOperador!.matricula,
       rol,
-      entorno.SECRETO_SESION
+      entorno.SECRETO_SESION,
+      cuentaOperador?.matricula,
+      cuentaOperador?.version_sesion
     );
+    if (cuentaOperador) await entorno.CONTENIDO_DB.prepare("UPDATE cuentas_operadores SET ultimo_acceso_en = unixepoch() WHERE matricula = ?").bind(cuentaOperador.matricula).run();
     return new Response(null, {
       status: 303,
       headers: {
@@ -205,7 +240,7 @@ export const onRequest = async (contexto: ContextoCloudflare) => {
     });
   }
 
-  contexto.data = { ...(contexto.data ?? {}), rol: sesionActiva.rol };
+  contexto.data = { ...(contexto.data ?? {}), rol: sesionActiva.rol, usuario: sesionActiva.usuario, matricula: sesionActiva.matricula };
 
   // Solo después de validar la sesión se permite que Pages entregue el recurso.
   const respuesta = await contexto.next();

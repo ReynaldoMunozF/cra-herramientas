@@ -5,6 +5,7 @@ import imagenComputoAnual from "../recursos/inicio/computo-anual.svg";
 import { RinconJavi } from "../componentes/RinconJavi";
 import { ComunidadInicio } from "../componentes/ComunidadInicio";
 import { Biblioteca } from "../componentes/Biblioteca";
+import { EnlacesPortada } from "../componentes/EnlacesPortada";
 
 interface HerramientaPortal {
   titulo: string;
@@ -66,9 +67,9 @@ const NovedadesInvitados: React.FC = () => (
       <div className="novedad-icono"><IconoNovedad tipo="cuadrante" /></div>
       <div>
         <span className="novedad-actualizacion">Actualización de hoy</span>
-        <h3>Cuadrante de octubre subido</h3>
-        <p>Ya está disponible el cuadrante de octubre con sus días, turnos y horas actualizados.</p>
-        <strong className="novedad-fecha-cuadrante">✓ Actualizado hoy, 23 de septiembre de 2026</strong>
+        <h3>Cuadrantes de octubre y noviembre actualizados</h3>
+        <p>Ya están disponibles los cuadrantes oficiales de octubre y noviembre con sus días y turnos actualizados.</p>
+        <strong className="novedad-fecha-cuadrante">✓ Actualizados el 16 de octubre de 2026</strong>
       </div>
     </article>
 
@@ -158,6 +159,7 @@ export const PaginaInicio: React.FC = () => {
 
   return (
     <main className="pagina-inicio">
+      <EnlacesPortada />
       <section className="inicio-principal">
         <header className="inicio-cabecera">
           <div><span>Herramientas CRA</span><h1>¿Qué necesitas gestionar hoy?</h1><p>Lo principal, claro y a mano. Las consultas auxiliares siguen disponibles arriba, desde la barra tradicional y la flotante.</p></div>
@@ -171,6 +173,13 @@ export const PaginaInicio: React.FC = () => {
               <div className="inicio-contenido"><small>{herramienta.clase === "cuadrante" ? "Organización de turnos" : "Control personal"}</small><h2>{herramienta.titulo}</h2><p>{herramienta.descripcion}</p><Link to={herramienta.ruta} target={herramienta.nuevaVentana ? "_blank" : undefined} rel={herramienta.nuevaVentana ? "noopener" : undefined}>{herramienta.textoBoton}<span aria-hidden="true">→</span></Link></div>
             </article>
           ))}
+        </section>
+        <section className="inicio-accesos-rapidos" aria-label="Accesos complementarios">
+          <Link className="zona-descanso-tarjeta" to="/zona-descanso">
+            <i aria-hidden="true">🎮</i>
+            <span><small>Pausa activa</small><strong>Zona de descanso</strong><em>Juegos rápidos, CRA Social, Artillería y La Taberna del Rey cuando esté abierta.</em></span>
+            <b aria-hidden="true">→</b>
+          </Link>
         </section>
       </section>
 

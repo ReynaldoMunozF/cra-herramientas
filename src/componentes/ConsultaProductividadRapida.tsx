@@ -1,6 +1,7 @@
 import React from "react";
 import { CUADRANTES } from "../cuadrante/constantes";
 import iconoProductividad from "../recursos/herramientas/productividad.svg";
+import { usarOperadoresPersonales } from "./usarOperadoresPersonales";
 
 interface RegistroProductividad {
   id: number;
@@ -193,6 +194,14 @@ export const ConsultaProductividadRapida: React.FC = () => {
   const [mensajeEmail, establecerMensajeEmail] = React.useState("");
   const [correoCopiado, establecerCorreoCopiado] = React.useState<string | null>(null);
   const solicitudMesActual = React.useRef(0);
+  const { operadores: operadoresVisibles, rol, matriculaPropia } = usarOperadoresPersonales(operadores);
+
+  React.useEffect(() => {
+    if (rol === "operador" && matriculaPropia) establecerMatricula(matriculaPropia);
+    if (rol === "invitado" && operadoresVisibles.length && !operadoresVisibles.some((operador) => operador.matricula === matricula)) {
+      establecerMatricula(operadoresVisibles[0].matricula);
+    }
+  }, [rol, matriculaPropia, operadoresVisibles, matricula]);
 
   const mesSeleccionado = fecha.slice(0, 7);
   const registroSeleccionado = registros.find((registro) => registro.fecha === fecha);
@@ -476,7 +485,7 @@ export const ConsultaProductividadRapida: React.FC = () => {
           </header>
 
           <div className={`productividad-contenido ${pinNecesario || !operadorConfirmado ? "requiere-pin" : ""}`}>
-            {!operadorConfirmado && <form className="productividad-pin productividad-seleccion-operador" onSubmit={e=>{e.preventDefault();establecerOperadorConfirmado(true);establecerMensaje("");}}><div aria-hidden="true">👤</div><small>IDENTIFICACIÓN</small><h3>¿Qué operador eres?</h3><p>Selecciona primero tu matrícula. El PIN solamente se solicitará después si está protegida.</p><label>Matrícula<select value={matricula} onChange={e=>{establecerMatricula(e.target.value);establecerRegistros([]);establecerPinNecesario(false);}}>{operadores.map(operador=><option key={operador.matricula} value={operador.matricula}>{operador.matricula} · {operador.nombre}</option>)}</select></label><button type="submit">Continuar con {matricula}</button></form>}
+            {!operadorConfirmado && <form className="productividad-pin productividad-seleccion-operador" onSubmit={e=>{e.preventDefault();establecerOperadorConfirmado(true);establecerMensaje("");}}><div aria-hidden="true">👤</div><small>IDENTIFICACIÓN</small><h3>{rol === "operador" ? "Tu productividad personal" : "¿Qué operador eres?"}</h3><p>{rol === "operador" ? "Tu cuenta ya identifica la matrícula con la que vas a trabajar." : "Selecciona primero tu matrícula. El PIN solamente se solicitará después si está protegida."}</p><label>Matrícula<select value={matricula} disabled={rol === "operador"} onChange={e=>{establecerMatricula(e.target.value);establecerRegistros([]);establecerPinNecesario(false);}}>{operadoresVisibles.map(operador=><option key={operador.matricula} value={operador.matricula}>{operador.matricula} · {operador.nombre}</option>)}</select></label><button type="submit">Continuar con {matricula}</button></form>}
             {pinNecesario && <form className="productividad-pin" onSubmit={validarPin}><div aria-hidden="true">🔐</div><small>ACCESO PERSONAL</small><h3>Introduce el PIN de {matricula}</h3><p>Solo podrás consultar y modificar la productividad asociada a esta matrícula.</p><input value={pin} onChange={e=>establecerPin(e.target.value.replace(/\D/g,"").slice(0,8))} type="password" inputMode="numeric" autoComplete="one-time-code" placeholder="PIN de 4 a 8 números" autoFocus/><button type="submit" disabled={validandoPin||pin.length<4}>{validandoPin?"Comprobando…":"Desbloquear mis datos"}</button>{mensaje&&<p role="alert">{mensaje}</p>}</form>}
             <div className="productividad-identificacion">
               <label>
@@ -490,7 +499,7 @@ export const ConsultaProductividadRapida: React.FC = () => {
                     establecerPinNecesario(false);
                   }}
                 >
-                  {operadores.map((operador) => (
+                  {operadoresVisibles.map((operador) => (
                     <option key={operador.matricula} value={operador.matricula}>
                       {operador.matricula} · {operador.nombre}
                     </option>

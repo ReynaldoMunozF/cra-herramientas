@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { CUADRANTES } from "../cuadrante/constantes";
+import { usarOperadoresPersonales } from "../componentes/usarOperadoresPersonales";
 
 interface TurnoGuardado {
   fecha: string;
@@ -78,6 +79,14 @@ export const PaginaComputoAnual: React.FC = () => {
   const [pinNecesario, establecerPinNecesario] = React.useState(false);
   const [pin, establecerPin] = React.useState("");
   const [validandoPin, establecerValidandoPin] = React.useState(false);
+  const { operadores: operadoresVisibles, rol, matriculaPropia } = usarOperadoresPersonales(operadores);
+
+  React.useEffect(() => {
+    if (rol === "operador" && matriculaPropia) establecerMatricula(matriculaPropia);
+    if (rol === "invitado" && operadoresVisibles.length && !operadoresVisibles.some((operador) => operador.matricula === matricula)) {
+      establecerMatricula(operadoresVisibles[0].matricula);
+    }
+  }, [rol, matriculaPropia, operadoresVisibles, matricula]);
 
   const operador = operadores.find((elemento) => elemento.matricula === matricula);
   const cantidadDias = diasDelMes(anio, mes);
@@ -222,11 +231,11 @@ export const PaginaComputoAnual: React.FC = () => {
           <form className="computo-acceso" onSubmit={(evento) => { evento.preventDefault(); establecerOperadorConfirmado(true); establecerMensaje(""); }}>
             <span aria-hidden="true">🔐</span>
             <small>ACCESO PERSONAL</small>
-            <h2>Selecciona tu matrícula</h2>
-            <p>El PIN se solicitará después solamente si esta matrícula está protegida.</p>
+            <h2>{rol === "operador" ? "Tu cómputo anual" : "Selecciona tu matrícula"}</h2>
+            <p>{rol === "operador" ? "Tu cuenta protege y abre solo tu cómputo anual." : "El PIN se solicitará después solamente si esta matrícula está protegida."}</p>
             <label>Operador
-              <select value={matricula} onChange={(evento) => { establecerMatricula(evento.target.value); establecerTurnos({}); establecerPinNecesario(false); }}>
-                {operadores.map((elemento) => <option value={elemento.matricula} key={elemento.matricula}>{elemento.matricula} · {elemento.nombre}</option>)}
+              <select value={matricula} disabled={rol === "operador"} onChange={(evento) => { establecerMatricula(evento.target.value); establecerTurnos({}); establecerPinNecesario(false); }}>
+                {operadoresVisibles.map((elemento) => <option value={elemento.matricula} key={elemento.matricula}>{elemento.matricula} · {elemento.nombre}</option>)}
               </select>
             </label>
             <button type="submit">Continuar con {matricula}</button>
@@ -249,7 +258,7 @@ export const PaginaComputoAnual: React.FC = () => {
           <label>
             Operador
             <select value={matricula} onChange={(evento) => { establecerMatricula(evento.target.value); establecerOperadorConfirmado(false); establecerTurnos({}); }}>
-              {operadores.map((elemento) => (
+              {operadoresVisibles.map((elemento) => (
                 <option value={elemento.matricula} key={elemento.matricula}>
                   {elemento.matricula} · {elemento.nombre}
                 </option>

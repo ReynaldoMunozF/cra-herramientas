@@ -235,7 +235,7 @@ Operador CRA`
                 </div>
               </div>
               <div className="schedule-stats">
-                <div><strong>{operadorSeleccionado.horas}</strong><span>Horas</span></div>
+                <div><strong>{operadorSeleccionado.horas || "—"}</strong><span>{operadorSeleccionado.horas ? "Horas" : "Total no indicado"}</span></div>
                 <div><strong>{diasTrabajados}</strong><span>Turnos</span></div>
                 <div><strong>{diasLibres}</strong><span>Libres</span></div>
                 <div><strong>{diasVacaciones}</strong><span>Vacaciones</span></div>
@@ -315,7 +315,7 @@ Operador CRA`
                   <strong>{operadorComparado.matricula}</strong>
                   <div>
                     <h4>{operadorComparado.nombre}</h4>
-                    <p>Matrícula {operadorComparado.matricula} · {operadorComparado.horas} horas</p>
+                    <p>Matrícula {operadorComparado.matricula} · {operadorComparado.horas ? `${operadorComparado.horas} horas` : "total no indicado"}</p>
                   </div>
                 </div>
 

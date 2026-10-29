@@ -2,6 +2,7 @@ import React from "react";
 import { CUADRANTES } from "../cuadrante/constantes";
 import { registrarUso } from "../servicios/estadisticasUso";
 import iconoComentarios from "../recursos/herramientas/comentarios.svg";
+import { usarOperadoresPersonales } from "./usarOperadoresPersonales";
 
 type VistaComentarios = "lista" | "gestionar";
 
@@ -61,6 +62,14 @@ export const ConsultaComentariosRapidos: React.FC = () => {
   const [matricula, establecerMatricula] = React.useState(
     () => localStorage.getItem(CLAVE_OPERADOR_COMENTARIOS) ?? "RMI"
   );
+  const { operadores: operadoresVisibles, rol, matriculaPropia } = usarOperadoresPersonales(operadoresComentarios);
+
+  React.useEffect(() => {
+    if (rol === "operador" && matriculaPropia) establecerMatricula(matriculaPropia);
+    if (rol === "invitado" && operadoresVisibles.length && !operadoresVisibles.some((operador) => operador.matricula === matricula)) {
+      establecerMatricula(operadoresVisibles[0].matricula);
+    }
+  }, [rol, matriculaPropia, operadoresVisibles, matricula]);
 
   const cargarComentarios = React.useCallback(async () => {
     establecerCargando(true);
@@ -75,7 +84,7 @@ export const ConsultaComentariosRapidos: React.FC = () => {
 
       // Migra una sola vez los textos creados con la versión que usaba localStorage.
       const anteriores = JSON.parse(localStorage.getItem(CLAVE_COMENTARIOS_ANTERIORES) ?? "[]");
-      if (Array.isArray(anteriores) && anteriores.length > 0) {
+      if (rol !== "operador" && Array.isArray(anteriores) && anteriores.length > 0) {
         await Promise.all(
           anteriores
             .filter((texto): texto is string => typeof texto === "string" && Boolean(texto.trim()))
@@ -103,7 +112,7 @@ export const ConsultaComentariosRapidos: React.FC = () => {
     } finally {
       establecerCargando(false);
     }
-  }, [matricula]);
+  }, [matricula, rol]);
 
   React.useEffect(() => {
     const cerrarAlAbrirOtra = (evento: Event) => {
@@ -238,7 +247,7 @@ export const ConsultaComentariosRapidos: React.FC = () => {
           </div>
 
           <div className="comentarios-rapidos-contenido">
-            <label className="comentarios-operador-selector">
+            {rol === "operador" ? <p className="comentarios-operador-propio">🔒 Estás viendo únicamente tus comentarios personales.</p> : <label className="comentarios-operador-selector">
               Operador
               <select
                 value={matricula}
@@ -248,13 +257,13 @@ export const ConsultaComentariosRapidos: React.FC = () => {
                   establecerMensaje("");
                 }}
               >
-                {operadoresComentarios.map((operador) => (
+                {operadoresVisibles.map((operador) => (
                   <option key={operador.matricula} value={operador.matricula}>
                     {operador.matricula} · {operador.nombre}
                   </option>
                 ))}
               </select>
-            </label>
+            </label>}
             {mensaje && <p className="comentarios-rapidos-mensaje">{mensaje}</p>}
             {vista === "gestionar" && (
               <form className="comentario-personal-formulario" onSubmit={guardar}>

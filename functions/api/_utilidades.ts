@@ -9,14 +9,15 @@ export interface BaseD1 {
   prepare: (consulta: string) => SentenciaD1;
   batch: (sentencias: SentenciaD1[]) => Promise<unknown[]>;
 }
-export interface ObjetoR2 { body: ReadableStream; writeHttpMetadata: (headers: Headers) => void; }
-export interface DepositoR2 { put: (clave: string, valor: ArrayBuffer | ReadableStream | Blob, opciones?: { httpMetadata?: { contentType?: string } }) => Promise<unknown>; get: (clave: string) => Promise<ObjetoR2 | null>; delete: (clave: string) => Promise<void>; }
+export interface ObjetoR2 { body: ReadableStream; size: number; range?: { offset: number; length: number }; writeHttpMetadata: (headers: Headers) => void; }
+export interface DepositoR2 { put: (clave: string, valor: ArrayBuffer | ReadableStream | Blob, opciones?: { httpMetadata?: { contentType?: string } }) => Promise<unknown>; get: (clave: string, opciones?: { range?: Headers }) => Promise<ObjetoR2 | null>; delete: (clave: string) => Promise<void>; }
 export interface EntornoManual { CONTENIDO_DB: BaseD1; MEDIA_PRIVADA: DepositoR2; SECRETO_SESION?: string; }
+export type RolSesion = "administrador" | "invitado" | "operador";
 export interface ContextoPagina {
   request: Request;
   env: EntornoManual;
   params: Record<string, string | string[]>;
-  data?: { rol?: "administrador" | "invitado" };
+  data?: { rol?: RolSesion; matricula?: string; usuario?: string };
 }
 
 export const responderJson = (datos: unknown, estado = 200) => new Response(JSON.stringify(datos), {
