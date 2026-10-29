@@ -45,3 +45,20 @@ test('un operador no puede leer ni modificar la matrícula de otro', async () =>
   const escritura = await api.onRequest(contexto(env, new Request('https://cra.test/api/productividad', { method: 'PUT', body: JSON.stringify(dia) }), data));
   assert.equal(escritura.status, 403); assert.equal(registros.size, 0);
 });
+
+const bono = cargar('src/servicios/bonificacionProductividad.ts');
+test('la escala termina en 27 gestiones por hora y 300 euros', () => {
+  assert.equal(bono.MAX_PRODUCTIVIDAD_BONIFICADA, 27);
+  assert.ok(bono.ESCALA_BONIFICACION.every(([gestiones, euros]) => gestiones <= 27 && euros <= 300));
+  for (const productividad of [27, 27.5, 36, 100]) {
+    assert.equal(bono.obtenerTramoBono(productividad)[1], 300);
+    assert.equal(bono.obtenerEstadoProductividad(productividad).clase, 'verde');
+    assert.equal(bono.obtenerEstadoProductividad(productividad).texto, 'Tope del bono alcanzado');
+  }
+});
+test('mantiene los importes de los tramos inferiores', () => {
+  assert.equal(bono.obtenerTramoBono(17.99), null);
+  for (const [gestiones, euros] of [[18, 40], [22, 157], [25, 245], [26, 270], [26.99, 270]]) {
+    assert.equal(bono.obtenerTramoBono(gestiones)[1], euros);
+  }
+});

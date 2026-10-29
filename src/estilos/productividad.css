@@ -279,9 +279,9 @@
 }
 .productividad-progreso-marcas span { position: absolute; transform: translateX(-50%); }
 .productividad-progreso-marcas span:nth-child(1) { left: 0; transform: none; }
-.productividad-progreso-marcas span:nth-child(2) { left: 50%; }
-.productividad-progreso-marcas span:nth-child(3) { left: 61.11%; }
-.productividad-progreso-marcas span:nth-child(4) { left: 77.78%; }
+.productividad-progreso-marcas span:nth-child(2) { left: 66.67%; }
+.productividad-progreso-marcas span:nth-child(3) { left: 81.48%; }
+.productividad-progreso-marcas span:nth-child(4) { left: 92.59%; }
 .productividad-progreso-marcas span:nth-child(5) { right: 0; transform: none; }
 .productividad-resumen { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
 .productividad-resumen > div {

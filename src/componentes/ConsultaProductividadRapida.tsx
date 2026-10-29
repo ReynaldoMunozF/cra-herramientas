@@ -1,4 +1,5 @@
 import React from "react";
+import { MAX_PRODUCTIVIDAD_BONIFICADA, obtenerTramoBono, obtenerEstadoProductividad } from "../servicios/bonificacionProductividad";
 import { CUADRANTES } from "../cuadrante/constantes";
 import iconoProductividad from "../recursos/herramientas/productividad.svg";
 import { usarOperadoresPersonales } from "./usarOperadoresPersonales";
@@ -39,20 +40,6 @@ const FORMULARIO_VACIO: CantidadesFormulario = {
   gestionesAdministrativas: 0,
   tramosEmail: [],
 };
-
-/** Escala corporativa facilitada para estimar el bono según las gestiones por hora. */
-const ESCALA_BONIFICACION: Array<[number, number]> = [
-  [18, 40], [18.2, 45], [18.4, 51], [18.5, 56], [18.7, 61], [18.9, 67],
-  [19.1, 72], [19.3, 77], [19.4, 83], [19.6, 88], [19.8, 93], [20, 99],
-  [20.2, 104], [20.3, 109], [20.5, 115], [20.7, 120], [20.9, 125],
-  [21.1, 131], [21.2, 136], [21.4, 141], [21.6, 147], [21.8, 152],
-  [22, 157], [22.1, 163], [22.3, 168], [22.5, 173], [22.7, 179],
-  [22.9, 184], [23, 189], [23.2, 195], [23.4, 200], [24, 220],
-  [25, 245], [26, 270], [27, 300], [27.5, 310], [28, 320], [28.5, 330],
-  [29, 340], [29.5, 350], [30, 360], [30.5, 370], [31, 380],
-  [31.5, 390], [32, 400], [32.5, 410], [33, 420], [33.5, 430],
-  [34, 440], [34.5, 450], [35, 460], [35.5, 470], [36, 480],
-];
 
 const operadores = Array.from(
   new Map(
@@ -117,20 +104,6 @@ const horasEfectivasFormulario = (cantidades: CantidadesFormulario) =>
 
 const formatearNumero = (valor: number) =>
   valor.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-const obtenerTramoBono = (productividad: number) =>
-  ESCALA_BONIFICACION.reduce<[number, number] | null>(
-    (tramo, candidato) => productividad >= candidato[0] ? candidato : tramo,
-    null
-  );
-
-const obtenerEstadoProductividad = (productividad: number) => {
-  if (productividad < 18) return { clase: "roja", texto: "Por debajo del primer tramo" };
-  if (productividad < 22) return { clase: "amarilla", texto: "Primer tramo alcanzado" };
-  if (productividad < 28) return { clase: "naranja", texto: "Avance favorable" };
-  if (productividad <= 36) return { clase: "verde", texto: "Objetivo alto alcanzado" };
-  return { clase: "superior", texto: "Superando la escala" };
-};
 
 const CLAVE_MATRICULA_PRODUCTIVIDAD = "cra-productividad-matricula";
 const CLAVE_RESPALDOS_PRODUCTIVIDAD = "cra-productividad-pendientes-v1";
@@ -461,7 +434,7 @@ export const ConsultaProductividadRapida: React.FC<{ variante?: "flotante" | "te
   const productividadMes = horasMes > 0 ? gestionesMes / horasMes : 0;
   const tramoBono = obtenerTramoBono(productividadMes);
   const estadoProductividad = obtenerEstadoProductividad(productividadHoy);
-  const avanceProductividad = Math.min(100, (productividadHoy / 36) * 100);
+  const avanceProductividad = Math.min(100, (productividadHoy / MAX_PRODUCTIVIDAD_BONIFICADA) * 100);
 
   const camposProductividad = (<>
             <div className="productividad-identificacion">
@@ -614,7 +587,7 @@ export const ConsultaProductividadRapida: React.FC<{ variante?: "flotante" | "te
                 <span style={{ width: `${avanceProductividad}%` }} />
               </div>
               <div className="productividad-progreso-marcas" aria-hidden="true">
-                <span>0</span><span>18</span><span>22</span><span>28</span><span>36+</span>
+                <span>0</span><span>18</span><span>22</span><span>25</span><span>27</span>
               </div>
             </section>
 
@@ -631,6 +604,7 @@ export const ConsultaProductividadRapida: React.FC<{ variante?: "flotante" | "te
                     ? `Tramo de ${tramoBono[0].toLocaleString("es-ES")} gestiones/h`
                     : "Primer tramo: 18 gestiones/h"}
                 </small>
+                <small>Máximo: 300 € · 27 gestiones/h</small>
               </div>
             </div>
 
