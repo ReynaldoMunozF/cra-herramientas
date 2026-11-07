@@ -2,11 +2,11 @@ import datosJulio from "./datos-julio-2026.json";
 import datosAgosto from "./datos-agosto-2026.json";
 import datosSeptiembre from "./datos-septiembre-2026.json";
 import datosOctubre from "./datos-octubre-2026-pdf-14oct.json";
-import datosNoviembre from "./datos-noviembre-2026-pdf-15oct.json";
+import datosNoviembre from "./datos-noviembre-2026-pdf-6nov.json";
 import { CuadranteMensual, OperadorCuadrante, OperadorJson } from "./tipos";
 
 /** Fecha de incorporación de los últimos cuadrantes oficiales disponibles. */
-export const FECHA_ACTUALIZACION_CUADRANTES = "16 de octubre de 2026";
+export const FECHA_ACTUALIZACION_CUADRANTES = "7 de noviembre de 2026";
 
 /** Días abreviados utilizados en la cabecera del calendario de escritorio. */
 export const DIAS_SEMANA = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
