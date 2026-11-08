@@ -26,11 +26,11 @@ test('Defensa del handler impide datos y escrituras a otros roles',async()=>{
 });
 test('Solo permite rutas cerradas, páginas válidas y métodos de lectura',async()=>{
  const ctx={data:{rol:'administrador'},request:new Request('https://cra.test/'),env:{},next:()=>{throw Error('No debe leer assets')}};
- for(const archivo of ['../catalogo.json','imagenes/pagina-000.jpg','imagenes/pagina-143.jpg','manual.pdf/extra','otra.json'])assert.equal((await handler.onRequest({...ctx,params:{archivo}})).status,404);
+ for(const archivo of ['../catalogo.json','imagenes/pagina-000.jpg','imagenes/pagina-146.jpg','manual.pdf/extra','otra.json'])assert.equal((await handler.onRequest({...ctx,params:{archivo}})).status,404);
  assert.equal((await handler.onRequest({...ctx,request:new Request('https://cra.test/',{method:'POST'}),params:{archivo:'catalogo.json'}})).status,405);
 });
 test('Guarda la copia privada y recupera datos en un build posterior sin assets',async()=>{
- let contenido=null;const bucket={get:async()=>contenido?{body:new Blob([contenido]).stream()}:null,put:async(k,v)=>{assert.equal(k,'teo/manual-2025-revision-v1/catalogo.json');contenido=v}};
+ let contenido=null;const bucket={get:async()=>contenido?{body:new Blob([contenido]).stream()}:null,put:async(k,v)=>{assert.equal(k,'teo/manual-2026-11-08-v2/catalogo.json');contenido=v}};
  const base={data:{rol:'administrador'},params:{archivo:'catalogo.json'},request:new Request('https://cra.test/'),env:{MEDIA_PRIVADA:bucket}};
  const r=await handler.onRequest({...base,next:async()=>new Response('{"version":"fixture"}',{headers:{'Content-Type':'application/json'}})});
  assert.equal(r.headers.get('Cache-Control'),'private, no-store');assert.equal(await r.text(),'{"version":"fixture"}');assert.ok(contenido);
@@ -68,4 +68,20 @@ test('El índice rápido encuentra doble vía por su identificador y mantiene la
  assert.equal(servicio.buscarProcedimientosManual([otra,ficha],'CGO','',true).length,0,'La consulta rápida indexa títulos e identificadores, sin llenar la pantalla con menciones del cuerpo');
  assert.equal(servicio.buscarProcedimientosManual([otra,ficha],'CGO').length,1,'La consulta completa del manual conserva su búsqueda en el contenido');
  assert.equal(servicio.buscarProcedimientosManual([otra,ficha],'inexistente','',true).length,0);
+});
+
+test('La revisión de 145 páginas acepta su última imagen sin reutilizar la caché anterior',async()=>{
+ let clave;const r=await handler.onRequest({data:{rol:'administrador'},params:{archivo:'imagenes/pagina-145.jpg'},request:new Request('https://cra.test/'),env:{MEDIA_PRIVADA:{get:async k=>{clave=k;return null},put:async()=>{}}},next:async()=>new Response('imagen actual',{headers:{'Content-Type':'image/jpeg'}})});
+ assert.equal(r.status,200);assert.equal(await r.text(),'imagen actual');assert.equal(clave,'teo/manual-2026-11-08-v2/imagenes/pagina-145.jpg');
+});
+
+test('El paquete exige todas las páginas y un PDF que corresponda al catálogo',()=>{
+ const validar=require('../scripts/validar-paquete-manual-teo.cjs');
+ const pdf=Buffer.from('fixture PDF');const catalogo={fuente:{paginas:2,sha256:crypto.createHash('sha256').update(pdf).digest('hex')},procedimientos:[{id:'fixture',paginas:[2],nodos:{inicio:{paginas:[2]}}}]};
+ const paquete={'catalogo.json':Buffer.from(JSON.stringify(catalogo)).toString('base64'),'manual.pdf':pdf.toString('base64'),'imagenes/pagina-001.jpg':'eA==','imagenes/pagina-002.jpg':'eA=='};
+ assert.equal(validar(paquete).fuente.paginas,2);
+ const sinPagina={...paquete};delete sinPagina['imagenes/pagina-002.jpg'];assert.throws(()=>validar(sinPagina),/Faltan páginas/);
+ assert.throws(()=>validar({...paquete,'manual.pdf':Buffer.from('otro').toString('base64')}),/no corresponde/);
+ assert.throws(()=>validar({...paquete,'../extra':'eA=='}),/archivos no permitidos/);
+ catalogo.procedimientos[0].paginas=[3];assert.throws(()=>validar({...paquete,'catalogo.json':Buffer.from(JSON.stringify(catalogo)).toString('base64')}),/Referencia fuera/);
 });

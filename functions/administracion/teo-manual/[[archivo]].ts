@@ -9,9 +9,9 @@ const onRequestGet = async (contexto: ContextoManual) => {
   const pagina = /^imagenes\/pagina-(\d{3})\.jpg$/.exec(archivo ?? "");
   const tipo = archivo === "catalogo.json" ? "application/json"
     : archivo === "manual.pdf" ? "application/pdf"
-    : pagina && Number(pagina[1]) >= 1 && Number(pagina[1]) <= 142 ? "image/jpeg" : null;
+    : pagina && Number(pagina[1]) >= 1 && Number(pagina[1]) <= 145 ? "image/jpeg" : null;
   if (!tipo) return responderJson({ error: "Recurso no encontrado." }, 404);
-  const clave = `teo/manual-2025-revision-v1/${archivo}`;
+  const clave = `teo/manual-2026-11-08-v2/${archivo}`;
   const headers = { "Content-Type": tipo, "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff" };
   // El bucket es privado y el endpoint general /api/media no permite estas claves.
   // Conservar la primera copia consultada evita perder las revisiones en futuros builds.
