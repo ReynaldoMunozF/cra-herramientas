@@ -170,7 +170,7 @@ export const ConsultaProductividadRapida: React.FC<{ variante?: "flotante" | "te
   const [mensajeEmail, establecerMensajeEmail] = React.useState("");
   const [correoCopiado, establecerCorreoCopiado] = React.useState<string | null>(null);
   const solicitudMesActual = React.useRef(0);
-  const { operadores: operadoresVisibles, rol, matriculaPropia } = usarOperadoresPersonales(operadores);
+  const { operadores: operadoresVisibles, rol, matriculaPropia, cargandoSesion } = usarOperadoresPersonales(operadores);
 
   React.useEffect(() => {
     if (rol === "operador" && matriculaPropia) establecerMatricula(matriculaPropia);
@@ -178,6 +178,10 @@ export const ConsultaProductividadRapida: React.FC<{ variante?: "flotante" | "te
       establecerMatricula(operadoresVisibles[0].matricula);
     }
   }, [rol, matriculaPropia, operadoresVisibles, matricula]);
+
+  const identificacionConfirmada = !cargandoSesion && (rol === "operador"
+    ? Boolean(matriculaPropia && matricula === matriculaPropia)
+    : operadorConfirmado);
 
   const mesSeleccionado = fecha.slice(0, 7);
   const registroSeleccionado = registros.find((registro) => registro.fecha === fecha);
@@ -218,8 +222,8 @@ export const ConsultaProductividadRapida: React.FC<{ variante?: "flotante" | "te
   }, [esTeo]);
 
   React.useEffect(() => {
-    if (abierto && operadorConfirmado) cargarMes();
-  }, [abierto, operadorConfirmado, cargarMes]);
+    if (abierto && identificacionConfirmada) cargarMes();
+  }, [abierto, identificacionConfirmada, cargarMes]);
 
   React.useEffect(() => {
     localStorage.setItem(CLAVE_MATRICULA_PRODUCTIVIDAD, matricula);
@@ -438,7 +442,7 @@ export const ConsultaProductividadRapida: React.FC<{ variante?: "flotante" | "te
 
   const camposProductividad = (<>
             <div className="productividad-identificacion">
-              <label>
+              {rol !== "operador" && <label>
                 Matrícula
                 <select
                   value={matricula}
@@ -455,7 +459,7 @@ export const ConsultaProductividadRapida: React.FC<{ variante?: "flotante" | "te
                     </option>
                   ))}
                 </select>
-              </label>
+              </label>}
               <label>
                 Día
                 <input
@@ -640,22 +644,22 @@ export const ConsultaProductividadRapida: React.FC<{ variante?: "flotante" | "te
         <section className="productividad-rapida-panel">
           <header>
             <div><small>Cálculo diario</small><h2>Productividad</h2></div>
-            {(!esTeo || (operadorConfirmado && !pinNecesario && mesCargado === `${matricula}|${mesSeleccionado}`)) && <div className="productividad-resultado-cabecera">
+            {(!cargandoSesion && (!esTeo || (identificacionConfirmada && !pinNecesario && mesCargado === `${matricula}|${mesSeleccionado}`))) && <div className="productividad-resultado-cabecera">
               <strong>{formatearNumero(productividadHoy)}</strong>
               <span>gestiones/h{esTeo ? " · Hoy" : ""}</span>
             </div>}
             {!esTeo && <button type="button" onClick={alternar} aria-label="Cerrar">×</button>}
           </header>
 
-          <div className={`productividad-contenido ${pinNecesario || !operadorConfirmado ? "requiere-pin" : ""}`}>
-            {!operadorConfirmado && <form className="productividad-pin productividad-seleccion-operador" onSubmit={e=>{e.preventDefault();establecerOperadorConfirmado(true);establecerMensaje("");}}><div aria-hidden="true">👤</div><small>IDENTIFICACIÓN</small><h3>{rol === "operador" ? "Tu productividad personal" : "¿Qué operador eres?"}</h3><p>{rol === "operador" ? "Tu cuenta ya identifica la matrícula con la que vas a trabajar." : "Selecciona primero tu matrícula. El PIN solamente se solicitará después si está protegida."}</p><label>Matrícula<select value={matricula} disabled={rol === "operador"} onChange={e=>{establecerMatricula(e.target.value);establecerRegistros([]);establecerPinNecesario(false);}}>{operadoresVisibles.map(operador=><option key={operador.matricula} value={operador.matricula}>{operador.matricula} · {operador.nombre}</option>)}</select></label><button type="submit">Continuar con {matricula}</button></form>}
+          <div className={`productividad-contenido ${pinNecesario || !identificacionConfirmada ? "requiere-pin" : ""}`}>
+            {!cargandoSesion && rol !== "operador" && !identificacionConfirmada && <form className="productividad-pin productividad-seleccion-operador" onSubmit={e=>{e.preventDefault();establecerOperadorConfirmado(true);establecerMensaje("");}}><div aria-hidden="true">👤</div><small>IDENTIFICACIÓN</small><h3>{rol === "operador" ? "Tu productividad personal" : "¿Qué operador eres?"}</h3><p>{rol === "operador" ? "Tu cuenta ya identifica la matrícula con la que vas a trabajar." : "Selecciona primero tu matrícula. El PIN solamente se solicitará después si está protegida."}</p><label>Matrícula<select value={matricula} disabled={rol === "operador"} onChange={e=>{establecerMatricula(e.target.value);establecerRegistros([]);establecerPinNecesario(false);}}>{operadoresVisibles.map(operador=><option key={operador.matricula} value={operador.matricula}>{operador.matricula} · {operador.nombre}</option>)}</select></label><button type="submit">Continuar con {matricula}</button></form>}
             {pinNecesario && <form className="productividad-pin" onSubmit={validarPin}><div aria-hidden="true">🔐</div><small>ACCESO PERSONAL</small><h3>Introduce el PIN de {matricula}</h3><p>Solo podrás consultar y modificar la productividad asociada a esta matrícula.</p><input value={pin} onChange={e=>establecerPin(e.target.value.replace(/\D/g,"").slice(0,8))} type="password" inputMode="numeric" autoComplete="one-time-code" placeholder="PIN de 4 a 8 números" autoFocus/><button type="submit" disabled={validandoPin||pin.length<4}>{validandoPin?"Comprobando…":"Desbloquear mis datos"}</button>{mensaje&&<p role="alert">{mensaje}</p>}</form>}
-            {esTeo && operadorConfirmado && !pinNecesario && mesCargado !== `${matricula}|${mesSeleccionado}` && <div className="productividad-carga-teo" role="status">
+            {esTeo && identificacionConfirmada && !pinNecesario && mesCargado !== `${matricula}|${mesSeleccionado}` && <div className="productividad-carga-teo" role="status">
               <p>{cargando ? "Cargando tus registros…" : mensaje || "Preparando productividad…"}</p>
               {!cargando && <button type="button" onClick={cargarMes}>Reintentar carga</button>}
             </div>}
-            {esTeo ? (
-            <fieldset className="productividad-campos" style={esTeo ? undefined : { display: "contents" }} hidden={esTeo && (!operadorConfirmado || pinNecesario || mesCargado !== `${matricula}|${mesSeleccionado}`)} disabled={esTeo && (guardando || cargando)}>
+            {cargandoSesion || (rol === "operador" && !identificacionConfirmada) ? <p role="status">Cargando tu cuenta…</p> : esTeo ? (
+            <fieldset className="productividad-campos" style={esTeo ? undefined : { display: "contents" }} hidden={esTeo && (!identificacionConfirmada || pinNecesario || mesCargado !== `${matricula}|${mesSeleccionado}`)} disabled={esTeo && (guardando || cargando)}>
               {camposProductividad}
             </fieldset>
             ) : camposProductividad}
