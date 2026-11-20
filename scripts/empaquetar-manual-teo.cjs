@@ -1,0 +1,17 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const crypto = require('node:crypto');
+const zlib = require('node:zlib');
+const validar = require('./validar-paquete-manual-teo.cjs');
+const origen = path.resolve(__dirname, '../private/teo-manual');
+const clave = Buffer.from(process.env.TEO_MANUAL_BUILD_KEY || '', 'base64');
+if (clave.length !== 32) throw new Error('Falta una clave de compilación válida.');
+const catalogo = JSON.parse(fs.readFileSync(path.join(origen,'catalogo.json'),'utf8'));
+const nombres = ['catalogo.json','manual.pdf', ...Array.from({length:catalogo.fuente.paginas},(_,i)=>`imagenes/pagina-${String(i+1).padStart(3,'0')}.jpg`)];
+const archivos = Object.fromEntries(nombres.map(n=>[n,fs.readFileSync(path.join(origen,n)).toString('base64')]));
+validar(archivos);
+const iv = crypto.randomBytes(12);
+const cifrar = crypto.createCipheriv('aes-256-gcm',clave,iv);
+const cifrado = Buffer.concat([cifrar.update(zlib.gzipSync(JSON.stringify(archivos))),cifrar.final()]);
+fs.writeFileSync(path.resolve(__dirname,'../private/teo-manual.enc'),Buffer.concat([Buffer.from('TEO1'),iv,cifrar.getAuthTag(),cifrado]));
+console.log(`Paquete cifrado: ${catalogo.procedimientos.length} fichas y ${catalogo.fuente.paginas} páginas.`);

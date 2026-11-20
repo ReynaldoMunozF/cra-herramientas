@@ -2,6 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const zlib = require('node:zlib');
+const validar = require('./validar-paquete-manual-teo.cjs');
 const origen = path.resolve(__dirname, '../private/teo-manual');
 const paquete = path.resolve(__dirname, '../private/teo-manual.enc');
 const destino = path.resolve(__dirname, '../dist/administracion/teo-manual');
@@ -15,15 +16,13 @@ if (fs.existsSync(paquete) && textoClave) {
   descifrar.setAuthTag(contenido.subarray(16,32));
   const comprimido = Buffer.concat([descifrar.update(contenido.subarray(32)), descifrar.final()]);
   const archivos = JSON.parse(zlib.gunzipSync(comprimido).toString('utf8'));
-  if (!archivos['catalogo.json'] || !archivos['manual.pdf'] || Object.keys(archivos).length !== 144) throw new Error('El paquete del manual está incompleto.');
+  const catalogo = validar(archivos);
   for (const [relativo, base64] of Object.entries(archivos)) {
-    const pagina = /^imagenes\/pagina-(\d{3})\.jpg$/.exec(relativo);
-    if (!['catalogo.json','manual.pdf'].includes(relativo) && !(pagina && +pagina[1] >= 1 && +pagina[1] <= 142)) throw new Error('Archivo no permitido en el paquete del manual.');
     const archivo = path.join(destino, relativo);
     fs.mkdirSync(path.dirname(archivo), {recursive:true});
     fs.writeFileSync(archivo, Buffer.from(base64, 'base64'));
   }
-  console.log('Manual descifrado: 116 fichas y 142 páginas para acceso administrativo.');
+  console.log(`Manual descifrado: ${catalogo.procedimientos.length} fichas y ${catalogo.fuente.paginas} páginas para acceso administrativo.`);
 } else if (fs.existsSync(path.join(origen, 'catalogo.json'))) {
   fs.cpSync(origen, destino, { recursive:true });
   console.log('Manual de prueba preparado desde la copia local privada.');

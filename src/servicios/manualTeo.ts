@@ -9,7 +9,7 @@ export interface ProcedimientoManualTeo {
   discrepancias?: string[]; notas_fuente?: string;
 }
 export interface CatalogoManualTeo {
-  version: string; fuente: { sha256: string; paginas: number };
+  version: string; fuente: { titulo?: string; sha256: string; paginas: number };
   procedimientos: ProcedimientoManualTeo[];
   discrepancias: Array<{ id: string; titulo: string; detalle: string; regla: string; paginas: number[] }>;
 }

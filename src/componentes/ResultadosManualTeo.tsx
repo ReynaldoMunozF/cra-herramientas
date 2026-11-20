@@ -39,7 +39,7 @@ export const ResultadosManualTeo: React.FC<Props> = ({ consulta, alCaducarSesion
     const pagina = paginas[p.id] ?? p.paginas[0];
     const imagen = `${RUTA_MANUAL_TEO}imagenes/pagina-${String(pagina).padStart(3,"0")}.jpg`;
     const pdf = `${RUTA_MANUAL_TEO}manual.pdf#page=${pagina}`;
-    return <article key={p.id} className="teo-tarjeta"><h3>{p.titulo}</h3><small className="teo-nota">{p.grupo} · Manual 2025 · Página {pagina}</small>
+    return <article key={p.id} className="teo-tarjeta"><h3>{p.titulo}</h3><small className="teo-nota">{p.grupo} · {catalogo.fuente.titulo ?? "Manual operativo"} · Página {pagina}</small>
       {p.paginas.length > 1 && <label className="teo-manual-pagina">Página de referencia<select aria-label={`Página de ${p.titulo}`} value={pagina} onChange={e => { setPaginas(v => ({ ...v, [p.id]: Number(e.target.value) }));setImagenFallida(""); }}>{p.paginas.map(n => <option key={n} value={n}>Página {n}</option>)}</select></label>}
       <div className="teo-manual-enlaces"><a href={pdf} target="_blank" rel="noopener noreferrer">Abrir PDF · p. {pagina} ↗</a><button type="button" aria-expanded={abierta === p.id} onClick={() => setPrevisualizacion(abierta === p.id ? null : p.id)}>{abierta === p.id ? "Ocultar vista previa" : "Ver vista previa"}</button></div>
       {abierta === p.id && (imagenFallida === imagen ? <p className="teo-nota">No se pudo cargar la vista previa. Puedes abrir la página en el PDF.</p> : <a className="teo-miniatura-manual" href={imagen} target="_blank" rel="noopener noreferrer" aria-label={`Ampliar página ${pagina} del manual`}><img src={imagen} alt={`Página ${pagina}: ${p.titulo}`} onError={() => setImagenFallida(imagen)} /><span>Pulsa para ampliar</span></a>)}

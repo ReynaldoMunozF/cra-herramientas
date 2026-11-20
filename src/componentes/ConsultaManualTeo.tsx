@@ -68,7 +68,7 @@ export const ConsultaManualTeo: React.FC<{ alCaducarSesion: () => void }> = ({ a
   const revision = seleccion ? revisiones[seleccion.id] : null;
   return <div ref={raiz} className="teo-manual">
     {!seleccion && <><div className="teo-manual-titulo"><h2>Manual · Prueba de administrador</h2><span>Borrador</span></div>
-    <p className="teo-nota">Respuestas del manual 2025 pendientes de revisar. No realiza gestiones. No introduzcas claves ni datos de clientes.</p></>}
+    <p className="teo-nota">Respuestas de {datos?.fuente.titulo ?? "manual operativo"} pendientes de revisar. No realiza gestiones. No introduzcas claves ni datos de clientes.</p></>}
     {error ? <p className="teo-error" role="alert">{error} <button type="button" onClick={() => setIntento(n => n+1)}>Reintentar</button></p> : !datos ? <p role="status">Cargando manual…</p> : <>
       {!seleccion ? <>
         <label htmlFor={`${id}-buscar`}>¿Qué necesitas consultar?</label>
